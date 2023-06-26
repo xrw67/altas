@@ -1,0 +1,11 @@
+# clang-format configuration file
+#
+# For more information, see:
+#
+#   https://clang.llvm.org/docs/ClangFormat.html
+#   https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+#
+
+BasedOnStyle: Google
+DerivePointerAlignment: false
+SortIncludes: false
