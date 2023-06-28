@@ -1,11 +1,11 @@
-#ifndef THEFOX_BASE_STRING_VIEW_H_
-#define THEFOX_BASE_STRING_VIEW_H_
+#ifndef BBT_BASE_STRING_VIEW_H_
+#define BBT_BASE_STRING_VIEW_H_
 
 #include <cstddef>
 #include <cstring>
 #include <string>
 
-namespace thefox {
+namespace bbt {
 
 class string_view {
  public:
@@ -60,6 +60,6 @@ constexpr bool operator!=(string_view x, string_view y) noexcept {
   return !(x == y);
 }
 
-}  // namespace thefox
+}  // namespace bbt
 
-#endif  // THEFOX_BASE_STRING_VIEW_H_
+#endif  // BBT_BASE_STRING_VIEW_H_

@@ -3,7 +3,7 @@ src/appkit/
   入口 class App (init, run, exit)
   插件机制 
     class PluginManager(info, list, load, unload), 
-    struct thefox_plugin_t p4_plugin {
+    struct bbt_plugin_t p4_plugin {
       char *name = "p4'
       u32 version = PLUGIN_VERSION(0,1,0);
       char *depends = "p1,p2,p3"

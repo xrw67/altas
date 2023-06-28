@@ -1,9 +1,9 @@
-#include <thefox/base/status.h>
+#include <bbt/base/status.h>
 
 #include <cstdio>
 #include <cassert>
 
-namespace thefox {
+namespace bbt {
 
 const char* Status::CopyState(const char* state) {
   uint32_t size;
@@ -69,4 +69,4 @@ std::string Status::ToString() const {
   }
 }
 
-}  // namespace thefox
+}  // namespace bbt

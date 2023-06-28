@@ -12,27 +12,31 @@
 // non-const method, all threads accessing the same Status must use
 // external synchronization.
 
-#ifndef THEFOX_BASE_STATUS_H_
-#define THEFOX_BASE_STATUS_H_
+#ifndef BBT_BASE_STATUS_H_
+#define BBT_BASE_STATUS_H_
 
 #include <algorithm>
 #include <string>
 
-#include <thefox/base/string_view.h>
+#include <bbt/base/string_view.h>
 
-namespace thefox {
+namespace bbt {
 
 class Status {
  public:
   // Create a success status.
-  Status() noexcept : state_(nullptr) {}
-  ~Status() { delete[] state_; }
+  Status() noexcept;
 
   Status(const Status& rhs);
   Status& operator=(const Status& rhs);
 
-  Status(Status&& rhs) noexcept : state_(rhs.state_) { rhs.state_ = nullptr; }
+  Status(Status&& rhs) noexcept;
   Status& operator=(Status&& rhs) noexcept;
+
+  void Update(const Status& new_status) noexcept;
+  void Update(Status&& new_status);
+
+  ~Status();
 
   // Return a success status.
   static Status OK() { return Status(); }
@@ -106,6 +110,12 @@ class Status {
   const char* state_;
 };
 
+//-------------------------------------------------------------------
+// Implementation
+//-------------------------------------------------------------------
+
+inline Status::Status() noexcept : state_(nullptr) {}
+
 inline Status::Status(const Status& rhs) {
   state_ = (rhs.state_ == nullptr) ? nullptr : CopyState(rhs.state_);
 }
@@ -118,10 +128,30 @@ inline Status& Status::operator=(const Status& rhs) {
   }
   return *this;
 }
+
+inline Status::Status(Status&& rhs) noexcept : state_(rhs.state_) {
+  rhs.state_ = nullptr;
+}
+
 inline Status& Status::operator=(Status&& rhs) noexcept {
   std::swap(state_, rhs.state_);
   return *this;
 }
-}  // namespace thefox
 
-#endif  // THEFOX_BASE_STATUS_H_
+inline void Status::Update(const Status& new_status) noexcept {
+  if (ok()) {
+    *this = new_status;
+  }
+}
+
+inline void Status::Update(Status&& new_status) {
+  if (ok()) {
+    *this = std::move(new_status);
+  }
+}
+
+inline Status::~Status() { delete[] state_; }
+
+}  // namespace bbt
+
+#endif  // BBT_BASE_STATUS_H_

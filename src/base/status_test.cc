@@ -1,10 +1,10 @@
-#include <thefox/base/status.h>
+#include <bbt/base/status.h>
 
 #include <utility>
 
 #include <gmock/gmock.h>
 
-using namespace thefox;
+using namespace bbt;
 
 TEST(Status, MoveConstructor) {
   {

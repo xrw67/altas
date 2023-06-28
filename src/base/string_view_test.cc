@@ -1,8 +1,8 @@
 #include <gmock/gmock.h>
 
-#include <thefox/base/string_view.h>
+#include <bbt/base/string_view.h>
 
-using namespace thefox;
+using namespace bbt;
 
 TEST(StringView, Ctor) {
   {

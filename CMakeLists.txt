@@ -4,7 +4,7 @@
 
 cmake_minimum_required(VERSION 3.10)
 
-project(thefox)
+project(bbt)
 
 set(THIRD_PARTY_DIR ${PROJECT_SOURCE_DIR}/third_party)
 
@@ -29,13 +29,13 @@ add_executable(hello
     src/hello.cc
 )
 
-# thefox_base
+# bbt_base
 aux_source_directory(src/base  DIR_SRCS)
 
-# thefox_appkit
+# bbt_appkit
 
-# thefox_test
-add_executable(thefox_test ${DIR_SRCS} src/test/hello_test.cc)
-target_link_libraries(thefox_test gmock gmock_main)
+# bbt_test
+add_executable(bbt_test ${DIR_SRCS} src/test/hello_test.cc)
+target_link_libraries(bbt_test gmock gmock_main)
 
-gtest_discover_tests(thefox_test)
+gtest_discover_tests(bbt_test)
