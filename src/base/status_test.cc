@@ -30,3 +30,31 @@ TEST(Status, MoveConstructor) {
     self_moved_reference = std::move(self_moved);
   }
 }
+
+TEST(Status, Update) {
+  {
+    Status st = Status::OK();
+    st.Update(Status::NotFound("msg1"));
+    ASSERT_EQ("NotFound: msg1", st.ToString());
+
+    st.Update(Status::InvalidArgument("msg2"));
+    ASSERT_EQ("NotFound: msg1", st.ToString());
+  }
+
+  // Copy
+  {
+    Status st = Status::OK();
+    const Status err = Status::NotFound("msg");
+    st.Update(err);
+    ASSERT_EQ(st.ToString(), err.ToString());
+  }
+
+  // Move
+  {
+    Status st = Status::OK();
+    Status err = Status::NotFound("msg");
+    st.Update(std::move(err));
+    ASSERT_EQ("NotFound: msg", st.ToString());
+    ASSERT_TRUE(err.ok());
+  }
+}
