@@ -14,14 +14,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # GoogleTest
 include(GoogleTest)
-add_subdirectory(${THIRD_PARTY_DIR}/googletest)
+add_subdirectory(${THIRD_PARTY_DIR}/googletest-1.8.1)
 enable_testing()
 
 
 
 # Common
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -g f-O2")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -g -O2")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -g f-O2")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Werror -g -O2")
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
 # hello

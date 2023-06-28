@@ -1,9 +1,14 @@
-#include <bbt/base/status.h>
+#include "bbt/base/status.h"
 
 #include <cstdio>
 #include <cassert>
 
 namespace bbt {
+
+std::ostream& operator<<(std::ostream& os, const Status& x) {
+  os << x.ToString();
+  return os;
+}
 
 const char* Status::CopyState(const char* state) {
   uint32_t size;
@@ -30,7 +35,7 @@ Status::Status(Code code, const string_view& msg, const string_view& msg2) {
   state_ = result;
 }
 
-std::string Status::ToString() const {
+std::string Status::ToStringSlow() const {
   if (state_ == nullptr) {
     return "OK";
   } else {

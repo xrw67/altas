@@ -18,7 +18,8 @@
 #include <algorithm>
 #include <string>
 
-#include <bbt/base/string_view.h>
+#include "bbt/base/attributes.h"
+#include "bbt/base/string_view.h"
 
 namespace bbt {
 
@@ -63,27 +64,38 @@ class Status {
     return Status(kIOError, msg, msg2);
   }
 
-  // Returns true iff the status indicates success.
-  bool ok() const { return (state_ == nullptr); }
+  // Returns true if the status indicates success.
+  BBT_MUST_USE_RESULT bool ok() const { return (state_ == nullptr); }
 
-  // Returns true iff the status indicates a NotFound error.
-  bool IsNotFound() const { return code() == kNotFound; }
+  // Returns true if the status indicates a NotFound error.
+  BBT_MUST_USE_RESULT bool IsNotFound() const { return code() == kNotFound; }
 
-  // Returns true iff the status indicates a Corruption error.
-  bool IsCorruption() const { return code() == kCorruption; }
+  // Returns true if the status indicates a Corruption error.
+  BBT_MUST_USE_RESULT bool IsCorruption() const {
+    return code() == kCorruption;
+  }
 
-  // Returns true iff the status indicates an IOError.
-  bool IsIOError() const { return code() == kIOError; }
+  // Returns true if the status indicates an IOError.
+  BBT_MUST_USE_RESULT bool IsIOError() const { return code() == kIOError; }
 
-  // Returns true iff the status indicates a NotSupportedError.
-  bool IsNotSupportedError() const { return code() == kNotSupported; }
+  // Returns true if the status indicates a NotSupportedError.
+  BBT_MUST_USE_RESULT bool IsNotSupportedError() const {
+    return code() == kNotSupported;
+  }
 
-  // Returns true iff the status indicates an InvalidArgument.
-  bool IsInvalidArgument() const { return code() == kInvalidArgument; }
+  // Returns true if the status indicates an InvalidArgument.
+  BBT_MUST_USE_RESULT bool IsInvalidArgument() const {
+    return code() == kInvalidArgument;
+  }
 
   // Return a string representation of this status suitable for printing.
   // Returns the string "OK" for success.
   std::string ToString() const;
+
+  // Ignores any errors. This method does nothing except potentially suppress
+  // complaints from any tools that are checking that errors are not dropped on
+  // the floor.
+  void IgnoreError() const;
 
  private:
   enum Code {
@@ -101,6 +113,7 @@ class Status {
 
   Status(Code code, const string_view& msg, const string_view& msg2);
   static const char* CopyState(const char* s);
+  std::string ToStringSlow() const;
 
   // OK status has a null state_.  Otherwise, state_ is a new[] array
   // of the following form:
@@ -109,6 +122,9 @@ class Status {
   //    state_[5..]  == message
   const char* state_;
 };
+
+// Prints a human-readable representation of `x` to `os`.
+std::ostream& operator<<(std::ostream& os, const Status& x);
 
 //-------------------------------------------------------------------
 // Implementation
@@ -151,6 +167,14 @@ inline void Status::Update(Status&& new_status) {
 }
 
 inline Status::~Status() { delete[] state_; }
+
+inline std::string Status::ToString() const {
+  return ok() ? "OK" : ToStringSlow();
+}
+
+inline void Status::IgnoreError() const {
+  // no-op
+}
 
 }  // namespace bbt
 

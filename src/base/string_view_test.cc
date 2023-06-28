@@ -1,6 +1,6 @@
-#include <gmock/gmock.h>
+#include "bbt/base/string_view.h"
 
-#include <bbt/base/string_view.h>
+#include <gmock/gmock.h>
 
 using namespace bbt;
 
@@ -101,5 +101,3 @@ TEST(StringViewTest, Swap) {
 //   ++iter;
 //   EXPECT_TRUE(iter == map.end());
 // }
-
-
