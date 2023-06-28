@@ -2,6 +2,7 @@
 
 #include <cstdio>
 #include <cassert>
+#include <ostream>
 
 namespace bbt {
 
