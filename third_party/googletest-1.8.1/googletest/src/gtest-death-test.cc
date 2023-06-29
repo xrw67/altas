@@ -1219,8 +1219,8 @@ static void StackLowerThanAddress(const void* ptr, bool* result) {
 // Make sure AddressSanitizer does not tamper with the stack here.
 GTEST_ATTRIBUTE_NO_SANITIZE_ADDRESS_
 static bool StackGrowsDown() {
-  int dummy;
-  bool result;
+  int dummy = 0;
+  bool result = false;
   StackLowerThanAddress(&dummy, &result);
   return result;
 }
