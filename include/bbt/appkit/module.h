@@ -8,9 +8,9 @@
 extern "C" {
 #endif
 
+
 struct BBT_EXPORT bbt_module {
   const char* name;
-  const char* description;
   unsigned int version;
   const char* depends;
   int (*init)(const char* param);
@@ -28,8 +28,8 @@ namespace bbt {
 class ModuleManager {
  public:
   virtual ~ModuleManager() {}
-  virtual Status LoadModule(bbt_module_t* mod) = 0;
-  virtual Status UnloadModule(string_view mod_name) = 0;
+  virtual Status LoadModule(bbt_module_t* mod, const char* param) = 0;
+  virtual Status UnloadModule(const char* mod_name) = 0;
 };
 
 ModuleManager* CreateModuleManager();

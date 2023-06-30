@@ -4,25 +4,17 @@
 
 using namespace bbt;
 
-// TODO
-//
-// 定义一个插件对象
-// 加载插件
-//  正常的插件
-//  缺少字段的插件
-//  检查init参数param
-
-//  卸载插件
-//      没有退出函数的插件，无法卸载
-
-// Builtin函数不在ModuleManager的管辖范围内，只是借用一下插件的架构而已。
-
 //
 // Test Module
 //
 
 static int mod_init_ok(const char* param) { return 0; }
 static int mod_init_fail(const char* param) { return 1; }
+static int mod_init_with_param(const char* param) {
+  int ret = atoi(param);
+  return ret;
+}
+
 static void mod_exit(void) { return; }
 
 TEST(Module, LoadAndUnload) {
@@ -35,68 +27,74 @@ TEST(Module, LoadAndUnload) {
     const char* errmsg;
     StatusCode result;
     bbt_module_t mod;
-
+    const char* param;
   } cases[] = {
       {
           "case1",
           StatusCode::kOk,
-          {"test1", "test1 desc", 1001, "", mod_init_ok, mod_exit},
+          {"test1", 1001, "", mod_init_ok, mod_exit},
       },
       {
-          "case2",
+          "case2: wothout exit function",
           StatusCode::kOk,
-          {"test2", NULL, 1001, NULL, mod_init_ok, NULL},
+          {"test2", 1001, NULL, mod_init_ok, NULL},
       },
       {
-          "case3",
+          "case3: without name",
           StatusCode::kInvalidArgument,
-          {NULL, NULL, 1001, NULL, mod_init_ok, mod_exit},
+          {NULL, 1001, NULL, mod_init_ok, mod_exit},
       },
       {
-          "case4",
+          "case4: empty name",
           StatusCode::kInvalidArgument,
-          {"", NULL, 1001, NULL, mod_init_ok, mod_exit},
+          {"", 1001, NULL, mod_init_ok, mod_exit},
       },
-      // 名字重复
       {
-          "case5",
+          "case5: duplicated name",
           StatusCode::kAlreadyExists,
-          {"test1", NULL, 1001, NULL, mod_init_ok, mod_exit},
+          {"test1", 1001, NULL, mod_init_ok, mod_exit},
       },
       {
-          "case6",
+          "case6: invalid version",
           StatusCode::kInvalidArgument,
-          {"test6", NULL, 0, NULL, mod_init_ok, mod_exit},
+          {"test6", 0, NULL, mod_init_ok, mod_exit},
       },
       {
-          "case7",
+          "case7: without init function",
           StatusCode::kInvalidArgument,
-          {"test7", NULL, 1, NULL, NULL, mod_exit},
+          {"test7", 1, NULL, NULL, mod_exit},
       },
-
-      // init失败
-      // TODO: 添加一个StatusCode?
       {
           "case8",
           StatusCode::kIOError,
-          {"test8", "test6 desc", 1001, "", mod_init_fail, mod_exit},
+          {"test8", 1001, "", mod_init_fail, mod_exit},
+      },
+      {
+          "case8: with param",
+          StatusCode::kIOError,
+          {"test8", 1001, "", mod_init_with_param, mod_exit},
+          "255",
       },
   };
 
   // Load
 
   for (auto& i : cases) {
-    st = mm->LoadModule(&i.mod);
+    st = mm->LoadModule(&i.mod, i.param);
     ASSERT_EQ(st.code(), i.result) << i.errmsg;
   }
 
-  st = mm->LoadModule(NULL);
+  st = mm->LoadModule(NULL, NULL);
   ASSERT_EQ(st.code(), StatusCode::kInvalidArgument);
 
   // Unload
+  ASSERT_TRUE(IsInvalidArgument(mm->UnloadModule(NULL)));
+  ASSERT_TRUE(IsInvalidArgument(mm->UnloadModule("")));
   ASSERT_TRUE(mm->UnloadModule("test1").ok());
-  ASSERT_EQ(mm->UnloadModule("test1").code(), StatusCode::kNotFound);
-  ASSERT_EQ(mm->UnloadModule("test2").code(), StatusCode::kNotSupported);
+  ASSERT_TRUE(IsNotFound(mm->UnloadModule("test1")));
+  ASSERT_TRUE(IsNotSupported(mm->UnloadModule("test2")));
 
   ReleaseModuleManager(mm);
 }
+
+// TEST(Module, Relation) {}
