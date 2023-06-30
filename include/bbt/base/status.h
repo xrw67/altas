@@ -36,72 +36,22 @@ class Status {
  public:
   // Create a success status.
   Status() noexcept;
-
+  Status(StatusCode code, string_view msg, string_view msg2 = string_view());
   Status(const Status& rhs);
   Status& operator=(const Status& rhs);
 
   Status(Status&& rhs) noexcept;
   Status& operator=(Status&& rhs) noexcept;
 
-  void Update(const Status& new_status) noexcept;
-  void Update(Status&& new_status);
-
   ~Status();
 
-  // Return a success status.
-  static Status Ok() { return Status(); }
-
-  // Return error status of an appropriate type.
-  static Status NotFound(const string_view& msg,
-                         const string_view& msg2 = string_view()) {
-    return Status(StatusCode::kNotFound, msg, msg2);
-  }
-  static Status Corruption(const string_view& msg,
-                           const string_view& msg2 = string_view()) {
-    return Status(StatusCode::kCorruption, msg, msg2);
-  }
-  static Status NotSupported(const string_view& msg,
-                             const string_view& msg2 = string_view()) {
-    return Status(StatusCode::kNotSupported, msg, msg2);
-  }
-  static Status InvalidArgument(const string_view& msg,
-                                const string_view& msg2 = string_view()) {
-    return Status(StatusCode::kInvalidArgument, msg, msg2);
-  }
-  static Status IOError(const string_view& msg,
-                        const string_view& msg2 = string_view()) {
-    return Status(StatusCode::kIOError, msg, msg2);
-  }
+  void Update(const Status& new_status) noexcept;
+  void Update(Status&& new_status);
 
   StatusCode code() const;
 
   // Returns true if the status indicates success.
-  BBT_MUST_USE_RESULT bool ok() const { return (state_ == nullptr); }
-
-  // Returns true if the status indicates a NotFound error.
-  BBT_MUST_USE_RESULT bool IsNotFound() const {
-    return code() == StatusCode::kNotFound;
-  }
-
-  // Returns true if the status indicates a Corruption error.
-  BBT_MUST_USE_RESULT bool IsCorruption() const {
-    return code() == StatusCode::kCorruption;
-  }
-
-  // Returns true if the status indicates an IOError.
-  BBT_MUST_USE_RESULT bool IsIOError() const {
-    return code() == StatusCode::kIOError;
-  }
-
-  // Returns true if the status indicates a NotSupportedError.
-  BBT_MUST_USE_RESULT bool IsNotSupportedError() const {
-    return code() == StatusCode::kNotSupported;
-  }
-
-  // Returns true if the status indicates an InvalidArgument.
-  BBT_MUST_USE_RESULT bool IsInvalidArgument() const {
-    return code() == StatusCode::kInvalidArgument;
-  }
+  BBT_MUST_USE_RESULT bool ok() const;
 
   // Return a string representation of this status suitable for printing.
   // Returns the string "OK" for success.
@@ -113,7 +63,6 @@ class Status {
   void IgnoreError() const;
 
  private:
-  Status(StatusCode code, const string_view& msg, const string_view& msg2);
   static const char* CopyState(const char* s);
   std::string ToStringSlow() const;
 
@@ -125,8 +74,30 @@ class Status {
   const char* state_;
 };
 
+// Returns an OK status, equivalent to a default constructed instance. Prefer
+// usage of `:OkStatus()` when constructing such an OK status.
+Status OkStatus();
+
 // Prints a human-readable representation of `x` to `os`.
 std::ostream& operator<<(std::ostream& os, const Status& x);
+
+// These convenience functions return `true` if a given status matches the
+// `StatusCode` error code of its associated function.
+BBT_MUST_USE_RESULT bool IsNotFound(const Status& status);
+BBT_MUST_USE_RESULT bool IsCorruption(const Status& status);
+BBT_MUST_USE_RESULT bool IsIOError(const Status& status);
+BBT_MUST_USE_RESULT bool IsNotSupportedError(const Status& status);
+BBT_MUST_USE_RESULT bool IsInvalidArgument(const Status& status);
+
+// These convenience functions create an `Status` object with an error
+// code as indicated by the associated function name, using the error message
+// passed in `message`.
+
+Status NotFoundError(string_view message);
+Status CorruptionError(string_view message);
+Status NotSupportedError(string_view message);
+Status InvalidArgumentError(string_view message);
+Status IOError(string_view message);
 
 //-------------------------------------------------------------------
 // Implementation
@@ -156,6 +127,8 @@ inline Status& Status::operator=(Status&& rhs) noexcept {
   return *this;
 }
 
+inline Status::~Status() { delete[] state_; }
+
 inline void Status::Update(const Status& new_status) noexcept {
   if (ok()) {
     *this = new_status;
@@ -168,12 +141,12 @@ inline void Status::Update(Status&& new_status) {
   }
 }
 
-inline Status::~Status() { delete[] state_; }
-
 inline StatusCode Status::code() const {
   return (state_ == nullptr) ? StatusCode::kOk
                              : static_cast<StatusCode>(state_[4]);
 }
+
+inline bool Status::ok() const { return (state_ == nullptr); }
 
 inline std::string Status::ToString() const {
   return ok() ? "OK" : ToStringSlow();

@@ -6,9 +6,51 @@
 
 namespace bbt {
 
+Status OkStatus() { return Status(); }
+
 std::ostream& operator<<(std::ostream& os, const Status& x) {
   os << x.ToString();
   return os;
+}
+
+bool IsNotFound(const Status& status) {
+  return status.code() == StatusCode::kNotFound;
+}
+
+bool IsCorruption(const Status& status) {
+  return status.code() == StatusCode::kCorruption;
+}
+
+bool IsIOError(const Status& status) {
+  return status.code() == StatusCode::kIOError;
+}
+
+bool IsNotSupportedError(const Status& status) {
+  return status.code() == StatusCode::kNotSupported;
+}
+
+bool IsInvalidArgument(const Status& status) {
+  return status.code() == StatusCode::kInvalidArgument;
+}
+
+Status NotFoundError(string_view message) {
+  return Status(StatusCode::kNotFound, message);
+}
+
+Status CorruptionError(string_view message) {
+  return Status(StatusCode::kCorruption, message);
+}
+
+Status NotSupportedError(string_view message) {
+  return Status(StatusCode::kNotSupported, message);
+}
+
+Status InvalidArgumentError(string_view message) {
+  return Status(StatusCode::kInvalidArgument, message);
+}
+
+Status IOError(string_view message) {
+  return Status(StatusCode::kIOError, message);
 }
 
 const char* Status::CopyState(const char* state) {
@@ -19,7 +61,7 @@ const char* Status::CopyState(const char* state) {
   return result;
 }
 
-Status::Status(StatusCode code, const string_view& msg, const string_view& msg2) {
+Status::Status(StatusCode code, string_view msg, string_view msg2) {
   assert(code != StatusCode::kOk);
   const uint32_t len1 = static_cast<uint32_t>(msg.size());
   const uint32_t len2 = static_cast<uint32_t>(msg2.size());
