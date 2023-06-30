@@ -28,11 +28,12 @@ namespace bbt {
 class ModuleManager {
  public:
   virtual ~ModuleManager() {}
-  virtual Status RegisterModule(bbt_module_t* m) = 0;
+  virtual Status LoadModule(bbt_module_t* mod) = 0;
+  virtual Status UnloadModule(string_view mod_name) = 0;
 };
 
 ModuleManager* CreateModuleManager();
-void DeleteModuleManager(ModuleManager* mod_mgr);
+void ReleaseModuleManager(ModuleManager* mod_mgr);
 
 }  // namespace bbt
 #endif  // BBT_APPKIT_MODULE_H_

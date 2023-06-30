@@ -9,6 +9,73 @@
 #include <cstddef>
 #endif  // __cplusplus
 
+// BBT_INTERNAL_CPLUSPLUS_LANG
+//
+// MSVC does not set the value of __cplusplus correctly, but instead uses
+// _MSVC_LANG as a stand-in.
+// https://docs.microsoft.com/en-us/cpp/preprocessor/predefined-macros
+//
+// However, there are reports that MSVC even sets _MSVC_LANG incorrectly at
+// times, for example:
+// https://github.com/microsoft/vscode-cpptools/issues/1770
+// https://reviews.llvm.org/D70996
+//
+// For this reason, this symbol is considered INTERNAL and code outside of
+// Abseil must not use it.
+#if defined(_MSVC_LANG)
+#define BBT_INTERNAL_CPLUSPLUS_LANG _MSVC_LANG
+#elif defined(__cplusplus)
+#define BBT_INTERNAL_CPLUSPLUS_LANG __cplusplus
+#endif
+
+#if defined(__APPLE__)
+// Included for TARGET_OS_IPHONE, __IPHONE_OS_VERSION_MIN_REQUIRED,
+// __IPHONE_8_0.
+#include <Availability.h>
+#include <TargetConditionals.h>
+#endif
+
+// -----------------------------------------------------------------------------
+// Compiler Feature Checks
+// -----------------------------------------------------------------------------
+
+// BBT_HAVE_BUILTIN()
+//
+// Checks whether the compiler supports a Clang Feature Checking Macro, and if
+// so, checks whether it supports the provided builtin function "x" where x
+// is one of the functions noted in
+// https://clang.llvm.org/docs/LanguageExtensions.html
+//
+// Note: Use this macro to avoid an extra level of #ifdef __has_builtin check.
+// http://releases.llvm.org/3.3/tools/clang/docs/LanguageExtensions.html
+#ifdef __has_builtin
+#define BBT_HAVE_BUILTIN(x) __has_builtin(x)
+#else
+#define BBT_HAVE_BUILTIN(x) 0
+#endif
+
+#ifdef __has_feature
+#define BBT_HAVE_FEATURE(f) __has_feature(f)
+#else
+#define BBT_HAVE_FEATURE(f) 0
+#endif
+
+// Portable check for GCC minimum version:
+// https://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+#define BBT_INTERNAL_HAVE_MIN_GNUC_VERSION(x, y) \
+  (__GNUC__ > (x) || __GNUC__ == (x) && __GNUC_MINOR__ >= (y))
+#else
+#define BBT_INTERNAL_HAVE_MIN_GNUC_VERSION(x, y) 0
+#endif
+
+#if defined(__clang__) && defined(__clang_major__) && defined(__clang_minor__)
+#define BBT_INTERNAL_HAVE_MIN_CLANG_VERSION(x, y) \
+  (__clang_major__ > (x) || __clang_major__ == (x) && __clang_minor__ >= (y))
+#else
+#define BBT_INTERNAL_HAVE_MIN_CLANG_VERSION(x, y) 0
+#endif
+
 #ifdef WIN32
 
 #define WIN32_LEAN_AND_MEAN
@@ -43,7 +110,6 @@
 #include <inttypes.h>
 #endif
 
-
 //
 // BBT_EXPORT
 //
@@ -65,7 +131,5 @@
 #endif
 #endif  // defined(_WIN32)
 #endif  // BBT_EXPORT
-
-
 
 #endif  // BBT_BASE_CONFIG_H_

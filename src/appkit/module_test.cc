@@ -25,9 +25,11 @@ static int mod_init_ok(const char* param) { return 0; }
 static int mod_init_fail(const char* param) { return 1; }
 static void mod_exit(void) { return; }
 
-TEST(Module, RegisterModule) {
+TEST(Module, LoadAndUnload) {
   Status st;
   ModuleManager* mm = CreateModuleManager();
+
+  // Setup
 
   struct register_testcase {
     const char* errmsg;
@@ -36,7 +38,6 @@ TEST(Module, RegisterModule) {
 
   } cases[] = {
       {
-
           "case1",
           StatusCode::kOk,
           {"test1", "test1 desc", 1001, "", mod_init_ok, mod_exit},
@@ -82,13 +83,20 @@ TEST(Module, RegisterModule) {
       },
   };
 
+  // Load
+
   for (auto& i : cases) {
-    st = mm->RegisterModule(&i.mod);
+    st = mm->LoadModule(&i.mod);
     ASSERT_EQ(st.code(), i.result) << i.errmsg;
   }
 
-  st = mm->RegisterModule(NULL);
+  st = mm->LoadModule(NULL);
   ASSERT_EQ(st.code(), StatusCode::kInvalidArgument);
 
-  DeleteModuleManager(mm);
+  // Unload
+  ASSERT_TRUE(mm->UnloadModule("test1").ok());
+  ASSERT_EQ(mm->UnloadModule("test1").code(), StatusCode::kNotFound);
+  ASSERT_EQ(mm->UnloadModule("test2").code(), StatusCode::kNotSupported);
+
+  ReleaseModuleManager(mm);
 }

@@ -24,6 +24,9 @@ set(THIRD_PARTY_DIR ${PROJECT_SOURCE_DIR}/third_party)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -Wall -Werror")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -std=c++11 -Wall -Werror")
 
+
+add_definitions(-DBBT_OPTION_HARDENED=0)
+
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
 # Base

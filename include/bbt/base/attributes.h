@@ -19,6 +19,20 @@
 #define BBT_HAVE_ATTRIBUTE(x) 0
 #endif
 
+// BBT_HAVE_CPP_ATTRIBUTE
+//
+// A function-like feature checking macro that accepts C++11 style attributes.
+// It's a wrapper around `__has_cpp_attribute`, defined by ISO C++ SD-6
+// (https://en.cppreference.com/w/cpp/experimental/feature_test). If we don't
+// find `__has_cpp_attribute`, will evaluate to 0.
+#if defined(__cplusplus) && defined(__has_cpp_attribute)
+// NOTE: requiring __cplusplus above should not be necessary, but
+// works around https://bugs.llvm.org/show_bug.cgi?id=23435.
+#define BBT_HAVE_CPP_ATTRIBUTE(x) __has_cpp_attribute(x)
+#else
+#define BBT_HAVE_CPP_ATTRIBUTE(x) 0
+#endif
+
 // BBT_MUST_USE_RESULT
 //
 // Tells the compiler to warn about unused results.
@@ -59,6 +73,28 @@
 #define BBT_MUST_USE_RESULT __attribute__((warn_unused_result))
 #else
 #define BBT_MUST_USE_RESULT
+#endif
+
+// BBT_ATTRIBUTE_LIFETIME_BOUND indicates that a resource owned by a function
+// parameter or implicit object parameter is retained by the return value of the
+// annotated function (or, for a parameter of a constructor, in the value of the
+// constructed object). This attribute causes warnings to be produced if a
+// temporary object does not live long enough.
+//
+// When applied to a reference parameter, the referenced object is assumed to be
+// retained by the return value of the function. When applied to a non-reference
+// parameter (for example, a pointer or a class type), all temporaries
+// referenced by the parameter are assumed to be retained by the return value of
+// the function.
+//
+// See also the upstream documentation:
+// https://clang.llvm.org/docs/AttributeReference.html#lifetimebound
+#if BBT_HAVE_CPP_ATTRIBUTE(clang::lifetimebound)
+#define BBT_ATTRIBUTE_LIFETIME_BOUND [[clang::lifetimebound]]
+#elif BBT_HAVE_ATTRIBUTE(lifetimebound)
+#define BBT_ATTRIBUTE_LIFETIME_BOUND __attribute__((lifetimebound))
+#else
+#define BBT_ATTRIBUTE_LIFETIME_BOUND
 #endif
 
 #endif  // BBT_BASE_ATTRIBUTES_H_
