@@ -35,4 +35,18 @@ std::vector<std::string> StrSplit(const std::string& text, char delimiter) {
   return result;
 }
 
+std::string StrTrimLeft(const std::string& s, const std::string& cutset) {
+  size_t pos = s.find_first_not_of(cutset);
+  return (pos == std::string::npos) ? s : s.substr(pos);
+}
+
+std::string StrTrimRight(const std::string& s, const std::string& cutset) {
+  size_t pos = s.find_last_not_of(cutset);
+  return (pos == std::string::npos) ? s : s.substr(0, pos + 1);
+}
+
+std::string StrTrim(const std::string& s, const std::string& cutset) {
+  return StrTrimRight(StrTrimLeft(s, cutset), cutset);
+}
+
 }  // namespace bbt

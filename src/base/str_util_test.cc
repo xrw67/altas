@@ -3,6 +3,7 @@
 #include "gmock/gmock.h"
 
 namespace {
+
 using ::testing::ElementsAre;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
@@ -30,6 +31,11 @@ TEST(StrUtil, StrSplit) {
     std::vector<std::string> v = bbt::StrSplit(embedded_nulls, '\0');
     ASSERT_THAT(v, ElementsAre("a", "b", "c"));
   }
+}
+
+TEST(StrUtil, StrTrim) {
+  std::string s = "  \r\n  \t \r\n Hello \r\t\n \t ";
+  ASSERT_EQ(bbt::StrTrim(s, " \r\n\t"), "Hello");
 }
 
 }  // namespace
