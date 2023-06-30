@@ -25,12 +25,16 @@ bool IsIOError(const Status& status) {
   return status.code() == StatusCode::kIOError;
 }
 
-bool IsNotSupportedError(const Status& status) {
+bool IsNotSupported(const Status& status) {
   return status.code() == StatusCode::kNotSupported;
 }
 
 bool IsInvalidArgument(const Status& status) {
   return status.code() == StatusCode::kInvalidArgument;
+}
+
+bool IsAlreadyExists(const Status& status) {
+  return status.code() == StatusCode::kAlreadyExists;
 }
 
 Status NotFoundError(string_view message) {
@@ -51,6 +55,10 @@ Status InvalidArgumentError(string_view message) {
 
 Status IOError(string_view message) {
   return Status(StatusCode::kIOError, message);
+}
+
+Status AlreadyExistsError(string_view message) {
+  return Status(StatusCode::kAlreadyExists, message);
 }
 
 const char* Status::CopyState(const char* state) {

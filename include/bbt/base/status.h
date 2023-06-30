@@ -29,7 +29,8 @@ enum class StatusCode : int {
   kCorruption = 2,
   kNotSupported = 3,
   kInvalidArgument = 4,
-  kIOError = 5
+  kIOError = 5,
+  kAlreadyExists = 6,
 };
 
 class Status {
@@ -86,8 +87,9 @@ std::ostream& operator<<(std::ostream& os, const Status& x);
 BBT_MUST_USE_RESULT bool IsNotFound(const Status& status);
 BBT_MUST_USE_RESULT bool IsCorruption(const Status& status);
 BBT_MUST_USE_RESULT bool IsIOError(const Status& status);
-BBT_MUST_USE_RESULT bool IsNotSupportedError(const Status& status);
+BBT_MUST_USE_RESULT bool IsNotSupported(const Status& status);
 BBT_MUST_USE_RESULT bool IsInvalidArgument(const Status& status);
+BBT_MUST_USE_RESULT bool IsAlreadyExists(const Status& status);
 
 // These convenience functions create an `Status` object with an error
 // code as indicated by the associated function name, using the error message
@@ -98,6 +100,7 @@ Status CorruptionError(string_view message);
 Status NotSupportedError(string_view message);
 Status InvalidArgumentError(string_view message);
 Status IOError(string_view message);
+Status AlreadyExistsError(string_view message);
 
 //-------------------------------------------------------------------
 // Implementation

@@ -25,12 +25,14 @@ typedef struct bbt_module bbt_module_t;
 
 namespace bbt {
 
-class ModuleManager final {
+class ModuleManager {
  public:
-  Status RegisterModule(const bbt_module_t* m);
-
- private:
+  virtual ~ModuleManager() {}
+  virtual Status RegisterModule(bbt_module_t* m) = 0;
 };
+
+ModuleManager* CreateModuleManager();
+void DeleteModuleManager(ModuleManager* mod_mgr);
 
 }  // namespace bbt
 #endif  // BBT_APPKIT_MODULE_H_

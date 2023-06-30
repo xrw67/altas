@@ -10,6 +10,7 @@ using namespace bbt;
 // 加载插件
 //  正常的插件
 //  缺少字段的插件
+//  检查init参数param
 
 //  卸载插件
 //      没有退出函数的插件，无法卸载
@@ -24,58 +25,70 @@ static int mod_init_ok(const char* param) { return 0; }
 static int mod_init_fail(const char* param) { return 1; }
 static void mod_exit(void) { return; }
 
-TEST(Module, ModuleObject) {
+TEST(Module, RegisterModule) {
   Status st;
-  ModuleManager mm;
+  ModuleManager* mm = CreateModuleManager();
 
   struct register_testcase {
+    const char* errmsg;
     StatusCode result;
     bbt_module_t mod;
+
   } cases[] = {
       {
+
+          "case1",
           StatusCode::kOk,
           {"test1", "test1 desc", 1001, "", mod_init_ok, mod_exit},
       },
       {
+          "case2",
           StatusCode::kOk,
           {"test2", NULL, 1001, NULL, mod_init_ok, NULL},
       },
       {
+          "case3",
           StatusCode::kInvalidArgument,
           {NULL, NULL, 1001, NULL, mod_init_ok, mod_exit},
       },
       {
+          "case4",
           StatusCode::kInvalidArgument,
           {"", NULL, 1001, NULL, mod_init_ok, mod_exit},
       },
       // 名字重复
-      // TODO： 定一个新的StatusCode？
       {
-          StatusCode::kInvalidArgument,
+          "case5",
+          StatusCode::kAlreadyExists,
           {"test1", NULL, 1001, NULL, mod_init_ok, mod_exit},
       },
       {
+          "case6",
           StatusCode::kInvalidArgument,
-          {"test4", NULL, 0, NULL, mod_init_ok, mod_exit},
+          {"test6", NULL, 0, NULL, mod_init_ok, mod_exit},
       },
       {
+          "case7",
           StatusCode::kInvalidArgument,
-          {"test5", NULL, 1, NULL, NULL, mod_exit},
+          {"test7", NULL, 1, NULL, NULL, mod_exit},
       },
 
       // init失败
       // TODO: 添加一个StatusCode?
       {
+          "case8",
           StatusCode::kIOError,
-          {"test6", "test6 desc", 1001, "", mod_init_fail, mod_exit},
+          {"test8", "test6 desc", 1001, "", mod_init_fail, mod_exit},
       },
   };
 
   for (auto& i : cases) {
-    st = mm.RegisterModule(&i.mod);
-    ASSERT_EQ(st.code(), i.result);
+    st = mm->RegisterModule(&i.mod);
+    ASSERT_EQ(st.code(), i.result) << i.errmsg;
   }
 
-  st = mm.RegisterModule(NULL);
+  st = mm->RegisterModule(NULL);
   ASSERT_EQ(st.code(), StatusCode::kInvalidArgument);
+
+  DeleteModuleManager(mm);
 }
