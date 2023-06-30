@@ -4,8 +4,8 @@ namespace bbt {
 
 Status ModuleManager::RegisterModule(const bbt_module_t* m) {
   if (!m || !m->name || !*m->name || !m->version || !m->init)
-    return Status::InvalidArgument("");
+    return InvalidArgumentError("");
 
-  return Status::Ok();
+  return OkStatus();
 }
 }  // namespace bbt
