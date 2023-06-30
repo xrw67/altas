@@ -18,11 +18,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Setup tools
+      run: sudo apt-get install -y lcov
+
     - name: Checkout code
       uses: actions/checkout@v3
-
-    - name: Setup LCOV
-      uses: hrishikesh-kadam/setup-lcov@v1
       
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.

@@ -19,8 +19,8 @@ const char* Status::CopyState(const char* state) {
   return result;
 }
 
-Status::Status(Code code, const string_view& msg, const string_view& msg2) {
-  assert(code != kOk);
+Status::Status(StatusCode code, const string_view& msg, const string_view& msg2) {
+  assert(code != StatusCode::kOk);
   const uint32_t len1 = static_cast<uint32_t>(msg.size());
   const uint32_t len2 = static_cast<uint32_t>(msg2.size());
   const uint32_t size = len1 + (len2 ? (2 + len2) : 0);
@@ -43,22 +43,22 @@ std::string Status::ToStringSlow() const {
     char tmp[30];
     const char* type;
     switch (code()) {
-      case kOk:
+      case StatusCode::kOk:
         type = "OK";
         break;
-      case kNotFound:
+      case StatusCode::kNotFound:
         type = "NotFound: ";
         break;
-      case kCorruption:
+      case StatusCode::kCorruption:
         type = "Corruption: ";
         break;
-      case kNotSupported:
+      case StatusCode::kNotSupported:
         type = "Not implemented: ";
         break;
-      case kInvalidArgument:
+      case StatusCode::kInvalidArgument:
         type = "Invalid argument: ";
         break;
-      case kIOError:
+      case StatusCode::kIOError:
         type = "IO error: ";
         break;
       default:

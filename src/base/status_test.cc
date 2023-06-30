@@ -8,7 +8,7 @@ using namespace bbt;
 
 TEST(Status, MoveConstructor) {
   {
-    Status ok = Status::OK();
+    Status ok = Status::Ok();
     Status ok2 = std::move(ok);
 
     ASSERT_TRUE(ok2.ok());
@@ -33,7 +33,7 @@ TEST(Status, MoveConstructor) {
 
 TEST(Status, Update) {
   {
-    Status st = Status::OK();
+    Status st = Status::Ok();
     st.Update(Status::NotFound("msg1"));
     ASSERT_EQ("NotFound: msg1", st.ToString());
 
@@ -43,7 +43,7 @@ TEST(Status, Update) {
 
   // Copy
   {
-    Status st = Status::OK();
+    Status st = Status::Ok();
     const Status err = Status::NotFound("msg");
     st.Update(err);
     ASSERT_EQ(st.ToString(), err.ToString());
@@ -51,7 +51,7 @@ TEST(Status, Update) {
 
   // Move
   {
-    Status st = Status::OK();
+    Status st = Status::Ok();
     Status err = Status::NotFound("msg");
     st.Update(std::move(err));
     ASSERT_EQ("NotFound: msg", st.ToString());

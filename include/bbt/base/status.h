@@ -23,6 +23,15 @@
 
 namespace bbt {
 
+enum class StatusCode : int {
+  kOk = 0,
+  kNotFound = 1,
+  kCorruption = 2,
+  kNotSupported = 3,
+  kInvalidArgument = 4,
+  kIOError = 5
+};
+
 class Status {
  public:
   // Create a success status.
@@ -40,52 +49,58 @@ class Status {
   ~Status();
 
   // Return a success status.
-  static Status OK() { return Status(); }
+  static Status Ok() { return Status(); }
 
   // Return error status of an appropriate type.
   static Status NotFound(const string_view& msg,
                          const string_view& msg2 = string_view()) {
-    return Status(kNotFound, msg, msg2);
+    return Status(StatusCode::kNotFound, msg, msg2);
   }
   static Status Corruption(const string_view& msg,
                            const string_view& msg2 = string_view()) {
-    return Status(kCorruption, msg, msg2);
+    return Status(StatusCode::kCorruption, msg, msg2);
   }
   static Status NotSupported(const string_view& msg,
                              const string_view& msg2 = string_view()) {
-    return Status(kNotSupported, msg, msg2);
+    return Status(StatusCode::kNotSupported, msg, msg2);
   }
   static Status InvalidArgument(const string_view& msg,
                                 const string_view& msg2 = string_view()) {
-    return Status(kInvalidArgument, msg, msg2);
+    return Status(StatusCode::kInvalidArgument, msg, msg2);
   }
   static Status IOError(const string_view& msg,
                         const string_view& msg2 = string_view()) {
-    return Status(kIOError, msg, msg2);
+    return Status(StatusCode::kIOError, msg, msg2);
   }
+
+  StatusCode code() const;
 
   // Returns true if the status indicates success.
   BBT_MUST_USE_RESULT bool ok() const { return (state_ == nullptr); }
 
   // Returns true if the status indicates a NotFound error.
-  BBT_MUST_USE_RESULT bool IsNotFound() const { return code() == kNotFound; }
+  BBT_MUST_USE_RESULT bool IsNotFound() const {
+    return code() == StatusCode::kNotFound;
+  }
 
   // Returns true if the status indicates a Corruption error.
   BBT_MUST_USE_RESULT bool IsCorruption() const {
-    return code() == kCorruption;
+    return code() == StatusCode::kCorruption;
   }
 
   // Returns true if the status indicates an IOError.
-  BBT_MUST_USE_RESULT bool IsIOError() const { return code() == kIOError; }
+  BBT_MUST_USE_RESULT bool IsIOError() const {
+    return code() == StatusCode::kIOError;
+  }
 
   // Returns true if the status indicates a NotSupportedError.
   BBT_MUST_USE_RESULT bool IsNotSupportedError() const {
-    return code() == kNotSupported;
+    return code() == StatusCode::kNotSupported;
   }
 
   // Returns true if the status indicates an InvalidArgument.
   BBT_MUST_USE_RESULT bool IsInvalidArgument() const {
-    return code() == kInvalidArgument;
+    return code() == StatusCode::kInvalidArgument;
   }
 
   // Return a string representation of this status suitable for printing.
@@ -98,20 +113,7 @@ class Status {
   void IgnoreError() const;
 
  private:
-  enum Code {
-    kOk = 0,
-    kNotFound = 1,
-    kCorruption = 2,
-    kNotSupported = 3,
-    kInvalidArgument = 4,
-    kIOError = 5
-  };
-
-  Code code() const {
-    return (state_ == nullptr) ? kOk : static_cast<Code>(state_[4]);
-  }
-
-  Status(Code code, const string_view& msg, const string_view& msg2);
+  Status(StatusCode code, const string_view& msg, const string_view& msg2);
   static const char* CopyState(const char* s);
   std::string ToStringSlow() const;
 
@@ -167,6 +169,11 @@ inline void Status::Update(Status&& new_status) {
 }
 
 inline Status::~Status() { delete[] state_; }
+
+inline StatusCode Status::code() const {
+  return (state_ == nullptr) ? StatusCode::kOk
+                             : static_cast<StatusCode>(state_[4]);
+}
 
 inline std::string Status::ToString() const {
   return ok() ? "OK" : ToStringSlow();
