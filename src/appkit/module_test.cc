@@ -4,128 +4,145 @@
 
 using namespace bbt;
 
-//
-// Test Module
-//
-
-static int mod_init_ok(const char* param) { return 0; }
-static int mod_init_with_param(const char* param) {
-  int ret = atoi(param);
-  return ret;
+static int plugin_init(const char* param) {
+  if (param) {
+    int ret = atoi(param);
+    return ret;
+  }
+  return 0;
 }
 
-static void mod_exit(void) { return; }
+static void plugin_exit(void) { return; }
 
-struct ModuleLoadTest {
+struct PluginLoadTest {
   const char* errmsg;
   StatusCode result;
-  bbt_module_t mod;
+  BBT_MODULE_HEADER hdr;
   const char* param;
 };
 
-TEST(Module, LoadAndUnload) {
+class MockPluginLoader : public ModuleLoader {
+ public:
+  MockPluginLoader(PluginLoadTest* tests, size_t count)
+      : tests_(tests), count_(count) {}
+
+  Status Load(const char* name, PBBT_MODULE_HEADER* result) {
+    if (name) {
+      for (size_t i = 0; i < count_; i++) {
+        PBBT_MODULE_HEADER hdr = &tests_[i].hdr;
+        if (hdr->name && std::strcmp(tests_[i].hdr.name, name) == 0) {
+          *result = hdr;
+          return OkStatus();
+        }
+      }
+    }
+    return NotFoundError("");
+  }
+
+  Status Unload(const char* name) { return OkStatus(); }
+
+ private:
+  PluginLoadTest* tests_;
+  size_t count_;
+};
+
+TEST(Plugin, LoadAndUnload) {
   // Setup
-  ModuleLoadTest cases[] = {
+  PluginLoadTest cases[] = {
       {
           "case1",
           StatusCode::kOk,
-          {"mod1", 1001, "", mod_init_ok, mod_exit},
+          {"plugin1", "1.0.0", "", plugin_init, plugin_exit},
       },
+      // name
       {
-          "case2: must have exit function",
+          "case2: name == NULL",
           StatusCode::kInvalidArgument,
-          {"mod2", 1001, NULL, mod_init_ok, NULL},
+          {NULL, "1.0.0", NULL, plugin_init, plugin_exit},
       },
       {
-          "case3: name == NULL",
+          "case3: name is empty",
           StatusCode::kInvalidArgument,
-          {NULL, 1001, NULL, mod_init_ok, mod_exit},
+          {"", "1.0.0", NULL, plugin_init, plugin_exit},
       },
       {
-          "case4: name is empty",
-          StatusCode::kInvalidArgument,
-          {"", 1001, NULL, mod_init_ok, mod_exit},
-      },
-      {
-          "case5: duplicated name",
+          "case4: duplicated name",
           StatusCode::kAlreadyExists,
-          {"mod1", 1001, NULL, mod_init_ok, mod_exit},
+          {"plugin1", "1.0.0", NULL, plugin_init, plugin_exit},
+      },
+      // version
+      {
+          "case5: version = NULL",
+          StatusCode::kInvalidArgument,
+          {"plugin5", NULL, NULL, plugin_init, plugin_exit},
       },
       {
           "case6: invalid version",
           StatusCode::kInvalidArgument,
-          {"mod6", 0, NULL, mod_init_ok, mod_exit},
+          {"plugin6", "", NULL, plugin_init, plugin_exit},
       },
+      // init and exit
       {
-          "case7: must have init function",
+          "case7: no init",
           StatusCode::kInvalidArgument,
-          {"mod7", 1, NULL, NULL, mod_exit},
+          {"plugin7", "1.0.0", NULL, NULL, plugin_exit},
       },
       {
           "case8: init return error",
           StatusCode::kInvalidArgument,
-          {"mod8", 1001, "", mod_init_with_param, mod_exit},
+          {"plugin8", "1.0.0", "", plugin_init, plugin_exit},
           "255",
       },
       {
-          "case9: null require",
+          "case9: no exit",
           StatusCode::kOk,
-          {"mod9", 1001, NULL, mod_init_ok, mod_exit},
+          {"plugin9", "1.0.0", NULL, plugin_init, NULL},
+      },
+      // requires
+      {
+          "case10: null require",
+          StatusCode::kOk,
+          {"plugin10", "1.0.0", NULL, plugin_init, plugin_exit},
       },
       {
-          "case10: require others",
+          "case11: require others",
           StatusCode::kOk,
-          {"mod10", 1, "mod9,mod1", mod_init_ok, mod_exit},
+          {"plugin11", "1.0.0", "plugin10,plugin1", plugin_init, plugin_exit},
       },
       {
-          "case11: require not exist",
+          "case12: require not exist",
           StatusCode::kNotFound,
-          {"mod11", 1, "mod999", mod_init_ok, mod_exit},
+          {"plugin12", "1.0.0", "plugin999", plugin_init, plugin_exit},
       },
   };
 
-  ModuleManager* mm = CreateModuleManager();
+  MockPluginLoader ldr(cases, BBT_ARRAYSIZE(cases));
+  ModuleManager* manager = ModuleManager::New(&ldr);
 
   // Load
   {
-    for (auto& i : cases) {
-      ASSERT_EQ(mm->LoadModule(&i.mod, i.param).code(), i.result) << i.errmsg;
-    }
+    ASSERT_TRUE(IsInvalidArgument(manager->Load(NULL, NULL)))
+        << "load null plugin";
 
-    ASSERT_TRUE(IsInvalidArgument(mm->LoadModule(NULL, NULL)))
-        << "load null module";
+    for (auto& i : cases) {
+      ASSERT_EQ(manager->Load(i.hdr.name, i.param).code(), i.result)
+          << i.errmsg;
+    }
   }
 
   // Unload
   {
-    ASSERT_TRUE(IsInvalidArgument(mm->UnloadModule(NULL))) << "null module";
-    ASSERT_TRUE(IsInvalidArgument(mm->UnloadModule(""))) << "empty module name";
-    ASSERT_TRUE(mm->UnloadModule("mod1").ok());
-    ASSERT_TRUE(IsNotFound(mm->UnloadModule("mod1")));
-    ASSERT_TRUE(mm->UnloadModule("mod9").ok());
+    ASSERT_EQ(manager->Unload(NULL).code(), StatusCode::kInvalidArgument)
+        << "null plugin";
+    ASSERT_EQ(manager->Unload("").code(), StatusCode::kInvalidArgument)
+        << "empty plugin name";
+    ASSERT_EQ(manager->Unload("plugin1").code(), StatusCode::kCancelled);
+    ASSERT_EQ(manager->Unload("plugin11").code(), StatusCode::kOk);
+    ASSERT_EQ(manager->Unload("plugin1").code(), StatusCode::kOk);
+    ASSERT_EQ(manager->Unload("plugin1").code(), StatusCode::kNotFound);
+    ASSERT_EQ(manager->Unload("plugin9").code(), StatusCode::kUnimplemented);
   }
 
-  {
-    std::vector<bbt_module_t*> mods = mm->ListModules();
-    ASSERT_EQ(mods.size(), 1);
-    ASSERT_STREQ(mods[0]->name, "mod10");
-  }
-
-  ReleaseModuleManager(mm);
+  ModuleManager::Release(manager);
 }
 
-// class ModuleLoader {
-
-// }
-
-// TEST(Module, CycleRelation) {
-//     struct bbt_module_t mods[] = {
-//         {"mod1", 1, "mod3", mod_init_ok, mod_exit},
-//         {"mod2", 1, "mod1", mod_init_ok, mod_exit},
-//         {"mod3", 1, "mod2", mod_init_ok, mod_exit},
-//     };
-//     ModuleLoader ldr();
-//     ModuleManager* mm = CreateModuleManager();
-
-//     ldr->LoadAllModules(mods)
-// }

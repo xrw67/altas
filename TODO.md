@@ -23,6 +23,40 @@ BBT_OPTION_HARDENED
 
 ## 插件机制
 
+module对象
+loader  负责从目录中加载，加载完成的结果是module_info数组(LoadAll)
+manager 把Module对象管理起来
+
+1. loader起头，加载所有模块
+2. 期间调用manager去
+
+DllModuleLoader
+MockModuleLoader
+ModuleManager
+
+插件管理：管理依赖关系
+插件加载则：
+  加载：dll -> BBT_MODULE_HEADER
+  卸载RA
+
+
+从  dll -> Module，由Loader完成
+  检查插件是否合法
+  解决依赖
+  初始化函数
+  DllModuleLoader
+  FakeModuleLoader
+
+ModuleLoader
+  LoadAllModules
+  Load
+  UnloadAllModules
+  Unload
+```
+1. 创建一个ModuleFactory，加载所有模块，每个模块是一个Module接口
+2. 
+```
+
 加载插件
 
 

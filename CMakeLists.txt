@@ -18,7 +18,7 @@ set(CMAKE_BUILD_TYPE "Debug")
 
 set(THIRD_PARTY_DIR ${PROJECT_SOURCE_DIR}/third_party)
 
-
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 # Common
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -Wall -Werror")
@@ -38,7 +38,11 @@ add_library(bbt_base SHARED ${BBT_BASE_SRCS})
 file(GLOB_RECURSE BBT_APPKIT_SRCS "src/appkit/*.cc")
 list(FILTER BBT_APPKIT_SRCS EXCLUDE REGEX ".*_test.cc$") # Except unit test sources
 add_library(bbt_appkit SHARED ${BBT_APPKIT_SRCS})
-target_link_libraries(bbt_appkit bbt_base)
+target_link_libraries(bbt_appkit bbt_base dl)
+
+# Plugins
+set(BBT_MODULE_DIR ${PROJECT_SOURCE_DIR}/src/modules)
+add_subdirectory(${BBT_MODULE_DIR}/hello)
 
 
 if(BBT_BUILD_TESTS)
