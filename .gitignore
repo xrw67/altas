@@ -12,4 +12,6 @@ _deps
 
 
 /build
-/.vscode
+.DS_Store
+
+/.vscode/settings.json

@@ -9,7 +9,6 @@ using namespace bbt;
 //
 
 static int mod_init_ok(const char* param) { return 0; }
-static int mod_init_fail(const char* param) { return 1; }
 static int mod_init_with_param(const char* param) {
   int ret = atoi(param);
   return ret;
@@ -18,11 +17,7 @@ static int mod_init_with_param(const char* param) {
 static void mod_exit(void) { return; }
 
 TEST(Module, LoadAndUnload) {
-  Status st;
-  ModuleManager* mm = CreateModuleManager();
-
   // Setup
-
   struct register_testcase {
     const char* errmsg;
     StatusCode result;
@@ -32,69 +27,103 @@ TEST(Module, LoadAndUnload) {
       {
           "case1",
           StatusCode::kOk,
-          {"test1", 1001, "", mod_init_ok, mod_exit},
+          {"mod1", 1001, "", mod_init_ok, mod_exit},
       },
       {
-          "case2: wothout exit function",
-          StatusCode::kOk,
-          {"test2", 1001, NULL, mod_init_ok, NULL},
+          "case2: must have exit function",
+          StatusCode::kInvalidArgument,
+          {"mod2", 1001, NULL, mod_init_ok, NULL},
       },
       {
-          "case3: without name",
+          "case3: name == NULL",
           StatusCode::kInvalidArgument,
           {NULL, 1001, NULL, mod_init_ok, mod_exit},
       },
       {
-          "case4: empty name",
+          "case4: name is empty",
           StatusCode::kInvalidArgument,
           {"", 1001, NULL, mod_init_ok, mod_exit},
       },
       {
           "case5: duplicated name",
           StatusCode::kAlreadyExists,
-          {"test1", 1001, NULL, mod_init_ok, mod_exit},
+          {"mod1", 1001, NULL, mod_init_ok, mod_exit},
       },
       {
           "case6: invalid version",
           StatusCode::kInvalidArgument,
-          {"test6", 0, NULL, mod_init_ok, mod_exit},
+          {"mod6", 0, NULL, mod_init_ok, mod_exit},
       },
       {
-          "case7: without init function",
+          "case7: must have init function",
           StatusCode::kInvalidArgument,
-          {"test7", 1, NULL, NULL, mod_exit},
+          {"mod7", 1, NULL, NULL, mod_exit},
       },
       {
-          "case8",
+          "case8: init return error",
           StatusCode::kIOError,
-          {"test8", 1001, "", mod_init_fail, mod_exit},
-      },
-      {
-          "case8: with param",
-          StatusCode::kIOError,
-          {"test8", 1001, "", mod_init_with_param, mod_exit},
+          {"mod8", 1001, "", mod_init_with_param, mod_exit},
           "255",
+      },
+      {
+          "case9: null require",
+          StatusCode::kOk,
+          {"mod9", 1001, NULL, mod_init_ok, mod_exit},
+      },
+      {
+          "case10: require others",
+          StatusCode::kOk,
+          {"mod10", 1, "mod9,mod1", mod_init_ok, mod_exit},
+      },
+      {
+          "case11: require not exist",
+          StatusCode::kNotFound,
+          {"mod11", 1, "mod999", mod_init_ok, mod_exit},
       },
   };
 
-  // Load
+  ModuleManager* mm = CreateModuleManager();
 
-  for (auto& i : cases) {
-    st = mm->LoadModule(&i.mod, i.param);
-    ASSERT_EQ(st.code(), i.result) << i.errmsg;
+  // Load
+  {
+    for (auto& i : cases) {
+      ASSERT_EQ(mm->LoadModule(&i.mod, i.param).code(), i.result) << i.errmsg;
+    }
+
+    ASSERT_TRUE(IsInvalidArgument(mm->LoadModule(NULL, NULL)))
+        << "load null module";
   }
 
-  st = mm->LoadModule(NULL, NULL);
-  ASSERT_EQ(st.code(), StatusCode::kInvalidArgument);
-
   // Unload
-  ASSERT_TRUE(IsInvalidArgument(mm->UnloadModule(NULL)));
-  ASSERT_TRUE(IsInvalidArgument(mm->UnloadModule("")));
-  ASSERT_TRUE(mm->UnloadModule("test1").ok());
-  ASSERT_TRUE(IsNotFound(mm->UnloadModule("test1")));
-  ASSERT_TRUE(IsNotSupported(mm->UnloadModule("test2")));
+  {
+    ASSERT_TRUE(IsInvalidArgument(mm->UnloadModule(NULL))) << "null module";
+    ASSERT_TRUE(IsInvalidArgument(mm->UnloadModule(""))) << "empty module name";
+    ASSERT_TRUE(mm->UnloadModule("mod1").ok());
+    ASSERT_TRUE(IsNotFound(mm->UnloadModule("mod1")));
+    ASSERT_TRUE(mm->UnloadModule("mod9").ok());
+  }
+
+  {
+    std::vector<bbt_module_t*> mods = mm->ListModules();
+    ASSERT_EQ(mods.size(), 1);
+    ASSERT_STREQ(mods[0]->name, "mod10");
+  }
 
   ReleaseModuleManager(mm);
 }
 
-// TEST(Module, Relation) {}
+// class ModuleLoader {
+
+// }
+
+// TEST(Module, CycleRelation) {
+//     struct bbt_module_t mods[] = {
+//         {"mod1", 1, "mod3", mod_init_ok, mod_exit},
+//         {"mod2", 1, "mod1", mod_init_ok, mod_exit},
+//         {"mod3", 1, "mod2", mod_init_ok, mod_exit},
+//     };
+//     ModuleLoader ldr();
+//     ModuleManager* mm = CreateModuleManager();
+
+//     ldr->LoadAllModules(mods)
+// }
