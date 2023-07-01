@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
+#include <cstdarg>
 #include <iterator>
 #include <limits>
 #include <memory>
@@ -18,14 +19,39 @@ int memcasecmp(const char* s1, const char* s2, size_t len) {
   const unsigned char* us2 = reinterpret_cast<const unsigned char*>(s2);
 
   for (size_t i = 0; i < len; i++) {
-    const int diff =
-        int{static_cast<unsigned char>(tolower(us1[i]))} -
-        int{static_cast<unsigned char>(tolower(us2[i]))};
+    const int diff = int{static_cast<unsigned char>(tolower(us1[i]))} -
+                     int{static_cast<unsigned char>(tolower(us2[i]))};
     if (diff != 0) return diff;
   }
   return 0;
 }
 
+}  // namespace
+
+std::string StrCat(const std::string& a, const std::string& b) {
+  std::string result;
+  result.append(a);
+  result.append(b);
+  return result;
+}
+
+std::string StrCat(const std::string& a, const std::string& b,
+                   const std::string& c) {
+  std::string result;
+  result.append(a);
+  result.append(b);
+  result.append(c);
+  return result;
+}
+
+std::string StrCat(const std::string& a, const std::string& b,
+                   const std::string& c, const std::string& d) {
+  std::string result;
+  result.append(a);
+  result.append(b);
+  result.append(c);
+  result.append(d);
+  return result;
 }
 
 // TODO: 性能
@@ -35,8 +61,7 @@ std::vector<std::string> StrSplit(const std::string& text, char delimiter) {
 
   std::vector<std::string> result;
 
-  if (text.empty())
-    return result;
+  if (text.empty()) return result;
 
   while (std::string::npos != pos) {
     pos = text.find_first_of(delimiter, new_pos);
@@ -53,6 +78,29 @@ std::vector<std::string> StrSplit(const std::string& text, char delimiter) {
   return result;
 }
 
+std::string StrPrintf(const char* fmt, ...) {
+  va_list ap;
+  std::vector<char> buf;
+  int buf_size = 1024;  // 预留的长度
+  int n = 0;
+
+  while (1) {
+    buf.resize(buf_size);
+    va_start(ap, fmt);
+    n = ::vsnprintf(&buf[0], buf_size, fmt, ap);
+    va_end(ap);
+
+    if (n < 0)
+      return std::string();
+    else if (n >= buf_size)
+      buf_size = n + 1;  // for null char
+    else
+      break;
+  }
+
+  return std::string(&buf[0], n);
+}
+
 std::string StrTrimLeft(const std::string& s, const std::string& cutset) {
   size_t pos = s.find_first_not_of(cutset);
   return (pos == std::string::npos) ? s : s.substr(pos);
@@ -67,26 +115,19 @@ std::string StrTrim(const std::string& s, const std::string& cutset) {
   return StrTrimRight(StrTrimLeft(s, cutset), cutset);
 }
 
-
-bool EqualsIgnoreCase(string_view piece1,
-                      string_view piece2) noexcept {
+bool EqualsIgnoreCase(string_view piece1, string_view piece2) noexcept {
   return (piece1.size() == piece2.size() &&
-          0 == memcasecmp(piece1.data(), piece2.data(),
-                                                  piece1.size()));
+          0 == memcasecmp(piece1.data(), piece2.data(), piece1.size()));
 }
 
-bool StartsWithIgnoreCase(string_view text,
-                          string_view prefix) noexcept {
+bool StartsWithIgnoreCase(string_view text, string_view prefix) noexcept {
   return (text.size() >= prefix.size()) &&
          EqualsIgnoreCase(text.substr(0, prefix.size()), prefix);
 }
 
-bool EndsWithIgnoreCase(string_view text,
-                        string_view suffix) noexcept {
+bool EndsWithIgnoreCase(string_view text, string_view suffix) noexcept {
   return (text.size() >= suffix.size()) &&
          EqualsIgnoreCase(text.substr(text.size() - suffix.size()), suffix);
 }
-
-
 
 }  // namespace bbt

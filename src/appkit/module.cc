@@ -76,7 +76,7 @@ Status ModuleManagerImpl::LoadModule(bbt_module_t* mod, const char* param) {
   if (!param) param = "";
 
   int err = mod->init(param);
-  if (err) return IOError("");
+  if (err) return InvalidArgumentError("init retrn error");
 
   // insert and save
   std::shared_ptr<Module> m(new Module(mod, param));
@@ -95,7 +95,7 @@ Status ModuleManagerImpl::UnloadModule(const char* mod_name) {
   // 判断依赖关系
 
   std::shared_ptr<Module> m(it->second);
-  if (!m->obj->exit) return NotSupportedError(mod_name);
+  if (!m->obj->exit) return InvalidArgumentError("no exit function");
 
   m->obj->exit();
 

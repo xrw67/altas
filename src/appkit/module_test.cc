@@ -16,14 +16,16 @@ static int mod_init_with_param(const char* param) {
 
 static void mod_exit(void) { return; }
 
+struct ModuleLoadTest {
+  const char* errmsg;
+  StatusCode result;
+  bbt_module_t mod;
+  const char* param;
+};
+
 TEST(Module, LoadAndUnload) {
   // Setup
-  struct register_testcase {
-    const char* errmsg;
-    StatusCode result;
-    bbt_module_t mod;
-    const char* param;
-  } cases[] = {
+  ModuleLoadTest cases[] = {
       {
           "case1",
           StatusCode::kOk,
@@ -61,7 +63,7 @@ TEST(Module, LoadAndUnload) {
       },
       {
           "case8: init return error",
-          StatusCode::kIOError,
+          StatusCode::kInvalidArgument,
           {"mod8", 1001, "", mod_init_with_param, mod_exit},
           "255",
       },

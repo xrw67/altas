@@ -6,6 +6,35 @@
 
 namespace bbt {
 
+std::string StatusCodeToString(StatusCode code) {
+  switch (code) {
+    case StatusCode::kOk:
+      return "OK";
+    case StatusCode::kCancelled:
+      return "CANCELLED";
+    case StatusCode::kUnknown:
+      return "UNKNOWN";
+    case StatusCode::kInvalidArgument:
+      return "INVALID_ARGUMENT";
+    case StatusCode::kNotFound:
+      return "NOT_FOUND";
+    case StatusCode::kAlreadyExists:
+      return "ALREADY_EXISTS";
+    case StatusCode::kPermissionDenied:
+      return "PERMISSION_DENIED";
+    case StatusCode::kOutOfRange:
+      return "OUT_OF_RANGE";
+    case StatusCode::kUnimplemented:
+      return "UNIMPLEMENTED";
+    default:
+      return "";
+  }
+}
+
+std::ostream& operator<<(std::ostream& os, StatusCode code) {
+  return os << StatusCodeToString(code);
+}
+
 Status OkStatus() { return Status(); }
 
 std::ostream& operator<<(std::ostream& os, const Status& x) {
@@ -13,52 +42,79 @@ std::ostream& operator<<(std::ostream& os, const Status& x) {
   return os;
 }
 
-bool IsNotFound(const Status& status) {
-  return status.code() == StatusCode::kNotFound;
+bool IsCancelled(const Status& status) {
+  return status.code() == StatusCode::kCancelled;
 }
 
-bool IsCorruption(const Status& status) {
-  return status.code() == StatusCode::kCorruption;
-}
-
-bool IsIOError(const Status& status) {
-  return status.code() == StatusCode::kIOError;
-}
-
-bool IsNotSupported(const Status& status) {
-  return status.code() == StatusCode::kNotSupported;
+bool IsUnknown(const Status& status) {
+  return status.code() == StatusCode::kUnknown;
 }
 
 bool IsInvalidArgument(const Status& status) {
   return status.code() == StatusCode::kInvalidArgument;
 }
 
+bool IsNotFound(const Status& status) {
+  return status.code() == StatusCode::kNotFound;
+}
+
 bool IsAlreadyExists(const Status& status) {
   return status.code() == StatusCode::kAlreadyExists;
 }
 
-Status NotFoundError(string_view message) {
-  return Status(StatusCode::kNotFound, message);
+bool IsPermissionDenied(const Status& status) {
+  return status.code() == StatusCode::kPermissionDenied;
 }
 
-Status CorruptionError(string_view message) {
-  return Status(StatusCode::kCorruption, message);
+bool IsOutOfRange(const Status& status) {
+  return status.code() == StatusCode::kOutOfRange;
 }
 
-Status NotSupportedError(string_view message) {
-  return Status(StatusCode::kNotSupported, message);
+bool IsUnimplemented(const Status& status) {
+  return status.code() == StatusCode::kUnimplemented;
+}
+
+Status CancelledError(string_view message) {
+  return Status(StatusCode::kCancelled, message);
+}
+
+Status UnknownError(string_view message) {
+  return Status(StatusCode::kUnknown, message);
 }
 
 Status InvalidArgumentError(string_view message) {
   return Status(StatusCode::kInvalidArgument, message);
 }
 
-Status IOError(string_view message) {
-  return Status(StatusCode::kIOError, message);
+Status NotFoundError(string_view message) {
+  return Status(StatusCode::kNotFound, message);
 }
 
 Status AlreadyExistsError(string_view message) {
   return Status(StatusCode::kAlreadyExists, message);
+}
+
+Status PermissionDeniedError(string_view message) {
+  return Status(StatusCode::kPermissionDenied, message);
+}
+
+Status OutOfRangeError(string_view message) {
+  return Status(StatusCode::kOutOfRange, message);
+}
+
+Status UnimplementedError(string_view message) {
+  return Status(StatusCode::kUnimplemented, message);
+}
+
+string_view Status::message() const {
+  if (state_ != nullptr) {
+    uint32_t length;
+    std::memcpy(&length, state_, sizeof(length));
+    if (length > 0) {
+      return string_view(state_ + 5, length);
+    }
+  }
+  return string_view();
 }
 
 const char* Status::CopyState(const char* state) {
@@ -87,42 +143,19 @@ Status::Status(StatusCode code, string_view msg, string_view msg2) {
 }
 
 std::string Status::ToStringSlow() const {
-  if (state_ == nullptr) {
-    return "OK";
-  } else {
-    char tmp[30];
-    const char* type;
-    switch (code()) {
-      case StatusCode::kOk:
-        type = "OK";
-        break;
-      case StatusCode::kNotFound:
-        type = "NotFound: ";
-        break;
-      case StatusCode::kCorruption:
-        type = "Corruption: ";
-        break;
-      case StatusCode::kNotSupported:
-        type = "Not implemented: ";
-        break;
-      case StatusCode::kInvalidArgument:
-        type = "Invalid argument: ";
-        break;
-      case StatusCode::kIOError:
-        type = "IO error: ";
-        break;
-      default:
-        std::snprintf(tmp, sizeof(tmp),
-                      "Unknown code(%d): ", static_cast<int>(code()));
-        type = tmp;
-        break;
-    }
-    std::string result(type);
+  std::string result = StatusCodeToString(code());
+
+  if (state_ != nullptr) {
     uint32_t length;
     std::memcpy(&length, state_, sizeof(length));
-    result.append(state_ + 5, length);
-    return result;
+
+    if (length > 0) {
+      result += ": ";
+      result.append(state_ + 5, length);
+    }
   }
+
+  return result;
 }
 
 }  // namespace bbt

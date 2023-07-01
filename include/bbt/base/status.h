@@ -25,13 +25,25 @@ namespace bbt {
 
 enum class StatusCode : int {
   kOk = 0,
-  kNotFound = 1,
-  kCorruption = 2,
-  kNotSupported = 3,
-  kInvalidArgument = 4,
-  kIOError = 5,
+  kCancelled = 1,
+  kUnknown = 2,
+  kInvalidArgument = 3,
+  kNotFound = 5,
   kAlreadyExists = 6,
+  kPermissionDenied = 7,
+  kOutOfRange = 11,
+  kUnimplemented = 12,
 };
+
+// StatusCodeToString()
+//
+// Returns the name for the status code, or "" if it is an unknown value.
+std::string StatusCodeToString(StatusCode code);
+
+// operator<<
+//
+// Streams StatusCodeToString(code) to `os`.
+std::ostream& operator<<(std::ostream& os, StatusCode code);
 
 class Status {
  public:
@@ -50,6 +62,7 @@ class Status {
   void Update(Status&& new_status);
 
   StatusCode code() const;
+  string_view message() const;
 
   // Returns true if the status indicates success.
   BBT_MUST_USE_RESULT bool ok() const;
@@ -84,23 +97,28 @@ std::ostream& operator<<(std::ostream& os, const Status& x);
 
 // These convenience functions return `true` if a given status matches the
 // `StatusCode` error code of its associated function.
-BBT_MUST_USE_RESULT bool IsNotFound(const Status& status);
-BBT_MUST_USE_RESULT bool IsCorruption(const Status& status);
-BBT_MUST_USE_RESULT bool IsIOError(const Status& status);
-BBT_MUST_USE_RESULT bool IsNotSupported(const Status& status);
+
+BBT_MUST_USE_RESULT bool IsCancelled(const Status& status);
+BBT_MUST_USE_RESULT bool IsUnknown(const Status& status);
 BBT_MUST_USE_RESULT bool IsInvalidArgument(const Status& status);
+BBT_MUST_USE_RESULT bool IsNotFound(const Status& status);
 BBT_MUST_USE_RESULT bool IsAlreadyExists(const Status& status);
+BBT_MUST_USE_RESULT bool IsPermissionDenied(const Status& status);
+BBT_MUST_USE_RESULT bool IsOutOfRange(const Status& status);
+BBT_MUST_USE_RESULT bool IsUnimplemented(const Status& status);
 
 // These convenience functions create an `Status` object with an error
 // code as indicated by the associated function name, using the error message
 // passed in `message`.
 
-Status NotFoundError(string_view message);
-Status CorruptionError(string_view message);
-Status NotSupportedError(string_view message);
+Status CancelledError(string_view message);
+Status UnknownError(string_view message);
 Status InvalidArgumentError(string_view message);
-Status IOError(string_view message);
+Status NotFoundError(string_view message);
 Status AlreadyExistsError(string_view message);
+Status PermissionDeniedError(string_view message);
+Status OutOfRangeError(string_view message);
+Status UnimplementedError(string_view message);
 
 //-------------------------------------------------------------------
 // Implementation

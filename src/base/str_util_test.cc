@@ -8,6 +8,28 @@ using ::testing::ElementsAre;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 
+TEST(StrUtil, StrCat) {
+  std::string result;
+
+  result = bbt::StrCat("", "");
+  EXPECT_EQ(result, "");
+
+  result = bbt::StrCat("", "Hello");
+  EXPECT_EQ(result, "Hello");
+
+  result = bbt::StrCat("Hello", "World");
+  EXPECT_EQ(result, "HelloWorld");
+
+  result = bbt::StrCat("", "", "");
+  EXPECT_EQ(result, "");
+
+  result = bbt::StrCat("Hello", "My", "World");
+  EXPECT_EQ(result, "HelloMyWorld");
+
+  result = bbt::StrCat("Hello", "My", "Funny", "World");
+  EXPECT_EQ(result, "HelloMyFunnyWorld");
+}
+
 TEST(StrUtil, StrSplit) {
   {
     std::vector<std::string> v = bbt::StrSplit("", ',');
@@ -38,6 +60,21 @@ TEST(StrUtil, StrSplit) {
   }
 }
 
+TEST(StrUtil, StrPrintf) {
+  std::string result = bbt::StrPrintf("Hello %s", "World");
+  EXPECT_EQ(result, "Hello World");
+
+  // large string
+  std::string text1(1024 * 1024, 'A');
+  std::string text2(1024 * 1024, 'B');
+  std::string fmt = text1 + "%s";
+
+  result = bbt::StrPrintf(fmt.c_str(), text2.c_str());
+  std::string expect = text1 + text2;
+  EXPECT_EQ(result.size(), expect.size());
+  EXPECT_TRUE(result == expect);
+}
+
 TEST(StrUtil, StrTrim) {
   std::string s = "  \r\n  \t \r\n Hello \r\t\n \t ";
   ASSERT_EQ(bbt::StrTrim(s, " \r\n\t"), "Hello");
@@ -46,7 +83,6 @@ TEST(StrUtil, StrTrim) {
 //
 // Match
 //
-
 
 TEST(MatchTest, StartsWith) {
   const std::string s1("123\0abc", 7);
@@ -153,7 +189,5 @@ TEST(MatchTest, EndsWithIgnoreCase) {
   EXPECT_FALSE(bbt::EndsWithIgnoreCase("foo", "fooo"));
   EXPECT_FALSE(bbt::EndsWithIgnoreCase("", "fo"));
 }
-
-
 
 }  // namespace
