@@ -41,4 +41,16 @@ std::string PathJoin(const std::string& a, const std::string& b,
   return result;
 }
 
+std::string Readlink(const std::string& linkpath) {
+  int n;
+  char buf[PATH_MAX];
+
+  n = ::readlink(linkpath.c_str(), buf, sizeof(buf) - 1);
+  if (n > 0) {
+    buf[n] = 0;
+    return buf;
+  }
+  return "";
+}
+
 }  // namespace bbt
