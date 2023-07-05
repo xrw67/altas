@@ -31,6 +31,7 @@ TEST(Fs, Readlink) {
   ASSERT_TRUE(WriteFile(src, "1").ok());
   ASSERT_EQ(::symlink(src.c_str(), dst.c_str()), 0) << strerror(errno);
   ASSERT_EQ(Readlink(dst), src);
+  ASSERT_EQ(Readlink(src), "");
 
   ::remove(dst.c_str());
   ::remove(src.c_str());

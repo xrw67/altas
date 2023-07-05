@@ -16,8 +16,8 @@ namespace bbt {
 class Service : public SharedObject {
  public:
   /// @brief 服务名
-  virtual const char* name() const = 0;
-  
+  virtual const char* service_name() const = 0;
+
  protected:
   virtual ~Service() {}
 };

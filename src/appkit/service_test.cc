@@ -10,7 +10,7 @@ class MockService : public Service {
     return reinterpret_cast<Service*>(new MockService(name));
   }
 
-  const char* name() const { return name_; }
+  const char* service_name() const { return name_; }
 
  private:
   MockService(const char* name) : name_(name) {}
@@ -50,7 +50,7 @@ TEST(Service, Register) {
   ASSERT_EQ(mgr->Get("svc1", &client2).code(), StatusCode::kOk);
 
   ASSERT_EQ(client1, client2);
-  ASSERT_STREQ(client1->name(), "svc1");
+  ASSERT_STREQ(client1->service_name(), "svc1");
   ASSERT_EQ(client1->ref_count(), 4);
 
   mgr->Put(client2);

@@ -16,7 +16,7 @@ class ServiceManagerImpl : public ServiceManager {
 
   Status Register(Service* svc) {
     if (!svc) return InvalidArgumentError("no service");
-    const char* name = svc->name();
+    const char* name = svc->service_name();
     if (!name || !*name) return InvalidArgumentError("no name");
 
     std::lock_guard<std::mutex> lock(mutex_);
@@ -31,7 +31,7 @@ class ServiceManagerImpl : public ServiceManager {
 
   Status Unregister(Service* svc) {
     if (!svc) return InvalidArgumentError("no service");
-    const char* name = svc->name();
+    const char* name = svc->service_name();
     if (!name || !*name) return InvalidArgumentError("no name");
 
     std::lock_guard<std::mutex> lock(mutex_);

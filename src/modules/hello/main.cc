@@ -8,7 +8,8 @@ int hello_init(const char* param) {
 
 void hello_exit(void) { BBT_LOG(INFO, "Hello exit"); }
 
-__attribute__((visibility("default"))) BBT_MODULE_HEADER bbt_module_header = {
+extern "C" __attribute__((visibility("default")))
+BBT_MODULE_HEADER bbt_module_header = {
     .name = "hello",
     .version = "0.1.0",
     .requires = "",

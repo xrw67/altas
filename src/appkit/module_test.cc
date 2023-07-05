@@ -4,6 +4,8 @@
 
 using namespace bbt;
 
+using ::testing::ElementsAre;
+
 static int plugin_init(const char* param) {
   if (param) {
     int ret = atoi(param);
@@ -46,7 +48,7 @@ class MockPluginLoader : public ModuleLoader {
   size_t count_;
 };
 
-TEST(Plugin, LoadAndUnload) {
+TEST(Module, LoadAndUnload) {
   // Setup
   PluginLoadTest cases[] = {
       {
@@ -130,6 +132,12 @@ TEST(Plugin, LoadAndUnload) {
     }
   }
 
+  {
+    auto mods = manager->List();
+    ASSERT_THAT(mods,
+                ElementsAre("plugin1", "plugin10", "plugin11", "plugin9"));
+  }
+
   // Unload
   {
     ASSERT_EQ(manager->Unload(NULL).code(), StatusCode::kInvalidArgument)
@@ -143,6 +151,10 @@ TEST(Plugin, LoadAndUnload) {
     ASSERT_EQ(manager->Unload("plugin9").code(), StatusCode::kUnimplemented);
   }
 
+  {
+    auto mods = manager->List();
+    ASSERT_THAT(mods, ElementsAre("plugin10", "plugin9"));
+  }
+
   ModuleManager::Release(manager);
 }
-

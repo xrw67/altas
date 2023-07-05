@@ -19,30 +19,23 @@ set(CMAKE_BUILD_TYPE "Debug")
 set(THIRD_PARTY_DIR ${PROJECT_SOURCE_DIR}/third_party)
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 # Common
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -Wall -Werror")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -std=c++11 -Wall -Werror")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -Wall")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -std=c++11 -Wall")
 
 
 add_definitions(-DBBT_OPTION_HARDENED=0)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
-# Base
-file(GLOB_RECURSE BBT_BASE_SRCS "src/base/*.cc")
-list(FILTER BBT_BASE_SRCS EXCLUDE REGEX ".*_test.cc$") # Except unit test sources
-add_library(bbt_base SHARED ${BBT_BASE_SRCS})
 
-# Appkit
-file(GLOB_RECURSE BBT_APPKIT_SRCS "src/appkit/*.cc")
-list(FILTER BBT_APPKIT_SRCS EXCLUDE REGEX ".*_test.cc$") # Except unit test sources
-add_library(bbt_appkit SHARED ${BBT_APPKIT_SRCS})
-target_link_libraries(bbt_appkit bbt_base dl)
+add_subdirectory(src/base)
+add_subdirectory(src/appkit)
 
-# Plugins
-set(BBT_MODULE_DIR ${PROJECT_SOURCE_DIR}/src/modules)
-add_subdirectory(${BBT_MODULE_DIR}/hello)
+add_subdirectory(src/modules/hello)
+add_subdirectory(src/modules/debugger)
 
 
 if(BBT_BUILD_TESTS)
@@ -55,10 +48,10 @@ if(BBT_BUILD_TESTS)
     include(GoogleTest)
     add_subdirectory(${THIRD_PARTY_DIR}/googletest-1.8.1)
 
-    file(GLOB_RECURSE BBT_TESTS_SRCS "src/*_test.cc")
-    add_executable(tests ${BBT_TESTS_SRCS})
-    target_link_libraries(tests bbt_base bbt_appkit gmock gmock_main)
-    gtest_discover_tests(tests)
+    file(GLOB_RECURSE BBT_TESTS_SRCS "src/test/*_test.cc")
+    add_executable(test_bbt ${BBT_TESTS_SRCS})
+    target_link_libraries(test_bbt bbt_base bbt_appkit gmock gmock_main)
+    gtest_discover_tests(test_bbt)
 
     # Code Coverage
     include(CodeCoverage)
@@ -67,7 +60,7 @@ if(BBT_BUILD_TESTS)
     setup_target_for_coverage_lcov(
         NAME coverage
         EXECUTABLE make test -j ${n_cores}
-        DEPENDENCIES tests
+        DEPENDENCIES test_bbt
         EXCLUDE "thrid_party/*" "*_test.cc"
     )
 
