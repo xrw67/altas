@@ -7,18 +7,22 @@
 
 namespace bbt {
 
-class MockDebugProvider : public DebugProvider {
+class MockDebugIo : public DebugIo {
  public:
-  std::string Run(const std::string& cmd) { return "resp1"; }
+  void set_debugger(Debugger* debugger) { debugger_ = debugger; }
+  void Write(const std::string& content) { write_buffer_ = content; }
 
-  // Status Start() {}
-  // Status Stop() {}
-  Status WriteResponse(const char* content) {
-    write_buffer_ = content;
-    return OkStatus();
+  std::string Run(const std::string& cmd, const std::string& args = "") {
+    write_buffer_.clear();
+    Status st = debugger_->OnRequest(this, cmd, args);
+    if (!st.ok())
+      return st.ToString();
+    else
+      return write_buffer_;
   }
 
  private:
+  Debugger* debugger_;
   std::string write_buffer_;
 };
 
@@ -28,15 +32,17 @@ class MockDebugHandler : public DebugHandler {
     cmds_["cmd1"] = "resp1";
     cmds_["cmd2"] = "resp2";
     cmds_["cmd3"] = "resp3";
-    cmds_["cmd4"] = "resp4";
-    cmds_["cmd5"] = "resp5";
   }
 
-  std::string OnDebugCommand(const char* cmd, const char* args) {
+  Status OnDebugRequest(DebugIo* io, const std::string& cmd,
+                        const std::string& args) {
     auto it = cmds_.find(cmd);
-    if (it != cmds_.end()) return it->second;
+    if (it != cmds_.end())
+      io->Write(it->second);
+    else
+      io->Write("empty");
 
-    return "empty";
+    return OkStatus();
   }
 
  private:
@@ -44,18 +50,30 @@ class MockDebugHandler : public DebugHandler {
 };
 
 TEST(Debugger, Create) {
+  Debugger* dbg = Debugger::New();
   MockDebugHandler handler;
-  MockDebugProvider provider;
-  Debugger* dbg = Debugger::New(&provider);
+  MockDebugIo io;
+
+  io.set_debugger(dbg);
 
   ASSERT_EQ(dbg->Register(NULL, &handler).code(), StatusCode::kInvalidArgument);
   ASSERT_EQ(dbg->Register("", &handler).code(), StatusCode::kInvalidArgument);
   ASSERT_EQ(dbg->Register("cmd1", NULL).code(), StatusCode::kInvalidArgument);
 
-  //   dbg->Register("cmd1", &handler);
-  //   dbg->Register("cmd2", &handler);
-  //   dbg->Register("cmd3", &handler);
+  ASSERT_EQ(dbg->Register("cmd1", &handler).code(), StatusCode::kOk);
+  ASSERT_EQ(dbg->Register("cmd2", &handler).code(), StatusCode::kOk);
+
+  ASSERT_EQ(io.Run("cmd1"), "resp1");
+  ASSERT_EQ(io.Run("cmd2"), "resp2");
+  ASSERT_EQ(io.Run("cmd3"), "NOT_FOUND: cmd3");
+
+  dbg->Unregister(NULL);
+  dbg->Unregister("");
+  dbg->Unregister("cmd1");
+
+  ASSERT_EQ(io.Run("cmd1"), "NOT_FOUND: cmd1");
 
   Debugger::Release(dbg);
 }
+
 }  // namespace bbt

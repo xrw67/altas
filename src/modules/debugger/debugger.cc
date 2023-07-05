@@ -13,14 +13,33 @@ class DebuggerImpl : public Debugger {
   Status Register(const char* command, DebugHandler* handler) {
     if (!command || !*command) return InvalidArgumentError("no command");
     if (!handler) return InvalidArgumentError("no handler");
+
+    cmds_[command] = handler;
     return OkStatus();
+  }
+
+  void Unregister(const char* command) {
+    if (!command || !*command) return;
+
+    auto it = cmds_.find(command);
+    if (it != cmds_.end()) cmds_.erase(it);
+  }
+
+  Status OnRequest(DebugIo* io, const std::string& command,
+                   const std::string& args) {
+    auto it = cmds_.find(command);
+    if (it != cmds_.end())
+      return it->second->OnDebugRequest(io, command, args);
+    else
+      return NotFoundError(command);
   }
 
  private:
   std::map<std::string, DebugHandler*> cmds_;
 };
 
-Debugger* Debugger::New(DebugProvider* provider) { return new DebuggerImpl(); }
+Debugger* Debugger::New() { return new DebuggerImpl(); }
+
 void Debugger::Release(Debugger* debugger) { delete debugger; }
 
 }  // namespace bbt
