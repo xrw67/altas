@@ -3,4 +3,6 @@
 
 using namespace bbt;
 
-TEST(Hello, World) {}
+TEST(Hello, World) {
+    ASSERT_TRUE(true);
+}
