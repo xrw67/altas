@@ -33,6 +33,52 @@
 #define BBT_HAVE_CPP_ATTRIBUTE(x) 0
 #endif
 
+// -----------------------------------------------------------------------------
+// Function Attributes
+// -----------------------------------------------------------------------------
+//
+// GCC: https://gcc.gnu.org/onlinedocs/gcc/Function-Attributes.html
+// Clang: https://clang.llvm.org/docs/AttributeReference.html
+
+// BBT_PRINTF_ATTRIBUTE
+// BBT_SCANF_ATTRIBUTE
+//
+// Tells the compiler to perform `printf` format string checking if the
+// compiler supports it; see the 'format' attribute in
+// <https://gcc.gnu.org/onlinedocs/gcc-4.7.0/gcc/Function-Attributes.html>.
+//
+// Note: As the GCC manual states, "[s]ince non-static C++ methods
+// have an implicit 'this' argument, the arguments of such methods
+// should be counted from two, not one."
+#if BBT_HAVE_ATTRIBUTE(format) || (defined(__GNUC__) && !defined(__clang__))
+#define BBT_PRINTF_ATTRIBUTE(string_index, first_to_check) \
+  __attribute__((__format__(__printf__, string_index, first_to_check)))
+#define BBT_SCANF_ATTRIBUTE(string_index, first_to_check) \
+  __attribute__((__format__(__scanf__, string_index, first_to_check)))
+#else
+#define BBT_PRINTF_ATTRIBUTE(string_index, first_to_check)
+#define BBT_SCANF_ATTRIBUTE(string_index, first_to_check)
+#endif
+
+// BBT_ATTRIBUTE_ALWAYS_INLINE
+// BBT_ATTRIBUTE_NOINLINE
+//
+// Forces functions to either inline or not inline. Introduced in gcc 3.1.
+#if BBT_HAVE_ATTRIBUTE(always_inline) || \
+    (defined(__GNUC__) && !defined(__clang__))
+#define BBT_ATTRIBUTE_ALWAYS_INLINE __attribute__((always_inline))
+#define BBT_HAVE_ATTRIBUTE_ALWAYS_INLINE 1
+#else
+#define BBT_ATTRIBUTE_ALWAYS_INLINE
+#endif
+
+#if BBT_HAVE_ATTRIBUTE(noinline) || (defined(__GNUC__) && !defined(__clang__))
+#define BBT_ATTRIBUTE_NOINLINE __attribute__((noinline))
+#define BBT_HAVE_ATTRIBUTE_NOINLINE 1
+#else
+#define BBT_ATTRIBUTE_NOINLINE
+#endif
+
 // BBT_MUST_USE_RESULT
 //
 // Tells the compiler to warn about unused results.

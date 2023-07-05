@@ -8,7 +8,7 @@
 #include <dlfcn.h>
 
 #include "bbt/base/str_util.h"
-#include "bbt/base/log.h"
+#include "bbt/base/logging.h"
 #include "bbt/base/fs.h"
 
 namespace bbt {
