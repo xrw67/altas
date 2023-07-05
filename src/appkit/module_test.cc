@@ -6,7 +6,7 @@ using namespace bbt;
 
 using ::testing::ElementsAre;
 
-static int plugin_init(const char* param) {
+static int mod_init(const char* param) {
   if (param) {
     int ret = atoi(param);
     return ret;
@@ -14,7 +14,7 @@ static int plugin_init(const char* param) {
   return 0;
 }
 
-static void plugin_exit(void) { return; }
+static void mod_exit(void) { return; }
 
 struct PluginLoadTest {
   const char* errmsg;
@@ -54,67 +54,67 @@ TEST(Module, LoadAndUnload) {
       {
           "case1",
           StatusCode::kOk,
-          {"plugin1", "1.0.0", "", plugin_init, plugin_exit},
+          {"mod1", "1.0.0", "", mod_init, mod_exit},
       },
       // name
       {
           "case2: name == NULL",
           StatusCode::kInvalidArgument,
-          {NULL, "1.0.0", NULL, plugin_init, plugin_exit},
+          {NULL, "1.0.0", NULL, mod_init, mod_exit},
       },
       {
           "case3: name is empty",
           StatusCode::kInvalidArgument,
-          {"", "1.0.0", NULL, plugin_init, plugin_exit},
+          {"", "1.0.0", NULL, mod_init, mod_exit},
       },
       {
           "case4: duplicated name",
           StatusCode::kAlreadyExists,
-          {"plugin1", "1.0.0", NULL, plugin_init, plugin_exit},
+          {"mod1", "1.0.0", NULL, mod_init, mod_exit},
       },
       // version
       {
           "case5: version = NULL",
           StatusCode::kInvalidArgument,
-          {"plugin5", NULL, NULL, plugin_init, plugin_exit},
+          {"mod5", NULL, NULL, mod_init, mod_exit},
       },
       {
           "case6: invalid version",
           StatusCode::kInvalidArgument,
-          {"plugin6", "", NULL, plugin_init, plugin_exit},
+          {"mod6", "", NULL, mod_init, mod_exit},
       },
       // init and exit
       {
           "case7: no init",
           StatusCode::kInvalidArgument,
-          {"plugin7", "1.0.0", NULL, NULL, plugin_exit},
+          {"mod7", "1.0.0", NULL, NULL, mod_exit},
       },
       {
           "case8: init return error",
           StatusCode::kInvalidArgument,
-          {"plugin8", "1.0.0", "", plugin_init, plugin_exit},
+          {"mod8", "1.0.0", "", mod_init, mod_exit},
           "255",
       },
       {
           "case9: no exit",
           StatusCode::kOk,
-          {"plugin9", "1.0.0", NULL, plugin_init, NULL},
+          {"mod9", "1.0.0", NULL, mod_init, NULL},
       },
       // requires
       {
           "case10: null require",
           StatusCode::kOk,
-          {"plugin10", "1.0.0", NULL, plugin_init, plugin_exit},
+          {"mod10", "1.0.0", NULL, mod_init, mod_exit},
       },
       {
           "case11: require others",
           StatusCode::kOk,
-          {"plugin11", "1.0.0", "plugin10,plugin1", plugin_init, plugin_exit},
+          {"mod11", "1.0.0", "mod10,mod1", mod_init, mod_exit},
       },
       {
           "case12: require not exist",
           StatusCode::kNotFound,
-          {"plugin12", "1.0.0", "plugin999", plugin_init, plugin_exit},
+          {"mod12", "1.0.0", "mod999", mod_init, mod_exit},
       },
   };
 
@@ -124,7 +124,7 @@ TEST(Module, LoadAndUnload) {
   // Load
   {
     ASSERT_TRUE(IsInvalidArgument(manager->Load(NULL, NULL)))
-        << "load null plugin";
+        << "load null mod";
 
     for (auto& i : cases) {
       ASSERT_EQ(manager->Load(i.hdr.name, i.param).code(), i.result)
@@ -134,26 +134,25 @@ TEST(Module, LoadAndUnload) {
 
   {
     auto mods = manager->List();
-    ASSERT_THAT(mods,
-                ElementsAre("plugin1", "plugin10", "plugin11", "plugin9"));
+    ASSERT_THAT(mods, ElementsAre("mod1", "mod10", "mod11", "mod9"));
   }
 
   // Unload
   {
     ASSERT_EQ(manager->Unload(NULL).code(), StatusCode::kInvalidArgument)
-        << "null plugin";
+        << "null mod";
     ASSERT_EQ(manager->Unload("").code(), StatusCode::kInvalidArgument)
-        << "empty plugin name";
-    ASSERT_EQ(manager->Unload("plugin1").code(), StatusCode::kCancelled);
-    ASSERT_EQ(manager->Unload("plugin11").code(), StatusCode::kOk);
-    ASSERT_EQ(manager->Unload("plugin1").code(), StatusCode::kOk);
-    ASSERT_EQ(manager->Unload("plugin1").code(), StatusCode::kNotFound);
-    ASSERT_EQ(manager->Unload("plugin9").code(), StatusCode::kUnimplemented);
+        << "empty mod name";
+    ASSERT_EQ(manager->Unload("mod1").code(), StatusCode::kCancelled);
+    ASSERT_EQ(manager->Unload("mod11").code(), StatusCode::kOk);
+    ASSERT_EQ(manager->Unload("mod1").code(), StatusCode::kOk);
+    ASSERT_EQ(manager->Unload("mod1").code(), StatusCode::kNotFound);
+    ASSERT_EQ(manager->Unload("mod9").code(), StatusCode::kUnimplemented);
   }
 
   {
     auto mods = manager->List();
-    ASSERT_THAT(mods, ElementsAre("plugin10", "plugin9"));
+    ASSERT_THAT(mods, ElementsAre("mod10", "mod9"));
   }
 
   ModuleManager::Release(manager);

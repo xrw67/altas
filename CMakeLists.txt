@@ -30,14 +30,6 @@ add_definitions(-DBBT_OPTION_HARDENED=0)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
-
-add_subdirectory(src/base)
-add_subdirectory(src/appkit)
-
-add_subdirectory(src/modules/hello)
-add_subdirectory(src/modules/debugger)
-
-
 if(BBT_BUILD_TESTS)
     enable_testing()
 
@@ -48,20 +40,29 @@ if(BBT_BUILD_TESTS)
     include(GoogleTest)
     add_subdirectory(${THIRD_PARTY_DIR}/googletest-1.8.1)
 
-    file(GLOB_RECURSE BBT_TESTS_SRCS "src/test/*_test.cc")
+    # Code Coverage
+    include(CodeCoverage)
+    append_coverage_compiler_flags()
+endif()
+
+add_subdirectory(src/base)
+add_subdirectory(src/appkit)
+
+add_subdirectory(src/modules/hello)
+add_subdirectory(src/modules/debugger)
+
+if(BBT_BUILD_TESTS)
+
+    file(GLOB_RECURSE BBT_TESTS_SRCS "src/test/*.cc")
     add_executable(test_bbt ${BBT_TESTS_SRCS})
     target_link_libraries(test_bbt bbt_base bbt_appkit gmock gmock_main)
     gtest_discover_tests(test_bbt)
 
-    # Code Coverage
-    include(CodeCoverage)
-    append_coverage_compiler_flags()
-
     setup_target_for_coverage_lcov(
         NAME coverage
-        EXECUTABLE make test -j ${n_cores}
-        DEPENDENCIES test_bbt
-        EXCLUDE "thrid_party/*" "*_test.cc"
+        EXECUTABLE ctest -j ${n_cores}
+        DEPENDENCIES test_bbt test_base test_appkit test_mod_debugger
+        EXCLUDE "third_party/*" "*_test.cc" "/usr/include/*"
     )
 
 endif()
