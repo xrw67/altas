@@ -34,13 +34,6 @@ BBT_EXPORT std::string GetAppPath();
 ///
 BBT_EXPORT std::string GetCurrentDir();
 
-///
-/// @brief 休眠当前线程(单位：秒)
-///
-/// @param msec
-///
-BBT_EXPORT void SleepMsec(uint32_t msec);
-
 }  // namespace bbt
 
 #endif  // BBT_SYS_UTIL_H_

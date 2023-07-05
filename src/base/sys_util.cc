@@ -31,13 +31,12 @@ std::string GetAppPath() {
   DWORD n = ::GetModuleFileName(NULL, pathbuf, sizeof(pathbuf));
   return std::string(buffer, n);
 }
-void SleepMsec(uint32_t msec) { ::Sleep(msec); }
+
 #else
 
 uint32_t GetTid() { return (uint32_t)::syscall(__NR_gettid); }
 uint32_t GetPid() { return (uint32_t)::syscall(__NR_getpid); }
 std::string GetAppPath() { return Readlink("/proc/self/exe"); }
-void SleepMsec(uint32_t msec) { ::usleep(msec * 1000); }
 
 #endif
 

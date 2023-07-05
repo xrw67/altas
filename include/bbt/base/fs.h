@@ -24,8 +24,7 @@ std::string GetTempPath(const std::string& name);
  */
 std::string Readlink(const std::string& linkpath);
 
-
-Status WriteFile(const std::string &filename, const std::string &content);
+Status WriteFile(const std::string& filename, const std::string& content);
 
 }  // namespace bbt
 #endif  // BBT_BASE_FS_H_

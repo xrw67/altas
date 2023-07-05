@@ -29,7 +29,7 @@ class ServiceManager {
 
   virtual Status Register(Service* svc) = 0;
   virtual Status Unregister(Service* svc) = 0;
-  virtual Status Get(const char *name, Service** psvc) = 0;
+  virtual Status Get(const char* name, Service** psvc) = 0;
   virtual void Put(Service* svc) = 0;
   virtual std::vector<std::string> List() = 0;
 
