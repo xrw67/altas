@@ -148,8 +148,6 @@ inline Status& Status::operator=(Status&& rhs) noexcept {
   return *this;
 }
 
-inline Status::~Status() { delete[] state_; }
-
 inline void Status::Update(const Status& new_status) noexcept {
   if (ok()) {
     *this = new_status;

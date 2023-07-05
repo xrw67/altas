@@ -13,6 +13,8 @@ TEST(StatusCode, InsertionOperator) {
   std::ostringstream oss;
   oss << code;
   EXPECT_EQ(oss.str(), StatusCodeToString(code));
+  EXPECT_EQ(StatusCodeToString(StatusCode::kOk), "OK");
+  EXPECT_EQ(StatusCodeToString(StatusCode(-1)), "");
 }
 
 // This structure holds the details for testing a single error code,
@@ -147,4 +149,13 @@ TEST(Status, Update) {
     ASSERT_EQ("NOT_FOUND: msg", st.ToString());
     ASSERT_TRUE(err.ok());
   }
+}
+
+TEST(Status, InsertionOperator) {
+  std::ostringstream oss;
+  Status st = OkStatus();
+  Status err = NotFoundError("msg");
+
+  oss << st << ", " << err;
+  EXPECT_EQ(oss.str(), "OK, NOT_FOUND: msg");
 }

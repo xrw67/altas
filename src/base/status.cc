@@ -142,6 +142,8 @@ Status::Status(StatusCode code, string_view msg, string_view msg2) {
   state_ = result;
 }
 
+Status::~Status() { delete[] state_; }
+
 std::string Status::ToStringSlow() const {
   std::string result = StatusCodeToString(code());
 
