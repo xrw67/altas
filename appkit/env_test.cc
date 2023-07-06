@@ -59,13 +59,12 @@ TEST(Env, Object) {
   ASSERT_EQ(client2->ref_count(), 2);
 
   // RemoveObject
-  ASSERT_EQ(env->RemoveObject(NULL).code(), StatusCode::kInvalidArgument);
-  ASSERT_EQ(env->RemoveObject(MockService::New(NULL)).code(),
-            StatusCode::kInvalidArgument);
-  ASSERT_EQ(env->RemoveObject(MockService::New("")).code(),
-            StatusCode::kInvalidArgument);
-  ASSERT_EQ(env->RemoveObject(svc1).code(), StatusCode::kOk);
-  ASSERT_EQ(env->RemoveObject(svc1).code(), StatusCode::kNotFound);
+  env->RemoveObject(NULL);
+  env->RemoveObject("");
+  env->RemoveObject("svc1");
+  env->RemoveObject("svc1");
+  env->RemoveObject("svc666");
+  ASSERT_EQ(env->GetObject("svc1", &client1).code(), StatusCode::kNotFound);
 
   GlobalEnv::Release(env);
   svc1->Release();

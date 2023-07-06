@@ -16,7 +16,7 @@ class GlobalEnv {
   static void Release(GlobalEnv* env);
 
   virtual Status InsertObject(Object* obj) = 0;
-  virtual Status RemoveObject(Object* obj) = 0;
+  virtual void RemoveObject(const char* name) = 0;
   virtual Status GetObject(const char* name, Object** pobj) = 0;
 
   virtual void InsertString(const char* key, const char* value) = 0;

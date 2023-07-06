@@ -24,24 +24,15 @@ class ObjectEnv {
     return OkStatus();
   }
 
-  Status Remove(Object* obj) {
-    if (!obj) return InvalidArgumentError("no service");
-    const char* name = obj->service_name();
-    if (!name || !*name) return InvalidArgumentError("no name");
-
-    std::lock_guard<std::mutex> lock(mutex_);
-
-    auto it = objs_.find(name);
-    if (it == objs_.end()) {
-      return NotFoundError(name);
+  void Remove(const char* name) {
+    if (name && *name) {
+      std::lock_guard<std::mutex> lock(mutex_);
+      auto it = objs_.find(name);
+      if (it != objs_.end()) {
+        it->second->Release();
+        objs_.erase(it);
+      }
     }
-    if (it->second != obj) {
-      return UnknownError("same name, but service object different");
-    }
-
-    objs_.erase(it);
-    obj->Release();
-    return OkStatus();
   }
 
   Status Get(const char* name, Object** pobj) {
@@ -100,7 +91,7 @@ class GlobalEnvImpl : public GlobalEnv {
   ~GlobalEnvImpl() {}
 
   Status InsertObject(Object* obj) { return obj_env_.Insert(obj); }
-  Status RemoveObject(Object* obj) { return obj_env_.Remove(obj); }
+  void RemoveObject(const char* name) { obj_env_.Remove(name); }
   Status GetObject(const char* name, Object** pobj) {
     return obj_env_.Get(name, pobj);
   }
