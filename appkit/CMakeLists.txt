@@ -1,6 +1,6 @@
 add_library(bbt_appkit SHARED 
     module.cc
-    service.cc
+    env.cc
 )
 
 if(BBT_BUILD_TESTS)
@@ -10,7 +10,7 @@ if(BBT_BUILD_TESTS)
 
     add_executable(test_appkit 
         module_test.cc    
-        service_test.cc
+        env_test.cc
     )
     
     target_link_libraries(test_appkit bbt_appkit bbt_base gmock gmock_main)

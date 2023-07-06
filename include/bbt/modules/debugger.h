@@ -1,8 +1,10 @@
 #ifndef BBT_MODULES_DEBUGGER_H_
 #define BBT_MODULES_DEBUGGER_H_
 
-#include "bbt/appkit/service.h"
 #include "bbt/base/string_view.h"
+#include "bbt/base/status.h"
+
+#include "bbt/appkit/object.h"
 
 namespace bbt {
 
@@ -24,7 +26,7 @@ class DebugHandler {
   virtual ~DebugHandler() {}
 };
 
-class Debugger : public Service {
+class Debugger : public Object {
  public:
   static Debugger* New();
   static void Release(Debugger* debugger);
