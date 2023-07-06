@@ -50,7 +50,6 @@ class ModuleManager {
 
   virtual Status Load(const char* name, const char* param) = 0;
   virtual Status Unload(const char* name) = 0;
-  virtual std::vector<std::string> List() = 0;
 };
 
 }  // namespace bbt

@@ -97,7 +97,7 @@ TEST(Module, LoadAndUnload) {
       },
       {
           "case9: no exit",
-          StatusCode::kOk,
+          StatusCode::kInvalidArgument,
           {"mod9", "1.0.0", NULL, mod_init, NULL},
       },
       // requires
@@ -132,11 +132,6 @@ TEST(Module, LoadAndUnload) {
     }
   }
 
-  {
-    auto mods = manager->List();
-    ASSERT_THAT(mods, ElementsAre("mod1", "mod10", "mod11", "mod9"));
-  }
-
   // Unload
   {
     ASSERT_EQ(manager->Unload(NULL).code(), StatusCode::kInvalidArgument)
@@ -147,12 +142,7 @@ TEST(Module, LoadAndUnload) {
     ASSERT_EQ(manager->Unload("mod11").code(), StatusCode::kOk);
     ASSERT_EQ(manager->Unload("mod1").code(), StatusCode::kOk);
     ASSERT_EQ(manager->Unload("mod1").code(), StatusCode::kNotFound);
-    ASSERT_EQ(manager->Unload("mod9").code(), StatusCode::kUnimplemented);
-  }
-
-  {
-    auto mods = manager->List();
-    ASSERT_THAT(mods, ElementsAre("mod10", "mod9"));
+    ASSERT_EQ(manager->Unload("mod9").code(), StatusCode::kNotFound);
   }
 
   ModuleManager::Release(manager);

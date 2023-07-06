@@ -4,6 +4,7 @@
 #include <set>
 #include <string>
 #include <memory>
+#include <mutex>
 
 #include <dlfcn.h>
 
@@ -21,6 +22,7 @@ Status VerifyModuleHeader(const PBBT_MODULE_HEADER hdr) {
   if (!hdr->version || !*hdr->version)
     return InvalidArgumentError("no version");
   if (!hdr->init) return InvalidArgumentError("no init func");
+  if (!hdr->exit) return InvalidArgumentError("no exit func");
   return OkStatus();
 }
 
@@ -44,67 +46,79 @@ class ModuleManagerImpl : public ModuleManager {
 
  private:
   ModuleLoader* loader_;
+
+  std::mutex mutex_;
   std::map<std::string, ModulePtr> mods_;
 
   Status Load(const char* name, const char* param) {
-    if (!name) {
-      return InvalidArgumentError("no module name");
+    if (!name || !*name) return InvalidArgumentError("no module name");
+    {
+      std::lock_guard<std::mutex> lock(mutex_);
+      if (mods_.find(name) != mods_.end()) return AlreadyExistsError(name);
     }
 
     PBBT_MODULE_HEADER hdr;
     Status st = loader_->Load(name, &hdr);
-    if (st.ok()) {
-      ModulePtr me(new Module(hdr));
-      if (!param) param = "";
+    if (!st.ok()) return st;
 
-      st = RunEntryPoint(me, hdr, param);
-      if (st.ok()) {
-        me->param = param;
-        mods_[hdr->name] = me;
-        return OkStatus();
-      }
+    ModulePtr me(new Module(hdr));
+
+    if (!param) param = "";
+    st = InitModule(me, hdr, param);
+    if (!st.ok()) {
+      loader_->Unload(name);
+      return st;
     }
 
-    // fail
-    loader_->Unload(name);
-    return st;
+    std::lock_guard<std::mutex> lock(mutex_);
+    me->param = param;
+    mods_[hdr->name] = me;
+    return OkStatus();
   }
 
   Status Unload(const char* name) {
     if (!name || !*name) return InvalidArgumentError("empty module name");
 
-    auto it = mods_.find(name);
-    if (it == mods_.end()) {
-      return NotFoundError(name);
-    }
+    ModulePtr me;
 
-    auto me = it->second;
-    if (!me->hdr->exit) return UnimplementedError("no exit function");
+    {
+      std::lock_guard<std::mutex> lock(mutex_);
+      auto it = mods_.find(name);
+      if (it == mods_.end()) {
+        return NotFoundError(name);
+      }
 
-    // 判断依赖关系
-    if (!me->sources.empty()) return CancelledError("has depend on by others");
+      me = it->second;
+ 
+      // 判断依赖关系
+      if (!me->sources.empty())
+        return CancelledError("has depend on by others");
 
-    for (auto target : me->targets) {
-      target->sources.erase(me);
+      for (auto target : me->targets) {
+        target->sources.erase(me);
+      }
+      mods_.erase(it);
     }
 
     me->hdr->exit();
     loader_->Unload(me->hdr->name);
-    mods_.erase(it);
     return OkStatus();
   }
 
-  std::vector<std::string> List() {
-    std::vector<std::string> result;
-    for (auto& it : mods_) result.push_back(it.first);
-    return result;
+  Status InitModule(ModulePtr& module, const PBBT_MODULE_HEADER hdr,
+                    const char* param) {
+    Status st = VerifyModuleHeader(hdr);
+    if (st.ok()) {
+      st = VerifyDependence(module);
+      if (st.ok()) {
+        int err = hdr->init(param);
+        if (err) return InvalidArgumentError("init retrn error");
+      }
+    }
+    return st;
   }
 
-  bool IsExist(const std::string& name) const {
-    return (mods_.find(name) != mods_.end());
-  }
-
-  Status ParseRequires(ModulePtr& module) {
+  Status VerifyDependence(ModulePtr& module) {
     if (!module->hdr->requires) return OkStatus();
 
     auto require_list = StrSplit(module->hdr->requires, ',');
@@ -124,24 +138,6 @@ class ModuleManagerImpl : public ModuleManager {
   void AddModuleUsage(ModulePtr& a, ModulePtr& b) {
     b->sources.insert(a);
     a->targets.insert(b);
-  }
-
-  Status RunEntryPoint(ModulePtr& module, const PBBT_MODULE_HEADER hdr,
-                       const char* param) {
-    Status st = VerifyModuleHeader(hdr);
-    if (!st.ok()) return st;
-    if (IsExist(hdr->name)) return AlreadyExistsError(hdr->name);
-
-    // 依赖关系
-    if (hdr->exit) {
-      st = ParseRequires(module);
-      if (!st.ok()) return st;
-    }
-
-    int err = hdr->init(param);
-    if (err) return InvalidArgumentError("init retrn error");
-
-    return OkStatus();
   }
 };
 
