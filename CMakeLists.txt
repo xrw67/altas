@@ -45,19 +45,12 @@ if(BBT_BUILD_TESTS)
     append_coverage_compiler_flags()
 endif()
 
-add_subdirectory(src/base)
-add_subdirectory(src/appkit)
-
-add_subdirectory(src/modules/hello)
-add_subdirectory(src/modules/debugger)
+add_subdirectory(base)
+add_subdirectory(appkit)
+add_subdirectory(modules)
+add_subdirectory(test)
 
 if(BBT_BUILD_TESTS)
-
-    file(GLOB_RECURSE BBT_TESTS_SRCS "src/test/*.cc")
-    add_executable(test_bbt ${BBT_TESTS_SRCS})
-    target_link_libraries(test_bbt bbt_base bbt_appkit gmock gmock_main)
-    gtest_discover_tests(test_bbt)
-
     setup_target_for_coverage_lcov(
         NAME coverage
         EXECUTABLE ctest -j ${n_cores}

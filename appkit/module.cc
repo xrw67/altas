@@ -154,10 +154,10 @@ void ModuleManager::Release(ModuleManager* mgr) { delete mgr; }
 // DLL Module Loader
 //
 
-class DllModuleLoader : public ModuleLoader {
+class DllLoader : public ModuleLoader {
  public:
-  DllModuleLoader(const char* dir) : dir_(dir) {}
-  ~DllModuleLoader() {
+  DllLoader(const char* dir) : dir_(dir) {}
+  ~DllLoader() {
     for (auto h : handles_) {
       if (::dlclose(h.second)) {
         BBT_RAW_LOG(ERROR, "unload module %s failed: %s", h.first.c_str(),
@@ -221,7 +221,7 @@ class DllModuleLoader : public ModuleLoader {
 ModuleLoader* ModuleLoader::New(ModuleLoader::Type type, const char* dir) {
   switch (type) {
     case kDll:
-      return new DllModuleLoader(dir ? dir : "");
+      return new DllLoader(dir ? dir : "");
     default:
       BBT_ASSERT(true);
       return NULL;

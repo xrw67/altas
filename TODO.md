@@ -33,7 +33,7 @@ manager 把Module对象管理起来
 1. loader起头，加载所有模块
 2. 期间调用manager去
 
-DllModuleLoader
+DllLoader
 MockModuleLoader
 ModuleManager
 
@@ -47,7 +47,7 @@ ModuleManager
   检查插件是否合法
   解决依赖
   初始化函数
-  DllModuleLoader
+  DllLoader
   FakeModuleLoader
 
 ModuleLoader
