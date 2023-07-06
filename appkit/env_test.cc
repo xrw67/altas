@@ -12,7 +12,7 @@ class MockService : public Object {
     return reinterpret_cast<Object*>(new MockService(name));
   }
 
-  const char* service_name() const { return name_; }
+  const char* obj_name() const { return name_; }
 
  private:
   MockService(const char* name) : name_(name) {}
@@ -49,7 +49,7 @@ TEST(Env, Object) {
   ASSERT_EQ(env->GetObject("svc1", &client2).code(), StatusCode::kOk);
 
   ASSERT_EQ(client1, client2);
-  ASSERT_STREQ(client1->service_name(), "svc1");
+  ASSERT_STREQ(client1->obj_name(), "svc1");
   ASSERT_EQ(client1->ref_count(), 4);
 
   client2->Release();

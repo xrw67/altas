@@ -10,7 +10,7 @@ class Object {
   Object();
 
   /// @brief 服务名
-  virtual const char* service_name() const = 0;
+  virtual const char* obj_name() const = 0;
 
   long ref_count() const;
   void AddRefManually();
