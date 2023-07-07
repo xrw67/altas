@@ -101,6 +101,21 @@ std::string StrPrintf(const char* fmt, ...) {
   return std::string(&buf[0], n);
 }
 
+int Stricmp(const char* s1, const char* s2) {
+  int n;
+
+  while (*s1 || *s2) {
+    n = tolower(*s1++) - tolower(*s2++);
+    if (n == 0) continue;
+    return n;
+  }
+  return 0;
+}
+
+int Stricmp(const std::string& s1, const std::string& s2) {
+  return Stricmp(s1.c_str(), s2.c_str());
+}
+
 std::string StrTrimLeft(const std::string& s, const std::string& cutset) {
   size_t pos = s.find_first_not_of(cutset);
   return (pos == std::string::npos) ? s : s.substr(pos);

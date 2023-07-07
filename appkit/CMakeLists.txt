@@ -1,4 +1,5 @@
 add_library(bbt_appkit SHARED 
+    args.cc
     env.cc
     module/manager.cc
     module/loader.cc
@@ -10,6 +11,7 @@ if(BBT_BUILD_TESTS)
 
 
     add_executable(test_appkit   
+        args_test.cc
         env_test.cc
         module/module_test.cc
     )

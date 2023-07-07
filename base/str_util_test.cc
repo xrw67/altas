@@ -30,6 +30,16 @@ TEST(StrUtil, StrCat) {
   EXPECT_EQ(result, "HelloMyFunnyWorld");
 }
 
+TEST(StrUtil, Stricmp) {
+  ASSERT_EQ(bbt::Stricmp("Hello", "HELLO"), 0);
+  ASSERT_GT(bbt::Stricmp("Hello1", "HELLO"), 0);
+  ASSERT_LT(bbt::Stricmp("Hello", "HELLO1"), 0);
+
+  ASSERT_EQ(bbt::Stricmp(std::string("Hello"), std::string("HELLO")), 0);
+  ASSERT_GT(bbt::Stricmp(std::string("Hello1"), std::string("HELLO")), 0);
+  ASSERT_LT(bbt::Stricmp(std::string("Hello"), std::string("HELLO1")), 0);
+}
+
 TEST(StrUtil, StrSplit) {
   {
     std::vector<std::string> v = bbt::StrSplit("", ',');
