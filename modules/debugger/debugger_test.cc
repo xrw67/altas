@@ -3,7 +3,7 @@
 #include <map>
 #include <string>
 
-#include <gmock/gmock.h>
+#include "gmock/gmock.h"
 
 namespace bbt {
 

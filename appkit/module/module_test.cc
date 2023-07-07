@@ -1,6 +1,6 @@
 #include "bbt/appkit/module.h"
 
-#include <gmock/gmock.h>
+#include "gmock/gmock.h"
 
 using namespace bbt;
 

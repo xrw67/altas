@@ -1,6 +1,6 @@
 #include "bbt/appkit/env.h"
 
-#include <gmock/gmock.h>
+#include "gmock/gmock.h"
 
 #include "bbt/appkit/object.h"
 

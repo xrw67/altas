@@ -55,7 +55,7 @@ if(BBT_BUILD_TESTS)
         NAME coverage
         EXECUTABLE ctest -j ${n_cores}
         DEPENDENCIES test_bbt test_base test_appkit test_mod_debugger
-        EXCLUDE "third_party/*" "*_test.cc" "/usr/include/*"
+        EXCLUDE "third_party/*" "test/*" "*_test.cc" "/usr/include/*"
     )
 
 endif()

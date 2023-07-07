@@ -1,5 +1,5 @@
 #include "bbt/base/logging.h"
-#include <gmock/gmock.h>
+#include "gmock/gmock.h"
 
 namespace bbt {
 

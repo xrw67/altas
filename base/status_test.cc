@@ -2,7 +2,7 @@
 
 #include <utility>
 
-#include <gmock/gmock.h>
+#include "gmock/gmock.h"
 
 #include "bbt/base/str_util.h"
 

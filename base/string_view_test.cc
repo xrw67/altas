@@ -11,7 +11,7 @@
 #include <type_traits>
 #include <utility>
 
-#include <gmock/gmock.h>
+#include "gmock/gmock.h"
 
 #include "bbt/base/config.h"
 
