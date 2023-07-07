@@ -203,4 +203,14 @@ Status Args::Parse(const char* argline) {
   return impl_->Parse(args);
 }
 
+Status Args::Parse(int argc, const char* const argv[]) {
+  std::vector<std::string> args;
+
+  for (int i = 0; i < argc && argv[i]; i++) {
+    std::string a = StrTrim(argv[i], " \r\t\n");
+    if (!a.empty()) args.push_back(a);
+  }
+  return impl_->Parse(args);
+}
+
 }  // namespace bbt

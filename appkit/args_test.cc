@@ -106,4 +106,19 @@ TEST(Args, MultiFlags) {
   ASSERT_FALSE(args.Parse("--").ok());
 }
 
+TEST(Args, Argc_Argv) {
+  bbt::Args args;
+  args.AddBool('d', "debug", "Enable debug mode");
+  args.AddString('f', "file", "1.txt", "Setup file path");
+  args.AddLong('p', "port", 80, "Listen port");
+
+  // Happy
+  const char* const argv[] = {" -d ", " --file", "2.txt",
+                              "-p",   "443",     NULL};
+  ASSERT_TRUE(args.Parse(5, argv).ok());
+  ASSERT_TRUE(args.GetBool("debug"));
+  ASSERT_EQ(args.GetString("file"), "2.txt");
+  ASSERT_EQ(args.GetLong("port"), 443);
+}
+
 }  // namespace
