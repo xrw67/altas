@@ -1,4 +1,4 @@
-add_library(bbt_base SHARED 
+add_library(bbt_base 
     fs.cc
     logging.cc
     status.cc
