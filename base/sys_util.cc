@@ -23,8 +23,8 @@ namespace bbt {
 
 #ifdef WIN32
 
-uint32_t GetTid() { return (uint32_t)::GetCurrentThreadId(); }
-uint32_t GetPid() { return (uint32_t)::GetCurrentProcessId(); }
+uint64_t GetTid() { return (uint64_t)::GetCurrentThreadId(); }
+uint64_t GetPid() { return (uint64_t)::GetCurrentProcessId(); }
 
 std::string GetAppPath() {
   char pathbuf[PATH_MAX] = {};
@@ -35,8 +35,8 @@ std::string GetAppPath() {
 #endif
 
 #ifdef __linux__
-uint32_t GetTid() { return (uint32_t)::syscall(__NR_gettid); }
-uint32_t GetPid() { return (uint32_t)::syscall(__NR_getpid); }
+uint64_t GetTid() { return (uint64_t)::syscall(__NR_gettid); }
+uint64_t GetPid() { return (uint64_t)::syscall(__NR_getpid); }
 std::string GetAppPath() { return Readlink("/proc/self/exe"); }
 
 #endif
