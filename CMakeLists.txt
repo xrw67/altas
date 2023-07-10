@@ -46,15 +46,38 @@ if(BBT_BUILD_TESTS)
 endif()
 
 add_subdirectory(base)
+add_subdirectory(net)
 add_subdirectory(appkit)
 add_subdirectory(modules)
-add_subdirectory(test)
 
 if(BBT_BUILD_TESTS)
+
+    enable_testing()
+    include(GoogleTest)
+
+    file(GLOB_RECURSE BBT_TESTS_SRCS
+            base/*_test.cc
+            net/*_test.cc
+            appkit/*_test.cc
+            modules/*_test.cc
+            test/*.cc
+            )
+    add_executable(tests ${BBT_TESTS_SRCS})
+
+    target_link_libraries(tests gmock gmock_main
+            bbt_base
+            bbt_net
+            bbt_appkit
+            mod_debugger
+            )
+    gtest_discover_tests(tests)
+
+
+
     setup_target_for_coverage_lcov(
         NAME coverage
         EXECUTABLE ctest -j ${n_cores}
-        DEPENDENCIES test_bbt test_base test_appkit test_mod_debugger
+        DEPENDENCIES tests
         EXCLUDE "third_party/*" "test/*" "*_test.cc" "/usr/include/*"
     )
 

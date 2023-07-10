@@ -17,7 +17,7 @@
 
 namespace {
 
-auto npos = bbt::string_view::npos;
+const size_t npos = bbt::string_view::npos;
 
 // A minimal allocator that uses malloc().
 template <typename T>

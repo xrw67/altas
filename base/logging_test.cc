@@ -7,7 +7,8 @@ char msg_buffer[3000];
 
 void mock_log_func(LogSeverity severity, const char* file, int line,
                    const char* message, int size) {
-  sprintf(msg_buffer, "[%s %s] %s", LogSeverityName(severity), file, message);
+  snprintf(msg_buffer, sizeof(msg_buffer), "[%s %s] %s",
+           LogSeverityName(severity), file, message);
 }
 
 TEST(Loggin, Print) {

@@ -32,11 +32,35 @@ std::string GetAppPath() {
   return std::string(buffer, n);
 }
 
-#else
+#endif
 
+#ifdef __linux__
 uint32_t GetTid() { return (uint32_t)::syscall(__NR_gettid); }
 uint32_t GetPid() { return (uint32_t)::syscall(__NR_getpid); }
 std::string GetAppPath() { return Readlink("/proc/self/exe"); }
+
+#endif
+
+#ifdef __APPLE__
+#include <unistd.h>
+#include <pthread.h>
+#include <libproc.h>
+
+uint64_t GetTid() {
+  uint64_t tid = 0;
+  return (uint32_t)pthread_threadid_np(NULL, &tid);
+  return tid;
+}
+
+uint64_t GetPid() { return (uint64_t)getpid(); }
+std::string GetAppPath() {
+  char pathbuf[PROC_PIDPATHINFO_MAXSIZE];
+  if (proc_pidpath(GetTid(), pathbuf, sizeof(pathbuf)) != 0) {
+    return "";
+  } else {
+    return pathbuf;
+  }
+}
 
 #endif
 

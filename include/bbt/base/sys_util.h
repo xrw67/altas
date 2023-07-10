@@ -11,14 +11,14 @@ namespace bbt {
 ///
 /// @return uint32_t 线程ID
 ///
-BBT_EXPORT uint32_t GetTid();
+BBT_EXPORT uint64_t GetTid();
 
 ///
 /// @brief 获取当前进程ID
 ///
 /// @return uint32_t 进程ID
 ///
-BBT_EXPORT uint32_t GetPid();
+BBT_EXPORT uint64_t GetPid();
 
 ///
 /// @brief 获取当前进程路径

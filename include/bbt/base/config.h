@@ -76,6 +76,32 @@
 #define BBT_INTERNAL_HAVE_MIN_CLANG_VERSION(x, y) 0
 #endif
 
+
+
+
+// -----------------------------------------------------------------------------
+// Platform Feature Checks
+// -----------------------------------------------------------------------------
+
+// Currently supported operating systems and associated preprocessor
+// symbols:
+//
+//   Linux and Linux-derived           __linux__
+//   Android                           __ANDROID__ (implies __linux__)
+//   Linux (non-Android)               __linux__ && !__ANDROID__
+//   Darwin (macOS and iOS)            __APPLE__
+//   Akaros (http://akaros.org)        __ros__
+//   Windows                           _WIN32
+//   NaCL                              __native_client__
+//   AsmJS                             __asmjs__
+//   WebAssembly                       __wasm__
+//   Fuchsia                           __Fuchsia__
+//
+// Note that since Android defines both __ANDROID__ and __linux__, one
+// may probe for either Linux or Android by simply testing for __linux__.
+
+
+
 #ifdef WIN32
 
 #define WIN32_LEAN_AND_MEAN
