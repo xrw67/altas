@@ -1,5 +1,8 @@
-#ifndef BBT_SYS_UTIL_H_
-#define BBT_SYS_UTIL_H_
+/**
+ * OSAL
+ */
+#ifndef BBT_BASE_SYS_H_
+#define BBT_BASE_SYS_H_
 
 #include <string>
 
@@ -36,4 +39,4 @@ BBT_EXPORT std::string GetCurrentDir();
 
 }  // namespace bbt
 
-#endif  // BBT_SYS_UTIL_H_
+#endif  // BBT_BASE_SYS_H_
