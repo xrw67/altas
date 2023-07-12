@@ -1,6 +1,7 @@
 #include "bbt/base/fs.h"
 
-#include <fstream>
+#include <fstream>  // std::ifstream
+#include <sstream>  // std::stringstream
 
 #include "bbt/base/str_util.h"
 
@@ -71,9 +72,18 @@ Status WriteFile(const std::string& filename, const std::string& content) {
   std::ofstream ofile(filename);
   if (!ofile.is_open()) return CancelledError("create file failed");
 
-  ofile << content << std::endl;
+  ofile << content;
   ofile.close();
   return OkStatus();
+}
+
+std::string ReadFile(string_view filename) {
+  if (filename.empty()) return std::string();
+
+  std::ifstream t(filename.data());
+  std::stringstream buf;
+  buf << t.rdbuf();
+  return buf.str();
 }
 
 }  // namespace bbt

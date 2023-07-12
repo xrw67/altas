@@ -26,5 +26,13 @@ std::string Readlink(const std::string& linkpath);
 
 Status WriteFile(const std::string& filename, const std::string& content);
 
+/**
+ * @brief 读文件内容
+ *
+ * @param filepath 文件路径
+ * @return std::string 文件内容
+ */
+std::string ReadFile(string_view filename);
+
 }  // namespace bbt
 #endif  // BBT_BASE_FS_H_

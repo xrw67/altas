@@ -37,4 +37,15 @@ TEST(Fs, Readlink) {
   ::remove(src.c_str());
 }
 
+TEST(Fs, ReadAndWriteFile) {
+  std::string path = GetTempPath("bbt_test_read_and_write_file");
+
+  ::remove(path.c_str());
+
+  ASSERT_TRUE(WriteFile(path, "1").ok());
+  ASSERT_EQ(ReadFile(path), "1");
+
+  ::remove(path.c_str());
+}
+
 }  // namespace bbt
