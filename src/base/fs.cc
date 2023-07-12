@@ -1,5 +1,6 @@
 #include "bbt/base/fs.h"
 
+#include <cstring>
 #include <fstream>  // std::ifstream
 #include <sstream>  // std::stringstream
 
@@ -84,6 +85,25 @@ std::string ReadFile(string_view filename) {
   std::stringstream buf;
   buf << t.rdbuf();
   return buf.str();
+}
+
+string_view Dir(string_view path) {
+  size_t pos = path.find_last_of("/\\");
+  if (pos != path.npos)
+    return path.substr(0, pos);
+  else
+    return string_view();
+}
+
+string_view Basename(string_view path) {
+  const char* slash = std::strrchr(path.data(), '/');
+  if (slash) {
+    return slash + 1;
+  } else {
+    slash = std::strrchr(path.data(), '\\');
+    if (slash) return slash + 1;
+  }
+  return path;
 }
 
 }  // namespace bbt

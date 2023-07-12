@@ -6,6 +6,7 @@
 #include <unistd.h>
 
 #include "gmock/gmock.h"
+#include "bbt/base/str_util.h"
 
 namespace bbt {
 
@@ -48,4 +49,23 @@ TEST(Fs, ReadAndWriteFile) {
   ::remove(path.c_str());
 }
 
+TEST(Fs, DirAndBasename) {
+  {
+    std::string path = "/path/to/file";
+    ASSERT_EQ(bbt::to_string(bbt::Dir(path)), "/path/to");
+    ASSERT_EQ(bbt::to_string(bbt::Basename(path)), "file");
+  }
+
+  {
+    std::string path = "/path/to/";
+    ASSERT_EQ(bbt::to_string(bbt::Dir(path)), "/path/to");
+    ASSERT_EQ(bbt::to_string(bbt::Basename(path)), "");
+  }
+
+  {
+    std::string path = "file";
+    ASSERT_EQ(bbt::to_string(bbt::Dir(path)), "");
+    ASSERT_EQ(bbt::to_string(bbt::Basename(path)), "file");
+  }
+}
 }  // namespace bbt
