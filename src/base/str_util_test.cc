@@ -90,6 +90,14 @@ TEST(StrUtil, StrTrim) {
   ASSERT_EQ(bbt::StrTrim(s, " \r\n\t"), "Hello");
 }
 
+TEST(StrUtil, CanAppendStringView) {
+  std::string hello("Hello");
+  bbt::string_view world(" World");
+
+  StrAppend(hello, world);
+  ASSERT_EQ(hello, "Hello World");
+}
+
 //
 // Match
 //

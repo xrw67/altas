@@ -101,6 +101,12 @@ std::string StrPrintf(const char* fmt, ...) {
   return std::string(&buf[0], n);
 }
 
+void StrAppend(std::string& s, string_view other) {
+  s.append(other.data(), other.size());
+}
+
+std::string to_string(string_view s) { return std::string(s.data(), s.size()); }
+
 int Stricmp(const char* s1, const char* s2) {
   int n;
 
@@ -116,17 +122,17 @@ int Stricmp(const std::string& s1, const std::string& s2) {
   return Stricmp(s1.c_str(), s2.c_str());
 }
 
-std::string StrTrimLeft(const std::string& s, const std::string& cutset) {
-  size_t pos = s.find_first_not_of(cutset);
-  return (pos == std::string::npos) ? s : s.substr(pos);
+string_view StrTrimLeft(string_view s, string_view cutset) {
+  string_view::size_type pos = s.find_first_not_of(cutset);
+  return (pos == string_view::npos) ? s : s.substr(pos);
 }
 
-std::string StrTrimRight(const std::string& s, const std::string& cutset) {
+string_view StrTrimRight(string_view s, string_view cutset) {
   size_t pos = s.find_last_not_of(cutset);
   return (pos == std::string::npos) ? s : s.substr(0, pos + 1);
 }
 
-std::string StrTrim(const std::string& s, const std::string& cutset) {
+string_view StrTrim(string_view s, string_view cutset) {
   return StrTrimRight(StrTrimLeft(s, cutset), cutset);
 }
 

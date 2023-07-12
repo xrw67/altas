@@ -554,8 +554,8 @@ std::ostream& operator<<(std::ostream& o, string_view piece);
 
 }  // namespace bbt
 
-#undef ABSL_INTERNAL_STRING_VIEW_CXX14_CONSTEXPR
-#undef ABSL_INTERNAL_STRING_VIEW_MEMCMP
+#undef BBT_INTERNAL_STRING_VIEW_CXX14_CONSTEXPR
+#undef BBT_INTERNAL_STRING_VIEW_MEMCMP
 
 namespace bbt {
 

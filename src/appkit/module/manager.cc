@@ -119,11 +119,11 @@ class ModuleManagerImpl : public ModuleManager {
 
     auto require_list = StrSplit(module->hdr->requires, ',');
     for (auto& i : require_list) {
-      std::string name = StrTrim(i, " ");
+      auto name = StrTrim(i, " ");
       if (name.empty()) continue;
-      auto it = mods_.find(name);
+      auto it = mods_.find(to_string(name));
       if (it == mods_.end())
-        return NotFoundError(StrPrintf("depend on %s", name.c_str()));
+        return NotFoundError(StrPrintf("depend on %s", name.data()));
       else
         AddModuleUsage(module, it->second);
     }

@@ -4,14 +4,14 @@
 #include <string>
 
 #include "bbt/base/status.h"
+#include "bbt/base/string_view.h"
 
 namespace bbt {
 
-std::string PathJoin(const std::string& a, const std::string& b);
-std::string PathJoin(const std::string& a, const std::string& b,
-                     const std::string& c);
-std::string PathJoin(const std::string& a, const std::string& b,
-                     const std::string& c, const std::string& d);
+std::string PathJoin(string_view a, string_view b);
+std::string PathJoin(string_view a, string_view b, string_view c);
+std::string PathJoin(string_view a, string_view b, string_view c,
+                     string_view d);
 
 //  返回临时目录下的文件名
 std::string GetTempPath(const std::string& name);

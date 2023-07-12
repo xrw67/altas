@@ -36,7 +36,7 @@ std::vector<std::string> ParseArgLine(const std::string& line) {
 
   for (auto i : tmp_args) {
     auto arg = StrTrim(i, " \r\t\n");
-    if (!arg.empty()) result.push_back(arg);
+    if (!arg.empty()) result.push_back(to_string(arg));
   }
 
   return result;
@@ -207,8 +207,8 @@ Status Args::Parse(int argc, const char* const argv[]) {
   std::vector<std::string> args;
 
   for (int i = 0; i < argc && argv[i]; i++) {
-    std::string a = StrTrim(argv[i], " \r\t\n");
-    if (!a.empty()) args.push_back(a);
+    auto a = StrTrim(argv[i], " \r\t\n");
+    if (!a.empty()) args.push_back(to_string(a));
   }
   return impl_->Parse(args);
 }

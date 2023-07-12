@@ -19,16 +19,20 @@ std::vector<std::string> StrSplit(const std::string& text, char delimiter);
 std::string StrPrintf(const char* fmt, ...);
 
 /// @brief 移除左侧的空格、换行符和制表符
-std::string StrTrimLeft(const std::string& s, const std::string& cutset);
+string_view StrTrimLeft(string_view s, string_view cutset);
 
 /// @brief 移除右侧的空格、换行符和制表符
-std::string StrTrimRight(const std::string& s, const std::string& cutset);
+string_view StrTrimRight(string_view s, string_view cutset);
 
 /// @brief 移除左右两侧的空格、换行符和制表符
-std::string StrTrim(const std::string& s, const std::string& cutset);
+string_view StrTrim(string_view s, string_view cutset);
 
 int Stricmp(const char* s1, const char* s2);
 int Stricmp(const std::string& s1, const std::string& s2);
+
+void StrAppend(std::string& s, string_view other);
+
+std::string to_string(string_view s);
 
 //
 // Match
@@ -36,7 +40,8 @@ int Stricmp(const std::string& s1, const std::string& s2);
 
 // StrContains()
 //
-// Returns whether a given string `haystack` contains the substring `needle`.
+// Returns whether a given string `haystack` contains the substring
+// `needle`.
 inline bool StrContains(string_view haystack, string_view needle) noexcept {
   return haystack.find(needle, 0) != haystack.npos;
 }

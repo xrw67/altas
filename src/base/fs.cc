@@ -12,35 +12,34 @@ static const char* kPathSeparator = "\\";
 static const char* kPathSeparator = "/";
 #endif
 
-std::string PathJoin(const std::string& a, const std::string& b) {
+std::string PathJoin(string_view a, string_view b) {
   std::string result;
-  result.append(StrTrimRight(a, kPathSeparator));
+  StrAppend(result, StrTrimRight(a, kPathSeparator));
   result.append(kPathSeparator);
-  result.append(StrTrim(b, kPathSeparator));
+  StrAppend(result, StrTrim(b, kPathSeparator));
   return result;
 }
 
-std::string PathJoin(const std::string& a, const std::string& b,
-                     const std::string& c) {
+std::string PathJoin(string_view a, string_view b, string_view c) {
   std::string result;
-  result.append(StrTrimRight(a, kPathSeparator));
+  StrAppend(result, StrTrimRight(a, kPathSeparator));
   result.append(kPathSeparator);
-  result.append(StrTrim(b, kPathSeparator));
+  StrAppend(result, StrTrim(b, kPathSeparator));
   result.append(kPathSeparator);
-  result.append(StrTrim(c, kPathSeparator));
+  StrAppend(result, StrTrim(c, kPathSeparator));
   return result;
 }
 
-std::string PathJoin(const std::string& a, const std::string& b,
-                     const std::string& c, const std::string& d) {
+std::string PathJoin(string_view a, string_view b, string_view c,
+                     string_view d) {
   std::string result;
-  result.append(StrTrimRight(a, kPathSeparator));
+  StrAppend(result, StrTrimRight(a, kPathSeparator));
   result.append(kPathSeparator);
-  result.append(StrTrim(b, kPathSeparator));
+  StrAppend(result, StrTrim(b, kPathSeparator));
   result.append(kPathSeparator);
-  result.append(StrTrim(c, kPathSeparator));
+  StrAppend(result, StrTrim(c, kPathSeparator));
   result.append(kPathSeparator);
-  result.append(StrTrim(d, kPathSeparator));
+  StrAppend(result, StrTrim(d, kPathSeparator));
   return result;
 }
 
