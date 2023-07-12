@@ -12,6 +12,8 @@ std::string PathJoin(string_view a, string_view b);
 std::string PathJoin(string_view a, string_view b, string_view c);
 std::string PathJoin(string_view a, string_view b, string_view c,
                      string_view d);
+std::string PathJoin(string_view a, string_view b, string_view c, string_view d,
+                     string_view e);
 
 //  返回临时目录下的文件名
 std::string GetTempPath(const std::string& name);

@@ -20,6 +20,7 @@ TEST(Fs, PathJoin) {
   ASSERT_EQ(bbt::PathJoin("/a///", "///b//", "/c/"), "/a/b/c");
 
   ASSERT_EQ(bbt::PathJoin("/a///", "///b//", "///c", "//d/e//"), "/a/b/c/d/e");
+  ASSERT_EQ(bbt::PathJoin("/a///", "///b//", "///c", "//d/e//", "fff"), "/a/b/c/d/e/fff");
 }
 
 TEST(Fs, Readlink) {

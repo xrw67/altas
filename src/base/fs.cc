@@ -45,6 +45,21 @@ std::string PathJoin(string_view a, string_view b, string_view c,
   return result;
 }
 
+std::string PathJoin(string_view a, string_view b, string_view c, string_view d,
+                     string_view e) {
+  std::string result;
+  StrAppend(result, StrTrimRight(a, kPathSeparator));
+  result.append(kPathSeparator);
+  StrAppend(result, StrTrim(b, kPathSeparator));
+  result.append(kPathSeparator);
+  StrAppend(result, StrTrim(c, kPathSeparator));
+  result.append(kPathSeparator);
+  StrAppend(result, StrTrim(d, kPathSeparator));
+  result.append(kPathSeparator);
+  StrAppend(result, StrTrim(e, kPathSeparator));
+  return result;
+}
+
 std::string GetTempPath(const std::string& name) {
 #ifdef WIN32
   char buffer[PATH_MAX] = {};
@@ -79,12 +94,15 @@ Status WriteFile(const std::string& filename, const std::string& content) {
 }
 
 std::string ReadFile(string_view filename) {
-  if (filename.empty()) return std::string();
-
-  std::ifstream t(filename.data());
-  std::stringstream buf;
-  buf << t.rdbuf();
-  return buf.str();
+  if (!filename.empty()) {
+    std::ifstream t(filename.data());
+    if (t.is_open()) {
+      std::stringstream buf;
+      buf << t.rdbuf();
+      return buf.str();
+    }
+  }
+  return std::string();
 }
 
 string_view Dir(string_view path) {
