@@ -26,6 +26,9 @@ std::string Readlink(const std::string& linkpath);
 
 Status WriteFile(const std::string& filename, const std::string& content);
 
+string_view Dir(string_view path);
+string_view Basename(string_view path);
+
 /**
  * @brief 读文件内容
  *
