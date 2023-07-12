@@ -14,6 +14,8 @@ namespace bbt {
 
 namespace {
 
+const char* kSpaceChars = " \t\r\n";
+
 int memcasecmp(const char* s1, const char* s2, size_t len) {
   const unsigned char* us1 = reinterpret_cast<const unsigned char*>(s1);
   const unsigned char* us2 = reinterpret_cast<const unsigned char*>(s2);
@@ -123,11 +125,13 @@ int Stricmp(const std::string& s1, const std::string& s2) {
 }
 
 string_view StrTrimLeft(string_view s, string_view cutset) {
+  if (cutset.empty()) cutset = kSpaceChars;
   string_view::size_type pos = s.find_first_not_of(cutset);
   return (pos == string_view::npos) ? s : s.substr(pos);
 }
 
 string_view StrTrimRight(string_view s, string_view cutset) {
+  if (cutset.empty()) cutset = kSpaceChars;
   size_t pos = s.find_last_not_of(cutset);
   return (pos == std::string::npos) ? s : s.substr(0, pos + 1);
 }

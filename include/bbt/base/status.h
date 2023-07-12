@@ -67,6 +67,8 @@ class Status {
   // Returns true if the status indicates success.
   BBT_MUST_USE_RESULT bool ok() const;
 
+  explicit operator bool() const noexcept;
+
   // Return a string representation of this status suitable for printing.
   // Returns the string "OK" for success.
   std::string ToString() const;
@@ -166,6 +168,8 @@ inline StatusCode Status::code() const {
 }
 
 inline bool Status::ok() const { return (state_ == nullptr); }
+
+inline Status::operator bool() const noexcept { return ok(); }
 
 inline std::string Status::ToString() const {
   return ok() ? "OK" : ToStringSlow();

@@ -88,6 +88,8 @@ TEST(StrUtil, StrPrintf) {
 TEST(StrUtil, StrTrim) {
   std::string s = "  \r\n  \t \r\n Hello \r\t\n \t ";
   ASSERT_EQ(bbt::StrTrim(s, " \r\n\t"), "Hello");
+  ASSERT_EQ(bbt::StrTrim(s), "Hello");
+  ASSERT_EQ(bbt::StrTrim(s, " "), "\r\n  \t \r\n Hello \r\t\n \t");
 }
 
 TEST(StrUtil, CanAppendStringView) {

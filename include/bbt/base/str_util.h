@@ -19,13 +19,13 @@ std::vector<std::string> StrSplit(const std::string& text, char delimiter);
 std::string StrPrintf(const char* fmt, ...);
 
 /// @brief 移除左侧的空格、换行符和制表符
-string_view StrTrimLeft(string_view s, string_view cutset);
+string_view StrTrimLeft(string_view s, string_view cutset = string_view());
 
 /// @brief 移除右侧的空格、换行符和制表符
-string_view StrTrimRight(string_view s, string_view cutset);
+string_view StrTrimRight(string_view s, string_view cutset = string_view());
 
 /// @brief 移除左右两侧的空格、换行符和制表符
-string_view StrTrim(string_view s, string_view cutset);
+string_view StrTrim(string_view s, string_view cutset = string_view());
 
 int Stricmp(const char* s1, const char* s2);
 int Stricmp(const std::string& s1, const std::string& s2);
