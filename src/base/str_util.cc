@@ -57,7 +57,7 @@ std::string StrCat(const std::string& a, const std::string& b,
 }
 
 // TODO: 性能
-std::vector<std::string> StrSplit(const std::string& text, char delimiter) {
+std::vector<std::string> StrSplit(string_view text, char delimiter) {
   size_t pos = 0;
   size_t new_pos = 0;
 
@@ -68,11 +68,11 @@ std::vector<std::string> StrSplit(const std::string& text, char delimiter) {
   while (std::string::npos != pos) {
     pos = text.find_first_of(delimiter, new_pos);
     if (std::string::npos == pos) {  // 结束了
-      result.push_back(text.substr(new_pos));
+      result.push_back(to_string(text.substr(new_pos)));
       break;
     } else {
       if (pos >= new_pos) {
-        result.push_back(text.substr(new_pos, pos - new_pos));
+        result.push_back(to_string(text.substr(new_pos, pos - new_pos)));
       }
       new_pos = pos + 1;
     }

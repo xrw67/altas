@@ -14,7 +14,7 @@ std::string StrCat(const std::string& a, const std::string& b,
 std::string StrCat(const std::string& a, const std::string& b,
                    const std::string& c, const std::string& d);
 
-std::vector<std::string> StrSplit(const std::string& text, char delimiter);
+std::vector<std::string> StrSplit(string_view text, char delimiter);
 
 std::string StrPrintf(const char* fmt, ...);
 
