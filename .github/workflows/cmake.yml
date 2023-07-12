@@ -40,7 +40,7 @@ jobs:
       run: ctest -C ${{env.BUILD_TYPE}}
 
     - name: Generate coverage report
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target coverage
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target lcov
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
