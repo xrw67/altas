@@ -112,6 +112,13 @@ TEST(StringViewTest, Ctor) {
   }
 }
 
+TEST(StringViewTest, Hash) {
+  auto s = "Hello";
+  auto hash1 = std::hash<std::string>{}(std::string(s));
+  auto hash2 = std::hash<bbt::string_view>{}(bbt::string_view(s));
+  ASSERT_EQ(hash1, hash2);
+}
+
 TEST(StringViewTest, Swap) {
   bbt::string_view a("a");
   bbt::string_view b("bbb");
