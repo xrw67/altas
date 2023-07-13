@@ -96,12 +96,22 @@ TEST(Status, ConstructorWithCodeMessage) {
     EXPECT_EQ(bbt::StatusCode::kUnknown, status.code());
     EXPECT_EQ("message", status.message());
   }
+}
+
+TEST(Status, ConstructorWithFormatMessage) {
+  {
+    bbt::Status status(bbt::StatusCode::kUnknown, "%s %s %d", "Hello", "World",
+                       666);
+    EXPECT_FALSE(status.ok());
+    EXPECT_EQ(bbt::StatusCode::kUnknown, status.code());
+    EXPECT_EQ("Hello World 666", status.message());
+  }
 
   {
     bbt::Status status(bbt::StatusCode::kUnknown, "msg1", "msg2");
     EXPECT_FALSE(status.ok());
     EXPECT_EQ(bbt::StatusCode::kUnknown, status.code());
-    EXPECT_EQ("msg1: msg2", status.message());
+    EXPECT_EQ("msg1", status.message());
   }
 }
 

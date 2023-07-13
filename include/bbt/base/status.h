@@ -49,7 +49,8 @@ class Status {
  public:
   // Create a success status.
   Status() noexcept;
-  Status(StatusCode code, string_view msg, string_view msg2 = string_view());
+  Status(StatusCode code, string_view msg);
+  Status(StatusCode code, const char *format, ...);
   Status(const Status& rhs);
   Status& operator=(const Status& rhs);
 
