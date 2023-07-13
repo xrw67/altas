@@ -34,7 +34,7 @@ std::vector<std::string> ParseArgLine(const std::string& line) {
   std::vector<std::string> result;
   auto tmp_args = StrSplit(line, ' ');
 
-  for (auto i : tmp_args) {
+  for (const auto& i : tmp_args) {
     auto arg = StrTrim(i, " \r\t\n");
     if (!arg.empty()) result.push_back(to_string(arg));
   }
@@ -61,7 +61,7 @@ struct Args::Impl {
   }
 
   std::string GetValue(const char* long_name) {
-    if (!long_name) return std::string();
+    if (!long_name) return {};
 
     auto it1 = values_.find(long_name);
     if (it1 != values_.end()) {
@@ -74,7 +74,7 @@ struct Args::Impl {
       return it2->second->default_value;
     }
 
-    return std::string();
+    return {};
   }
 
   ArgFlagPtr GetFlag(const std::string& name) {
@@ -92,7 +92,7 @@ struct Args::Impl {
     if (len >= 4 && name[1] == '-') {
       // check name
       for (size_t i = 2; i < len; i++) {
-        if (!IsLetterOrDigit(name[i])) return ArgFlagPtr();
+        if (!IsLetterOrDigit(name[i])) return {};
       }
 
       auto it = long_flags_.find(name.substr(2));
@@ -100,7 +100,7 @@ struct Args::Impl {
         return it->second;
       }
     }
-    return ArgFlagPtr();
+    return {};
   }
 
   Status Parse(const std::vector<std::string>& args) {
@@ -111,7 +111,7 @@ struct Args::Impl {
 
     for (const auto& arg : args) {
       if (arg[0] == '-') {
-        if (current_flag) return InvalidArgumentError("falg no value");
+        if (current_flag) return InvalidArgumentError("flag no value");
         current_flag = GetFlag(arg);
         if (!current_flag) return InvalidArgumentError("flag not found");
 
@@ -187,7 +187,7 @@ std::string Args::Help() {
 
   ss << "Arguments:" << std::endl;
 
-  for (auto i : impl_->long_flags_) {
+  for (const auto& i : impl_->long_flags_) {
     ArgFlagPtr flag(i.second);
     ss << StrPrintf("-%c, --%-15s %s (default: %s)", flag->short_name,
                     flag->long_name.c_str(), flag->help.c_str(),
@@ -198,8 +198,8 @@ std::string Args::Help() {
 }
 // LCOV_EXCL_STOP
 
-Status Args::Parse(const char* argline) {
-  auto args = ParseArgLine(argline);
+Status Args::Parse(const char* arg_line) {
+  auto args = ParseArgLine(arg_line);
   return impl_->Parse(args);
 }
 

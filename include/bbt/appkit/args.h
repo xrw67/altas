@@ -22,7 +22,7 @@ class Args {
 
   std::string Help();
 
-  Status Parse(const char* argline);
+  Status Parse(const char* arg_line);
   Status Parse(int argc, const char* const argv[]);
 
  private:
