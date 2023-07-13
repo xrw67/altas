@@ -108,6 +108,18 @@ TEST(Status, ConstructorWithFormatMessage) {
   }
 
   {
+    const std::string sufix(100000, 'A');
+    const std::string fmt = "%s %s %d: " + sufix;
+    const std::string result = "Hello World 666: " + sufix;
+
+    bbt::Status status(bbt::StatusCode::kUnknown, fmt.c_str(), "Hello", "World",
+                       666);
+    EXPECT_FALSE(status.ok());
+    EXPECT_EQ(bbt::StatusCode::kUnknown, status.code());
+    EXPECT_EQ(result, status.message()) << "Large string size";
+  }
+
+  {
     bbt::Status status(bbt::StatusCode::kUnknown, "msg1", "msg2");
     EXPECT_FALSE(status.ok());
     EXPECT_EQ(bbt::StatusCode::kUnknown, status.code());
