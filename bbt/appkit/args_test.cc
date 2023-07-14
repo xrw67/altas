@@ -4,6 +4,21 @@
 
 namespace {
 
+TEST(Args, DefaultArgForPrintHelp) {
+  bbt::Args args;
+  ASSERT_TRUE(args.Parse("-h").ok());
+  ASSERT_TRUE(args.GetBool("help"));
+}
+
+TEST(Args, DuplicateArgs) {
+  bbt::Args args;
+  args.AddLong('p', "port", 80, "");
+  args.AddLong('p', "port", 8080, "");
+
+  args.Parse("");
+  ASSERT_EQ(args.GetLong("port"), 8080);
+}
+
 TEST(Args, BoolFlag) {
   {
     bbt::Args args;
@@ -113,9 +128,9 @@ TEST(Args, Argc_Argv) {
   args.AddLong('p', "port", 80, "Listen port");
 
   // Happy
-  const char* const argv[] = {" -d ", " --file", "2.txt",
-                              "-p",   "443",     NULL};
-  ASSERT_TRUE(args.Parse(5, argv).ok());
+  const char* const argv[] = {"myapp", " -d ", " --file", "2.txt",
+                              "-p",    "443",  NULL};
+  ASSERT_TRUE(args.Parse(6, argv).ok());
   ASSERT_TRUE(args.GetBool("debug"));
   ASSERT_EQ(args.GetString("file"), "2.txt");
   ASSERT_EQ(args.GetLong("port"), 443);

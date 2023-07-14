@@ -104,12 +104,19 @@ struct Args::Impl {
   }
 
   Status Parse(const std::vector<std::string>& args) {
-    std::map<std::string, std::string> result;
-    ArgFlagPtr current_flag;
-
     values_.clear();  // init
 
-    for (const auto& arg : args) {
+    if (args.empty()) return OkStatus();  // nothing
+
+    std::map<std::string, std::string> result;
+    ArgFlagPtr current_flag;
+    size_t i = 0;
+    if (args[0][0] != '-') {
+      i++;  // skip program name whit first argument;
+    }
+
+    for (; i < args.size(); i++) {
+      const auto& arg = args[i];
       if (arg[0] == '-') {
         if (current_flag) return InvalidArgumentError("flag no value");
         current_flag = GetFlag(arg);
@@ -136,7 +143,12 @@ struct Args::Impl {
   }
 };
 
-Args::Args() : impl_(new Impl()) {}
+Args::Args() : impl_(new Impl()) {
+  // insert help args
+  ArgFlagPtr f(new ArgFlag(ArgFlag{kBool, 'h', "help", "", "This help text"}));
+  impl_->AddFlag(f);
+}
+
 Args::~Args() { delete impl_; }
 
 void Args::AddBool(char short_name, const char* long_name, const char* help) {
@@ -189,10 +201,13 @@ std::string Args::Help() {
 
   for (const auto& i : impl_->long_flags_) {
     ArgFlagPtr flag(i.second);
-    ss << StrPrintf("-%c, --%-15s %s (default: %s)", flag->short_name,
-                    flag->long_name.c_str(), flag->help.c_str(),
-                    flag->default_value.c_str())
-       << std::endl;
+    ss << StrPrintf("-%c, --%-15s %s", flag->short_name,
+                    flag->long_name.c_str(), flag->help.c_str());
+    if (!flag->default_value.empty()) {
+      ss << " (default: " << flag->default_value << ")";
+    }
+
+    ss << std::endl;
   }
   return ss.str();
 }

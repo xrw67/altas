@@ -14,6 +14,8 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug")
 endif()
 
+option(BBT_BUILD_EXAMPLES "Build samples" ON)
+
 set(THIRD_PARTY_DIR ${PROJECT_SOURCE_DIR}/third_party)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -52,3 +54,7 @@ add_custom_target(lcov
 add_custom_target(lcov_html
     genhtml -o ${CMAKE_BINARY_DIR}/lcov_html ${CMAKE_BINARY_DIR}/bbt_lcov.info 
 )
+
+if(BBT_BUILD_EXAMPLES)
+    add_subdirectory(examples)
+endif()
