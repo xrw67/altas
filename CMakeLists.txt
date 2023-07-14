@@ -37,7 +37,7 @@ include_directories(
 enable_testing()
 
 add_subdirectory(${THIRD_PARTY_DIR}/googletest-1.8.1)
-add_subdirectory(src)
+add_subdirectory(bbt)
 add_subdirectory(tests)
 
 add_custom_target(lcov

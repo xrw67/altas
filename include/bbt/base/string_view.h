@@ -581,14 +581,4 @@ constexpr string_view NullSafeStringView(const char* p) {
 
 }  // namespace bbt
 
-namespace std {
-template <>
-class std::hash<bbt::string_view> {
- public:
-  std::uint64_t operator()(const bbt::string_view& sv) const {
-    return std::hash<std::string>()(std::string(sv.data(), sv.size()));
-  }
-};
-}  // namespace std
-
 #endif  // BBT_BASE_STRING_VIEW_H_
