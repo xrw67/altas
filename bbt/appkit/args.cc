@@ -10,8 +10,6 @@
 
 namespace bbt {
 
-namespace {
-
 enum ArgType { kBool, kLong, kString };
 
 struct ArgFlag {
@@ -30,19 +28,74 @@ bool IsDigit(char c) { return (c >= '0' && c <= '9'); }
 
 inline bool IsLetterOrDigit(char c) { return IsLetter(c) || IsDigit(c); }
 
-std::vector<std::string> ParseArgLine(const std::string& line) {
-  std::vector<std::string> result;
-  auto tmp_args = StrSplit(line, ' ');
+//
+// capture english word
+// eq: hello "hello world" 'hello world'
+//
+class Tokenizer {
+ public:
+  string_view value;
 
-  for (const auto& i : tmp_args) {
-    auto arg = StrTrim(i, " \r\t\n");
-    if (!arg.empty()) result.push_back(to_string(arg));
+  explicit Tokenizer(string_view str) noexcept
+      : value(), current_(str.data()), end_(str.data() + str.size()) {}
+
+  Status MoveNext() noexcept {
+    auto p = current_;
+
+    // Skip space
+    while (p != end_ && *p <= ' ') {
+      p++;
+    }
+
+    auto token_start = p;
+
+    if (p == end_) {
+      value = string_view();
+      return OkStatus();
+    } else if (*p == '\'' || *p == '\"') {  // 双引号&单引号
+      const char quota = *p;
+      token_start = ++p;
+      for (; *p != quota; p++) {
+        if (p == end_) {
+          return InvalidArgumentError("Can't find end of Quota");
+        }
+      }
+
+      current_ = p + 1;
+    } else {  // 正常的字符
+      while (p != end_ && *p > ' ') {
+        if (*p == '\'' || *p == '\"') {
+          return InvalidArgumentError("Quota not first word");
+        }
+        p++;
+      }
+      current_ = p;
+    }
+
+    value = {token_start, static_cast<size_t>(p - token_start)};
+    return OkStatus();
   }
 
-  return result;
-}
+ private:
+  const char* current_;    // Current text pointer
+  const char* const end_;  // The end of text
+};
 
-}  // namespace
+Status ParseArgLine(string_view line, std::vector<string_view>* args) {
+  Tokenizer tokenizer(line);
+  for (;;) {
+    auto st = tokenizer.MoveNext();
+    if (!st) {
+      return st;
+    }
+
+    if (tokenizer.value.empty()) {
+      break;
+    }
+    args->push_back(tokenizer.value);
+  }
+  return OkStatus();
+}
 
 typedef std::shared_ptr<ArgFlag> ArgFlagPtr;
 
@@ -77,7 +130,7 @@ struct Args::Impl {
     return {};
   }
 
-  ArgFlagPtr GetFlag(const std::string& name) {
+  ArgFlagPtr GetFlag(string_view name) {
     size_t len = name.length();
 
     // is short ?
@@ -95,7 +148,7 @@ struct Args::Impl {
         if (!IsLetterOrDigit(name[i])) return {};
       }
 
-      auto it = long_flags_.find(name.substr(2));
+      auto it = long_flags_.find(to_string(name.substr(2)));
       if (it != long_flags_.end()) {
         return it->second;
       }
@@ -103,7 +156,7 @@ struct Args::Impl {
     return {};
   }
 
-  Status Parse(const std::vector<std::string>& args) {
+  Status Parse(const std::vector<string_view>& args) {
     values_.clear();  // init
 
     if (args.empty()) return OkStatus();  // nothing
@@ -130,7 +183,7 @@ struct Args::Impl {
       } else {
         if (!current_flag) return InvalidArgumentError("no flag");
 
-        result[current_flag->long_name] = arg;
+        result[current_flag->long_name] = to_string(arg);
         current_flag.reset();
         continue;
       }
@@ -214,16 +267,20 @@ std::string Args::Help() {
 // LCOV_EXCL_STOP
 
 Status Args::Parse(const char* arg_line) {
-  auto args = ParseArgLine(arg_line);
+  std::vector<string_view> args;
+  auto st = ParseArgLine(arg_line, &args);
+  if (!st) {
+    return st;
+  }
   return impl_->Parse(args);
 }
 
 Status Args::Parse(int argc, const char* const argv[]) {
-  std::vector<std::string> args;
+  std::vector<string_view> args;
 
   for (int i = 0; i < argc && argv[i]; i++) {
     auto a = StrTrim(argv[i], " \r\t\n");
-    if (!a.empty()) args.push_back(to_string(a));
+    if (!a.empty()) args.push_back(a);
   }
   return impl_->Parse(args);
 }

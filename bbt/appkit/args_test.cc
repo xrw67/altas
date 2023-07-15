@@ -136,4 +136,42 @@ TEST(Args, Argc_Argv) {
   ASSERT_EQ(args.GetLong("port"), 443);
 }
 
+TEST(Args, VerifyStringFormat) {
+  bbt::Args args;
+  args.AddString('w', "word", "", "");
+
+  ASSERT_TRUE(args.Parse("-w hello").ok());
+  ASSERT_EQ(args.GetString("word"), "hello");
+
+  ASSERT_TRUE(args.Parse("-w \"hello\"").ok());
+  ASSERT_EQ(args.GetString("word"), "hello");
+
+  ASSERT_TRUE(args.Parse("-w 'hello'").ok());
+  ASSERT_EQ(args.GetString("word"), "hello");
+
+  ASSERT_TRUE(args.Parse("-w \"hello world\"").ok());
+  ASSERT_EQ(args.GetString("word"), "hello world");
+
+  ASSERT_TRUE(args.Parse("-w 'hello world'").ok());
+  ASSERT_EQ(args.GetString("word"), "hello world");
+
+  {
+    auto st = args.Parse("-w \"hello");
+    ASSERT_FALSE(st.ok()) << st.ToString();
+  }
+
+  {
+    auto st = args.Parse("-w \"hello'");
+    ASSERT_FALSE(st.ok()) << st.ToString();
+  }
+  {
+    auto st = args.Parse("-w hello\"");
+    ASSERT_FALSE(st.ok()) << st.ToString();
+  }
+  {
+    auto st = args.Parse("-w hello\"world");
+    ASSERT_FALSE(st.ok()) << st.ToString();
+  }
+}
+
 }  // namespace
