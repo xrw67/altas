@@ -3,8 +3,8 @@
 
 #include <string>
 
-#include "bbt/base/config.h"
-#include "bbt/base/status.h"
+#include "bbt/util/config.h"
+#include "bbt/util/status.h"
 
 namespace bbt {
 

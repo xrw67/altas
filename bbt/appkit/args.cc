@@ -6,7 +6,7 @@
 #include <sstream>
 #include <memory>
 
-#include "bbt/base/str_util.h"
+#include "bbt/util/str_util.h"
 
 namespace bbt {
 

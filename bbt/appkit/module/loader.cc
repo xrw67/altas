@@ -5,9 +5,9 @@
 
 #include <dlfcn.h>
 
-#include "bbt/base/logging.h"
-#include "bbt/base/fs.h"
-#include "bbt/base/str_util.h"
+#include "bbt/util/logging.h"
+#include "bbt/util/fs.h"
+#include "bbt/util/str_util.h"
 
 namespace bbt {
 //

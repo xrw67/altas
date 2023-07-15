@@ -1,7 +1,7 @@
-#ifndef BBT_BASE_ATTRIBUTES_H_
-#define BBT_BASE_ATTRIBUTES_H_
+#ifndef BBT_UTIL_ATTRIBUTES_H_
+#define BBT_UTIL_ATTRIBUTES_H_
 
-#include "bbt/base/config.h"
+#include "bbt/util/config.h"
 
 // BBT_HAVE_ATTRIBUTE
 //
@@ -143,4 +143,4 @@
 #define BBT_ATTRIBUTE_LIFETIME_BOUND
 #endif
 
-#endif  // BBT_BASE_ATTRIBUTES_H_
+#endif  // BBT_UTIL_ATTRIBUTES_H_

@@ -1,5 +1,5 @@
 #include "bbt/appkit/module.h"
-#include "bbt/base/logging.h"
+#include "bbt/util/logging.h"
 
 int hello_init(const char* param) {
   BBT_LOG(INFO, "Hello init");

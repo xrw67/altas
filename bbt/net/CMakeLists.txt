@@ -1,7 +1,7 @@
 add_library(bbt_net 
     ipaddr.cc
 )
-target_link_libraries(bbt_net bbt_base)
+target_link_libraries(bbt_net bbt_util)
 
 add_executable(bbt_net_test
     ipaddr_test.cc

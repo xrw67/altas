@@ -1,7 +1,7 @@
 #ifndef BBT_APPKIT_ARGS_H_
 #define BBT_APPKIT_ARGS_H_
 
-#include "bbt/base/status.h"
+#include "bbt/util/status.h"
 
 namespace bbt {
 

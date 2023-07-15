@@ -1,12 +1,12 @@
-#ifndef BBT_BASE_MACROS_H_
-#define BBT_BASE_MACROS_H_
+#ifndef BBT_UTIL_MACROS_H_
+#define BBT_UTIL_MACROS_H_
 
 #include <cassert>
 #include <cstddef>
 
-#include "bbt/base/attributes.h"
-#include "bbt/base/config.h"
-#include "bbt/base/optimization.h"
+#include "bbt/util/attributes.h"
+#include "bbt/util/config.h"
+#include "bbt/util/optimization.h"
 
 // BBT_ARRAYSIZE()
 //
@@ -94,7 +94,7 @@ auto ArraySizeHelper(const T (&array)[N]) -> char (&)[N];
 // When `NDEBUG` is not defined, `BBT_HARDENING_ASSERT()` is identical to
 // `BBT_ASSERT()`.
 //
-// See `BBT_OPTION_HARDENED` in `bbt/base/options.h` for more information on
+// See `BBT_OPTION_HARDENED` in `bbt/util/options.h` for more information on
 // hardened mode.
 #if BBT_OPTION_HARDENED == 1 && defined(NDEBUG)
 #define BBT_HARDENING_ASSERT(expr)                 \
@@ -104,4 +104,4 @@ auto ArraySizeHelper(const T (&array)[N]) -> char (&)[N];
 #define BBT_HARDENING_ASSERT(expr) BBT_ASSERT(expr)
 #endif
 
-#endif  // BBT_BASE_MACROS_H_
+#endif  // BBT_UTIL_MACROS_H_

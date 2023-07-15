@@ -1,12 +1,12 @@
 /**
  * OSAL
  */
-#ifndef BBT_BASE_SYS_H_
-#define BBT_BASE_SYS_H_
+#ifndef BBT_UTIL_SYS_H_
+#define BBT_UTIL_SYS_H_
 
 #include <string>
 
-#include "bbt/base/config.h"
+#include "bbt/util/config.h"
 
 namespace bbt {
 ///
@@ -39,4 +39,4 @@ BBT_EXPORT std::string GetCurrentDir();
 
 }  // namespace bbt
 
-#endif  // BBT_BASE_SYS_H_
+#endif  // BBT_UTIL_SYS_H_

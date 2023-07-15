@@ -3,6 +3,6 @@ add_executable(args_demo
 )
 
 target_link_libraries(args_demo 
-    bbt_base 
+    bbt_util 
     bbt_appkit
 )

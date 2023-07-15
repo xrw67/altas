@@ -2,7 +2,7 @@
 
 #include <map>
 
-#include "bbt/base/logging.h"
+#include "bbt/util/logging.h"
 #include "bbt/modules/debugger.h"
 
 namespace bbt {

@@ -13,8 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-#ifndef BBT_BASE_STRING_VIEW_H_
-#define BBT_BASE_STRING_VIEW_H_
+#ifndef BBT_UTIL_STRING_VIEW_H_
+#define BBT_UTIL_STRING_VIEW_H_
 
 #include <algorithm>
 #include <cassert>
@@ -27,10 +27,10 @@
 #include <exception>
 #include <utility>
 
-#include "bbt/base/attributes.h"
-#include "bbt/base/config.h"
-#include "bbt/base/macros.h"
-#include "bbt/base/optimization.h"
+#include "bbt/util/attributes.h"
+#include "bbt/util/config.h"
+#include "bbt/util/macros.h"
+#include "bbt/util/optimization.h"
 
 namespace bbt {
 
@@ -581,4 +581,4 @@ constexpr string_view NullSafeStringView(const char* p) {
 
 }  // namespace bbt
 
-#endif  // BBT_BASE_STRING_VIEW_H_
+#endif  // BBT_UTIL_STRING_VIEW_H_

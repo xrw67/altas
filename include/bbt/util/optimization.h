@@ -1,8 +1,8 @@
-#ifndef BBT_BASE_OPTIMIZATION_H_
-#define BBT_BASE_OPTIMIZATION_H_
+#ifndef BBT_UTIL_OPTIMIZATION_H_
+#define BBT_UTIL_OPTIMIZATION_H_
 #include <assert.h>
 
-#include "bbt/base/config.h"
+#include "bbt/util/config.h"
 
 // BBT_BLOCK_TAIL_CALL_OPTIMIZATION
 //
@@ -165,4 +165,4 @@
 #define BBT_PREDICT_TRUE(x) (x)
 #endif
 
-#endif  // BBT_BASE_OPTIMIZATION_H_
+#endif  // BBT_UTIL_OPTIMIZATION_H_

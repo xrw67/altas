@@ -1,10 +1,10 @@
-#ifndef BBT_BASE_FS_H_
-#define BBT_BASE_FS_H_
+#ifndef BBT_UTIL_FS_H_
+#define BBT_UTIL_FS_H_
 
 #include <string>
 
-#include "bbt/base/status.h"
-#include "bbt/base/string_view.h"
+#include "bbt/util/status.h"
+#include "bbt/util/string_view.h"
 
 namespace bbt {
 
@@ -40,4 +40,4 @@ string_view Basename(string_view path);
 std::string ReadFile(string_view filename);
 
 }  // namespace bbt
-#endif  // BBT_BASE_FS_H_
+#endif  // BBT_UTIL_FS_H_

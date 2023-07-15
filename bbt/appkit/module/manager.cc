@@ -6,7 +6,7 @@
 #include <memory>
 #include <mutex>
 
-#include "bbt/base/str_util.h"
+#include "bbt/util/str_util.h"
 
 namespace bbt {
 

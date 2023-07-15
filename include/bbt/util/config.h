@@ -1,5 +1,5 @@
-#ifndef BBT_BASE_CONFIG_H_
-#define BBT_BASE_CONFIG_H_
+#ifndef BBT_UTIL_CONFIG_H_
+#define BBT_UTIL_CONFIG_H_
 
 // Included for the __GLIBC__ macro (or similar macros on other systems).
 #include <limits.h>
@@ -158,4 +158,4 @@
 #endif  // defined(_WIN32)
 #endif  // BBT_EXPORT
 
-#endif  // BBT_BASE_CONFIG_H_
+#endif  // BBT_UTIL_CONFIG_H_

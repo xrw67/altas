@@ -4,7 +4,7 @@ add_executable(bbt_tests
 target_link_libraries(bbt_tests 
     gmock 
     gmock_main
-    bbt_base 
+    bbt_util 
     bbt_net 
     bbt_appkit
     )

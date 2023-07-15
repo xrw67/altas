@@ -1,10 +1,10 @@
-#ifndef BBT_BASE_STR_UTIL_H_
-#define BBT_BASE_STR_UTIL_H_
+#ifndef BBT_UTIL_STR_UTIL_H_
+#define BBT_UTIL_STR_UTIL_H_
 
 #include <vector>
 #include <string>
 
-#include "bbt/base/string_view.h"
+#include "bbt/util/string_view.h"
 
 namespace bbt {
 
@@ -88,4 +88,4 @@ bool EndsWithIgnoreCase(string_view text, string_view suffix) noexcept;
 
 }  // namespace bbt
 
-#endif  // BBT_BASE_STR_UTIL_H_
+#endif  // BBT_UTIL_STR_UTIL_H_

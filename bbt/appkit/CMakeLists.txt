@@ -4,7 +4,7 @@ add_library(bbt_appkit
     module/manager.cc
     module/loader.cc
 )
-target_link_libraries(bbt_appkit bbt_base)
+target_link_libraries(bbt_appkit bbt_util)
 
 add_executable(bbt_appkit_test
     args_test.cc

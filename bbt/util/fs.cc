@@ -1,10 +1,10 @@
-#include "bbt/base/fs.h"
+#include "bbt/util/fs.h"
 
 #include <cstring>
 #include <fstream>  // std::ifstream
 #include <sstream>  // std::stringstream
 
-#include "bbt/base/str_util.h"
+#include "bbt/util/str_util.h"
 
 namespace bbt {
 

@@ -12,14 +12,14 @@
 // non-const method, all threads accessing the same Status must use
 // external synchronization.
 
-#ifndef BBT_BASE_STATUS_H_
-#define BBT_BASE_STATUS_H_
+#ifndef BBT_UTIL_STATUS_H_
+#define BBT_UTIL_STATUS_H_
 
 #include <algorithm>
 #include <string>
 
-#include "bbt/base/attributes.h"
-#include "bbt/base/string_view.h"
+#include "bbt/util/attributes.h"
+#include "bbt/util/string_view.h"
 
 namespace bbt {
 
@@ -182,4 +182,4 @@ inline void Status::IgnoreError() const {
 
 }  // namespace bbt
 
-#endif  // BBT_BASE_STATUS_H_
+#endif  // BBT_UTIL_STATUS_H_

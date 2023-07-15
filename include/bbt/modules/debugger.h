@@ -1,8 +1,8 @@
 #ifndef BBT_MODULES_DEBUGGER_H_
 #define BBT_MODULES_DEBUGGER_H_
 
-#include "bbt/base/string_view.h"
-#include "bbt/base/status.h"
+#include "bbt/util/string_view.h"
+#include "bbt/util/status.h"
 
 #include "bbt/appkit/object.h"
 
