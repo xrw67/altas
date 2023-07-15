@@ -45,19 +45,19 @@ add_subdirectory(tests)
 add_custom_target(lcov
     lcov -c 
     -t bbt
-    -o ${CMAKE_BINARY_DIR}/bbt_lcov.info 
+    -o ${CMAKE_BINARY_DIR}/lcov.info
     -d ${PROJECT_SOURCE_DIR} 
     -b ${PROJECT_SOURCE_DIR} 
     COMMAND
     lcov 
-    -r ${CMAKE_BINARY_DIR}/bbt_lcov.info 
-    -o ${CMAKE_BINARY_DIR}/bbt_lcov.info 
+    -r ${CMAKE_BINARY_DIR}/lcov.info
+    -o ${CMAKE_BINARY_DIR}/lcov.info
     '*/third_party/*' 
     '/usr/include/*'
 )
 
 add_custom_target(lcov_html
-    genhtml -o ${CMAKE_BINARY_DIR}/lcov_html ${CMAKE_BINARY_DIR}/bbt_lcov.info 
+    genhtml -o ${CMAKE_BINARY_DIR}/lcov_html ${CMAKE_BINARY_DIR}/lcov.info
 )
 
 if(BBT_BUILD_EXAMPLES)
