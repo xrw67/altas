@@ -86,6 +86,9 @@ bool StartsWithIgnoreCase(string_view text, string_view prefix) noexcept;
 // case in the comparison.
 bool EndsWithIgnoreCase(string_view text, string_view suffix) noexcept;
 
+std::vector<std::string> StrFields(const std::string& s);
+std::string StrReplace(std::string& str, const std::string& from,
+                       const std::string& to);
 }  // namespace bbt
 
 #endif  // BBT_UTIL_STR_UTIL_H_

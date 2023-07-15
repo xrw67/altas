@@ -1,8 +1,25 @@
 #include "bbt/util/fs.h"
 
 #include <cstring>
+#include <stdarg.h>
+#include <algorithm>
+#include <errno.h>
 #include <fstream>  // std::ifstream
+#include <set>
 #include <sstream>  // std::stringstream
+#include <string>
+
+#ifdef WIN32
+#include <direct.h>
+#define getcwd _getcwd
+#define PATH_MAX 4096
+#else
+#include <dirent.h>  // opendir(), readdir(), closedir()
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <fcntl.h>
+#endif
 
 #include "bbt/util/str_util.h"
 
@@ -93,6 +110,21 @@ Status WriteFile(const std::string& filename, const std::string& content) {
   return OkStatus();
 }
 
+bool AppendFile(const std::string& filename, const std::string& data) {
+  if (filename.empty() || data.empty()) return false;
+
+#ifdef __linux__
+  int n = 0;
+  int fd = ::open(filename.c_str(), O_WRONLY | O_APPEND, 0);
+  if (fd >= 0) {
+    n = ::write(fd, data.c_str(), data.length());
+    ::close(fd);
+  }
+  return (n > 0);
+#endif
+  return false;
+}
+
 std::string ReadFile(string_view filename) {
   if (!filename.empty()) {
     std::ifstream t(filename.data());
@@ -122,6 +154,49 @@ string_view Basename(string_view path) {
     if (slash) return slash + 1;
   }
   return path;
+}
+
+bool IsFileExist(const std::string& filename) {
+  return ::access(filename.c_str(), F_OK) == 0;
+}
+
+bool IsDir(const std::string& path) {
+  struct stat sb = {0};
+  return (::lstat(path.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode));
+}
+
+std::vector<std::string> GetDirectoryChildren(const std::string& path) {
+  std::vector<std::string> children;
+
+#ifdef WIN32
+  WIN32_FIND_DATA FileData;
+  HANDLE hFind;
+
+  hFind = FindFirstFile(path.c_str(), &FileData);
+  if (hFind != INVALID_HANDLE_VALUE) {
+    while (FindNextFile(hFind, &FileData)) {
+      children.push_back(FileData.cFileName);
+    }
+    FindClose(hFind);
+  }
+#else
+
+  DIR* dir;
+  struct dirent* ent;
+
+  dir = opendir(path.c_str());
+  if (dir) {
+    while ((ent = readdir(dir)) != NULL) {
+      if (strcmp(ent->d_name, ".") == 0 || strcmp(ent->d_name, "..") == 0)
+        continue;
+      children.push_back(ent->d_name);
+    }
+    closedir(dir);
+  }
+
+#endif
+
+  return children;
 }
 
 }  // namespace bbt

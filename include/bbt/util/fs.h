@@ -2,6 +2,7 @@
 #define BBT_UTIL_FS_H_
 
 #include <string>
+#include <vector>
 
 #include "bbt/util/status.h"
 #include "bbt/util/string_view.h"
@@ -31,6 +32,9 @@ Status WriteFile(const std::string& filename, const std::string& content);
 string_view Dir(string_view path);
 string_view Basename(string_view path);
 
+bool IsFileExist(const std::string& filename);
+bool IsDir(const std::string& path);
+
 /**
  * @brief 读文件内容
  *
@@ -38,6 +42,10 @@ string_view Basename(string_view path);
  * @return std::string 文件内容
  */
 std::string ReadFile(string_view filename);
+
+bool AppendFile(const std::string& filename, const std::string& data);
+
+std::vector<std::string> GetDirectoryChildren(const std::string& path);
 
 }  // namespace bbt
 #endif  // BBT_UTIL_FS_H_

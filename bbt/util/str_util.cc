@@ -155,4 +155,33 @@ bool EndsWithIgnoreCase(string_view text, string_view suffix) noexcept {
          EqualsIgnoreCase(text.substr(text.size() - suffix.size()), suffix);
 }
 
+std::vector<std::string> StrFields(const std::string& s) {
+  std::vector<std::string> fields;
+  size_t start, end;
+
+  // 跳过开头的空格
+  start = s.find_first_not_of(kSpaceChars);
+  if (start == std::string::npos) return {};
+
+  while ((end = s.find_first_of(kSpaceChars, start)) != std::string::npos) {
+    std::string cell(s.substr(start, end - start));
+    if (!cell.empty()) fields.push_back(cell);
+    start = s.find_first_not_of(kSpaceChars, end);
+  }
+  if (start < s.length()) {
+    std::string cell(StrTrimRight(s.substr(start), kSpaceChars));
+    if (!cell.empty()) fields.push_back(cell);
+  }
+  return fields;
+}
+
+std::string StrReplace(std::string& str, const std::string& from,
+                       const std::string& to) {
+  std::string::size_type pos = 0;
+  while ((pos = str.find(from, pos)) != std::string::npos) {
+    str.replace(pos, from.length(), to);
+    pos += to.length();
+  }
+  return str;
+}
 }  // namespace bbt

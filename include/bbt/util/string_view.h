@@ -217,6 +217,8 @@ class string_view {
   // string.
   constexpr const_pointer data() const noexcept { return ptr_; }
 
+  std::string str() const noexcept { return std::string(data(), size()); }
+
   // Modifiers
 
   // string_view::remove_prefix()
