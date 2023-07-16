@@ -4,6 +4,7 @@
 
 #include "gmock/gmock.h"
 
+#include "bbt/util/fmt.h"
 #include "bbt/util/str_util.h"
 
 using namespace bbt;
@@ -49,7 +50,7 @@ TEST(Status, CreateAndClassify) {
     // Ensure that the creator does, in fact, create status objects with the
     // expected error code and message.
     std::string message =
-        bbt::StrPrintf("error code %d test message", test.code);
+        bbt::format("error code {} test message", test.code);
     bbt::Status status = test.creator(message);
     EXPECT_EQ(test.code, status.code());
     EXPECT_EQ(message, status.message());

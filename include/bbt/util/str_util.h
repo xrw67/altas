@@ -16,8 +16,6 @@ std::string StrCat(const std::string& a, const std::string& b,
 
 std::vector<std::string> StrSplit(string_view text, char delimiter);
 
-std::string StrPrintf(const char* fmt, ...);
-
 /// @brief 移除左侧的空格、换行符和制表符
 string_view StrTrimLeft(string_view s, string_view cutset = string_view());
 

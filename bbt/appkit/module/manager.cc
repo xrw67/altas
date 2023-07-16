@@ -6,6 +6,7 @@
 #include <memory>
 #include <mutex>
 
+#include "bbt/util/fmt.h"
 #include "bbt/util/str_util.h"
 
 namespace bbt {
@@ -123,7 +124,7 @@ class ModuleManagerImpl : public ModuleManager {
       if (name.empty()) continue;
       auto it = mods_.find(to_string(name));
       if (it == mods_.end())
-        return NotFoundError(StrPrintf("depend on %s", name.data()));
+        return NotFoundError(format("depend on {}", name.data()));
       else
         AddModuleUsage(module, it->second);
     }

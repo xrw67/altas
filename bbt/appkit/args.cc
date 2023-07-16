@@ -6,6 +6,7 @@
 #include <sstream>
 #include <memory>
 
+#include "bbt/util/fmt.h"
 #include "bbt/util/str_util.h"
 
 namespace bbt {
@@ -254,8 +255,8 @@ std::string Args::Help() {
 
   for (const auto& i : impl_->long_flags_) {
     ArgFlagPtr flag(i.second);
-    ss << StrPrintf("-%c, --%-15s %s", flag->short_name,
-                    flag->long_name.c_str(), flag->help.c_str());
+    ss << format("{:c}, --{:<15} {}", flag->short_name, flag->long_name.c_str(),
+                 flag->help.c_str());
     if (!flag->default_value.empty()) {
       ss << " (default: " << flag->default_value << ")";
     }

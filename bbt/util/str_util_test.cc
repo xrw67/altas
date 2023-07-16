@@ -70,21 +70,6 @@ TEST(StrUtil, StrSplit) {
   }
 }
 
-TEST(StrUtil, StrPrintf) {
-  std::string result = bbt::StrPrintf("Hello %s", "World");
-  EXPECT_EQ(result, "Hello World");
-
-  // large string
-  std::string text1(1024 * 1024, 'A');
-  std::string text2(1024 * 1024, 'B');
-  std::string fmt = text1 + "%s";
-
-  result = bbt::StrPrintf(fmt.c_str(), text2.c_str());
-  std::string expect = text1 + text2;
-  EXPECT_EQ(result.size(), expect.size());
-  EXPECT_TRUE(result == expect);
-}
-
 TEST(StrUtil, StrTrim) {
   std::string s = "  \r\n  \t \r\n Hello \r\t\n \t ";
   ASSERT_EQ(bbt::StrTrim(s, " \r\n\t"), "Hello");

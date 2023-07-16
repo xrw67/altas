@@ -13,6 +13,7 @@ add_executable(bbt_util_test
     status_test.cc
     str_util_test.cc
     string_view_test.cc
+    fmt_test.cc
     )
 target_link_libraries(bbt_util_test bbt_util gmock gmock_main)
 add_test(NAME bbt_util COMMAND bbt_util_test)

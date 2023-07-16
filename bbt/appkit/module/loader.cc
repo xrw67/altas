@@ -7,6 +7,7 @@
 
 #include "bbt/util/logging.h"
 #include "bbt/util/fs.h"
+#include "bbt/util/fmt.h"
 #include "bbt/util/str_util.h"
 
 namespace bbt {
@@ -39,15 +40,15 @@ class DllLoader : public ModuleLoader {
     void* handle = dlopen(path.c_str(), RTLD_NOW);
     if (!handle) {
       return CancelledError(
-          StrPrintf("load module %s failed: %s", name, dlerror()));
+          format("load module {} failed: {}", name, dlerror()));
     }
 
     PBBT_MODULE_HEADER hdr =
         (PBBT_MODULE_HEADER)::dlsym(handle, "bbt_module_header");
     if (!hdr) {
       ::dlclose(handle);
-      return CancelledError(StrPrintf(
-          "load module %s failed: no symbol bbt_module_header", name));
+      return CancelledError(format(
+          "load module {} failed: no symbol bbt_module_header", name));
     }
 
     handles_[name] = handle;

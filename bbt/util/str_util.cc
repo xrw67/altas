@@ -80,29 +80,6 @@ std::vector<std::string> StrSplit(string_view text, char delimiter) {
   return result;
 }
 
-std::string StrPrintf(const char* fmt, ...) {
-  va_list ap;
-  std::vector<char> buf;
-  int buf_size = 1024;  // 预留的长度
-  int n = 0;
-
-  while (1) {
-    buf.resize(buf_size);
-    va_start(ap, fmt);
-    n = ::vsnprintf(&buf[0], buf_size, fmt, ap);
-    va_end(ap);
-
-    if (n < 0)
-      return std::string();
-    else if (n >= buf_size)
-      buf_size = n + 1;  // for null char
-    else
-      break;
-  }
-
-  return std::string(&buf[0], n);
-}
-
 void StrAppend(std::string& s, string_view other) {
   s.append(other.data(), other.size());
 }
