@@ -88,6 +88,10 @@ TEST(Fmt, string_view) {
   bbt::string_view sv("World");
   ASSERT_EQ(bbt::format("Hello {}", sv), "Hello World");
 }
+TEST(Fmt, Status) {
+  auto st = bbt::NotFoundError("msg1");
+  ASSERT_EQ(format("{}", st), "NOT_FOUND: msg1");
+}
 
 }  // namespace
 

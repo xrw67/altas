@@ -23,10 +23,10 @@
 FMT_BEGIN_NAMESPACE
 
 FMT_FORMAT_AS(bbt::StatusCode, int);
-// FMT_FORMAT_AS(bbt::string_view, std::basic_string<Char>);
 
 FMT_END_NAMESPACE
 
+// string_view
 template <>
 struct fmt::formatter<bbt::string_view> {
   auto parse(format_parse_context& ctx) -> format_parse_context::iterator {
@@ -37,6 +37,19 @@ struct fmt::formatter<bbt::string_view> {
       -> format_context::iterator {
     auto result = fmt::format_to_n(ctx.out(), sv.size(), "{:s}", sv.data());
     return result.out;
+  }
+};
+
+// Status
+template <>
+struct fmt::formatter<bbt::Status> {
+  auto parse(format_parse_context& ctx) -> format_parse_context::iterator {
+    return ctx.begin();
+  }
+
+  auto format(const bbt::Status& s, format_context& ctx) const
+      -> format_context::iterator {
+    return fmt::format_to(ctx.out(), "{}", s.ToString());
   }
 };
 
