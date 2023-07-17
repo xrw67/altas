@@ -11,11 +11,11 @@
 
 #define FMT_HEADER_ONLY 1
 
-#include "fmt/core.h"
-#include "fmt/format.h"
-#include "fmt/format-inl.h"
-#include "fmt/ranges.h"
-#include "fmt/chrono.h"
+#include "internals/fmt/core.h"
+#include "internals/fmt/format.h"
+#include "internals/fmt/format-inl.h"
+#include "internals/fmt/ranges.h"
+#include "internals/fmt/chrono.h"
 
 #include "string_view.h"
 #include "status.h"
