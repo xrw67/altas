@@ -31,7 +31,7 @@ class Debugger : public Object {
   static Debugger* New();
   static void Release(Debugger* debugger);
 
-  const char* obj_name() const { return "debugger"; }
+  const char* object_id() const { return "debugger"; }
 
   virtual Status Register(const char* command, DebugHandler* handler) = 0;
   virtual void Unregister(const char* command) = 0;

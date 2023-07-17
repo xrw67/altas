@@ -9,8 +9,7 @@ class Object {
  public:
   Object();
 
-  /// @brief 服务名
-  virtual const char* obj_name() const = 0;
+  virtual const char* object_id() const = 0;
 
   long ref_count() const;
   void AddRefManually();

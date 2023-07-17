@@ -12,7 +12,7 @@ class ObjectEnv {
  public:
   Status Insert(Object* obj) {
     if (!obj) return InvalidArgumentError("no service");
-    const char* name = obj->obj_name();
+    const char* name = obj->object_id();
     if (!name || !*name) return InvalidArgumentError("no name");
 
     std::lock_guard<std::mutex> lock(mutex_);
