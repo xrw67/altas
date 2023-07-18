@@ -40,6 +40,8 @@ std::string StatusCodeToString(StatusCode code) {
       return "OUT_OF_RANGE";
     case StatusCode::kUnimplemented:
       return "UNIMPLEMENTED";
+    case StatusCode::kInternal:
+      return "INTERNAL";
     case StatusCode::kUnavailable:
       return "UNAVAILABLE";
     default:
@@ -105,6 +107,10 @@ bool IsUnimplemented(const Status& status) {
   return status.code() == StatusCode::kUnimplemented;
 }
 
+bool IsInternal(const Status& status) {
+  return status.code() == StatusCode::kInternal;
+}
+
 bool IsUnavailable(const Status& status) {
   return status.code() == StatusCode::kUnavailable;
 }
@@ -154,6 +160,10 @@ Status AbortedError(string_view message) {
 
 Status UnimplementedError(string_view message) {
   return Status(StatusCode::kUnimplemented, message);
+}
+
+Status InternalError(string_view message) {
+  return Status(StatusCode::kInternal, message);
 }
 
 Status UnavailableError(string_view message) {
@@ -385,6 +395,13 @@ std::string Status::ToStringSlow() const {
   }
 
   return result;
+}
+
+const char* StatusMessageAsCStr(const Status& status) {
+  // As an internal implementation detail, we guarantee that if status.message()
+  // is non-empty, then the resulting string_view is null terminated.
+  auto sv_message = status.message();
+  return sv_message.empty() ? "" : sv_message.data();
 }
 
 }  // namespace bbt

@@ -37,6 +37,7 @@ enum class StatusCode : int {
   kAborted = 10,
   kOutOfRange = 11,
   kUnimplemented = 12,
+  kInternal = 13,
   kUnavailable = 14,
 };
 
@@ -55,7 +56,7 @@ class Status {
   // Create a success status.
   Status() noexcept;
   Status(StatusCode code, string_view msg);
-  Status(StatusCode code, const char *format, ...);
+  Status(StatusCode code, const char* format, ...);
   Status(const Status& rhs);
   Status& operator=(const Status& rhs);
 
@@ -118,6 +119,7 @@ BBT_MUST_USE_RESULT bool IsFailedPrecondition(const Status& status);
 BBT_MUST_USE_RESULT bool IsAborted(const Status& status);
 BBT_MUST_USE_RESULT bool IsOutOfRange(const Status& status);
 BBT_MUST_USE_RESULT bool IsUnimplemented(const Status& status);
+BBT_MUST_USE_RESULT bool IsInternal(const Status& status);
 BBT_MUST_USE_RESULT bool IsUnavailable(const Status& status);
 
 // These convenience functions create an `Status` object with an error
@@ -136,6 +138,7 @@ Status FailedPreconditionError(string_view message);
 Status AbortedError(string_view message);
 Status OutOfRangeError(string_view message);
 Status UnimplementedError(string_view message);
+Status InternalError(string_view message);
 Status UnavailableError(string_view message);
 
 // ErrnoToStatusCode()
@@ -207,6 +210,15 @@ inline std::string Status::ToString() const {
 inline void Status::IgnoreError() const {
   // no-op
 }
+
+// Retrieves a message's status as a null terminated C string. The lifetime of
+// this string is tied to the lifetime of the status object itself.
+//
+// If the status's message is empty, the empty string is returned.
+//
+// StatusMessageAsCStr exists for C support. Use `status.message()` in C++.
+const char* StatusMessageAsCStr(
+    const Status& status BBT_ATTRIBUTE_LIFETIME_BOUND);
 
 }  // namespace bbt
 

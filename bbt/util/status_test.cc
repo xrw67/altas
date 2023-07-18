@@ -197,13 +197,34 @@ TEST(Status, InsertionOperator) {
   EXPECT_EQ(oss.str(), "OK, NOT_FOUND: msg");
 }
 
+TEST(Status, StatusMessageCStringTest) {
+  {
+    bbt::Status status = bbt::OkStatus();
+    EXPECT_EQ(status.message(), "");
+    EXPECT_STREQ(bbt::StatusMessageAsCStr(status), "");
+    EXPECT_EQ(status.message(), bbt::StatusMessageAsCStr(status));
+    EXPECT_NE(bbt::StatusMessageAsCStr(status), nullptr);
+  }
+  {
+    bbt::Status status;
+    EXPECT_EQ(status.message(), "");
+    EXPECT_NE(bbt::StatusMessageAsCStr(status), nullptr);
+    EXPECT_STREQ(bbt::StatusMessageAsCStr(status), "");
+  }
+  {
+    bbt::Status status(bbt::StatusCode::kInternal, "message");
+    EXPECT_FALSE(status.ok());
+    EXPECT_EQ(bbt::StatusCode::kInternal, status.code());
+    EXPECT_EQ("message", status.message());
+    EXPECT_STREQ("message", bbt::StatusMessageAsCStr(status));
+  }
+}
 
 TEST(StatusErrno, ErrnoToStatusCode) {
   EXPECT_EQ(bbt::ErrnoToStatusCode(0), bbt::StatusCode::kOk);
 
   // Spot-check a few errno values.
-  EXPECT_EQ(bbt::ErrnoToStatusCode(EINVAL),
-            bbt::StatusCode::kInvalidArgument);
+  EXPECT_EQ(bbt::ErrnoToStatusCode(EINVAL), bbt::StatusCode::kInvalidArgument);
   EXPECT_EQ(bbt::ErrnoToStatusCode(ENOENT), bbt::StatusCode::kNotFound);
 
   // We'll pick a very large number so it hopefully doesn't collide to errno.
