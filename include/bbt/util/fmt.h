@@ -11,11 +11,12 @@
 
 #define FMT_HEADER_ONLY 1
 
-#include "internals/fmt/core.h"
-#include "internals/fmt/format.h"
-#include "internals/fmt/format-inl.h"
-#include "internals/fmt/ranges.h"
-#include "internals/fmt/chrono.h"
+#include "internal/fmt/core.h"
+#include "internal/fmt/format.h"
+#include "internal/fmt/format-inl.h"
+#include "internal/fmt/ranges.h"
+#include "internal/fmt/chrono.h"
+#include "internal/fmt/os.h"
 
 #include "string_view.h"
 #include "status.h"
@@ -57,6 +58,8 @@ namespace bbt {
 
 using fmt::format;
 using fmt::format_error;
+using fmt::print;
+using fmt::println;
 
 }  // namespace bbt
 

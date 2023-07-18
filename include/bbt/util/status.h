@@ -28,6 +28,14 @@ enum class StatusCode : int {
   kCancelled = 1,
   kUnknown = 2,
   kInvalidArgument = 3,
+
+  // StatusCode::kDeadlineExceeded
+  //
+  // kDeadlineExceeded (gRPC code "DEADLINE_EXCEEDED") indicates a deadline
+  // expired before the operation could complete. For operations that may change
+  // state within a system, this error may be returned even if the operation has
+  // completed successfully. For example, a successful response from a server
+  // could have been delayed long enough for the deadline to expire.
   kDeadlineExceeded = 4,
   kNotFound = 5,
   kAlreadyExists = 6,
