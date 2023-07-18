@@ -54,6 +54,7 @@ add_custom_target(lcov
     -o ${CMAKE_BINARY_DIR}/lcov.info
     '*/third_party/*' 
     '/usr/include/*'
+    '*/include/bbt/util/internal/fmt/*'
 )
 
 add_custom_target(lcov_html
