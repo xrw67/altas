@@ -28,11 +28,16 @@ enum class StatusCode : int {
   kCancelled = 1,
   kUnknown = 2,
   kInvalidArgument = 3,
+  kDeadlineExceeded = 4,
   kNotFound = 5,
   kAlreadyExists = 6,
   kPermissionDenied = 7,
+  kResourceExhausted = 8,
+  kFailedPrecondition = 9,
+  kAborted = 10,
   kOutOfRange = 11,
   kUnimplemented = 12,
+  kUnavailable = 14,
 };
 
 // StatusCodeToString()
@@ -104,11 +109,16 @@ std::ostream& operator<<(std::ostream& os, const Status& x);
 BBT_MUST_USE_RESULT bool IsCancelled(const Status& status);
 BBT_MUST_USE_RESULT bool IsUnknown(const Status& status);
 BBT_MUST_USE_RESULT bool IsInvalidArgument(const Status& status);
+BBT_MUST_USE_RESULT bool IsDeadlineExceeded(const Status& status);
 BBT_MUST_USE_RESULT bool IsNotFound(const Status& status);
 BBT_MUST_USE_RESULT bool IsAlreadyExists(const Status& status);
 BBT_MUST_USE_RESULT bool IsPermissionDenied(const Status& status);
+BBT_MUST_USE_RESULT bool IsResourceExhausted(const Status& status);
+BBT_MUST_USE_RESULT bool IsFailedPrecondition(const Status& status);
+BBT_MUST_USE_RESULT bool IsAborted(const Status& status);
 BBT_MUST_USE_RESULT bool IsOutOfRange(const Status& status);
 BBT_MUST_USE_RESULT bool IsUnimplemented(const Status& status);
+BBT_MUST_USE_RESULT bool IsUnavailable(const Status& status);
 
 // These convenience functions create an `Status` object with an error
 // code as indicated by the associated function name, using the error message
@@ -117,11 +127,29 @@ BBT_MUST_USE_RESULT bool IsUnimplemented(const Status& status);
 Status CancelledError(string_view message);
 Status UnknownError(string_view message);
 Status InvalidArgumentError(string_view message);
+Status DeadlineExceededError(string_view message);
 Status NotFoundError(string_view message);
 Status AlreadyExistsError(string_view message);
 Status PermissionDeniedError(string_view message);
+Status ResourceExhaustedError(string_view message);
+Status FailedPreconditionError(string_view message);
+Status AbortedError(string_view message);
 Status OutOfRangeError(string_view message);
 Status UnimplementedError(string_view message);
+Status UnavailableError(string_view message);
+
+// ErrnoToStatusCode()
+//
+// Returns the StatusCode for `error_number`, which should be an `errno` value.
+// See https://en.cppreference.com/w/cpp/error/errno_macros and similar
+// references.
+StatusCode ErrnoToStatusCode(int error_number);
+
+// ErrnoToStatus()
+//
+// Convenience function that creates a `absl::Status` using an `error_number`,
+// which should be an `errno` value.
+Status ErrnoToStatus(int error_number, string_view message);
 
 //-------------------------------------------------------------------
 // Implementation

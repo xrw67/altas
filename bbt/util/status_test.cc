@@ -31,6 +31,8 @@ struct ErrorTest {
 constexpr ErrorTest kErrorTests[]{
     {bbt::StatusCode::kCancelled, bbt::CancelledError, bbt::IsCancelled},
     {bbt::StatusCode::kUnknown, bbt::UnknownError, bbt::IsUnknown},
+    {bbt::StatusCode::kDeadlineExceeded, bbt::DeadlineExceededError,
+     bbt::IsDeadlineExceeded},
     {bbt::StatusCode::kInvalidArgument, bbt::InvalidArgumentError,
      bbt::IsInvalidArgument},
     {bbt::StatusCode::kNotFound, bbt::NotFoundError, bbt::IsNotFound},
@@ -38,9 +40,15 @@ constexpr ErrorTest kErrorTests[]{
      bbt::IsAlreadyExists},
     {bbt::StatusCode::kPermissionDenied, bbt::PermissionDeniedError,
      bbt::IsPermissionDenied},
+    {bbt::StatusCode::kResourceExhausted, bbt::ResourceExhaustedError,
+     bbt::IsResourceExhausted},
+    {bbt::StatusCode::kFailedPrecondition, bbt::FailedPreconditionError,
+     bbt::IsFailedPrecondition},
+    {bbt::StatusCode::kAborted, bbt::AbortedError, bbt::IsAborted},
     {bbt::StatusCode::kOutOfRange, bbt::OutOfRangeError, bbt::IsOutOfRange},
     {bbt::StatusCode::kUnimplemented, bbt::UnimplementedError,
      bbt::IsUnimplemented},
+    {bbt::StatusCode::kUnavailable, bbt::UnavailableError, bbt::IsUnavailable},
 };
 
 TEST(Status, CreateAndClassify) {
@@ -49,8 +57,7 @@ TEST(Status, CreateAndClassify) {
 
     // Ensure that the creator does, in fact, create status objects with the
     // expected error code and message.
-    std::string message =
-        bbt::format("error code {} test message", test.code);
+    std::string message = bbt::format("error code {} test message", test.code);
     bbt::Status status = test.creator(message);
     EXPECT_EQ(test.code, status.code());
     EXPECT_EQ(message, status.message());
@@ -188,4 +195,23 @@ TEST(Status, InsertionOperator) {
 
   oss << st << ", " << err;
   EXPECT_EQ(oss.str(), "OK, NOT_FOUND: msg");
+}
+
+
+TEST(StatusErrno, ErrnoToStatusCode) {
+  EXPECT_EQ(bbt::ErrnoToStatusCode(0), bbt::StatusCode::kOk);
+
+  // Spot-check a few errno values.
+  EXPECT_EQ(bbt::ErrnoToStatusCode(EINVAL),
+            bbt::StatusCode::kInvalidArgument);
+  EXPECT_EQ(bbt::ErrnoToStatusCode(ENOENT), bbt::StatusCode::kNotFound);
+
+  // We'll pick a very large number so it hopefully doesn't collide to errno.
+  EXPECT_EQ(bbt::ErrnoToStatusCode(19980927), bbt::StatusCode::kUnknown);
+}
+
+TEST(StatusErrno, ErrnoToStatus) {
+  bbt::Status status = bbt::ErrnoToStatus(ENOENT, "Cannot open 'path'");
+  EXPECT_EQ(status.code(), bbt::StatusCode::kNotFound);
+  EXPECT_EQ(status.message(), "Cannot open 'path': No such file or directory");
 }

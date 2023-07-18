@@ -1,4 +1,4 @@
-add_library(bbt_util 
+add_library(bbt_util STATIC
     fs.cc
     logging.cc
     status.cc
