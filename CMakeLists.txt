@@ -55,7 +55,7 @@ add_custom_target(lcov
     '*/third_party/*' 
     '/usr/include/*'
     '*/include/bbt/util/internal/fmt/*'
-    ‘*/include/bbt/util/internal/json/*'
+    '*/include/bbt/util/internal/json/*'
 )
 
 add_custom_target(lcov_html
