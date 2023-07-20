@@ -10,12 +10,14 @@ namespace bbt {
 
 namespace {
 
-string_view GetNextToken(const char** next, const char* end, char quota) {
+std::string GetNextToken(const char** next, const char* end, char quota) {
   const char* p = *next;
   const char* start = p;
 
+  if (p >= end) return std::string();
+
   while (p != end && *p != quota) p++;
-  string_view token(start, p - start);
+  std::string token(start, p - start);
 
   *next = ++p;
   return token;
@@ -28,11 +30,17 @@ Status HttpRequest::Parse(Buffer& buffer) noexcept {
   const char* end = next + buffer.ReadableBytes();
 
   auto method = GetNextToken(&next, end, ' ');
-  if (!set_method(method.str()))
+  if (!set_method(method))
     return InvalidArgumentError(format("invalid method: {}", method));
 
   auto path = GetNextToken(&next, end, ' ');
-  set_path(path.str());
+  auto question = path.find('?');
+  if (question != path.npos) {
+    set_path(path.substr(0, question));
+    set_query(path.substr(question + 1));
+  } else {
+    set_path(path);
+  }
 
   auto version = GetNextToken(&next, end, '\r');
   if (version == string_view("HTTP/1.1"))
@@ -56,12 +64,30 @@ Status HttpRequest::Parse(Buffer& buffer) noexcept {
     auto field = header.substr(0, pos);
     auto value =
         (pos + 1 < header.size()) ? header.substr(pos + 2) : string_view();
-    set_header(field.str(), StrTrim(value).str());
+    set_header(field, StrTrim(value).str());
     next++;
   }
 
   set_body(StrTrimLeft(string_view(next, end - next)).str());
   return OkStatus();
+}
+
+void HttpRequest::ParseForm() noexcept {
+  const char* next = query_.c_str();
+  const char* end = next + query_.length();
+
+  for (;;) {
+    auto param = GetNextToken(&next, end, '&');
+    if (param.empty()) {
+      break;
+    }
+    auto sep = param.find('=');
+    if (sep == param.npos) {
+      set_form(param, "");
+    } else {
+      set_form(param.substr(0, sep), param.substr(sep + 1));
+    }
+  }
 }
 
 }  // namespace bbt

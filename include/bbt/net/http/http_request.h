@@ -11,7 +11,7 @@ namespace bbt {
 class Buffer;
 class HttpRequest final {
  public:
-  typedef std::map<std::string, std::string> HeaderMap;
+  typedef std::map<std::string, std::string> StringMap;
 
   enum Method { kInvalid, kGet, kPost, kHead, kPut, kDelete };
   enum Version { kUnknown, kHttp10, kHttp11 };
@@ -20,6 +20,7 @@ class HttpRequest final {
       : method_(HttpRequest::kInvalid), version_(HttpRequest::kUnknown) {}
 
   Status Parse(Buffer& buffer) noexcept;
+  void ParseForm() noexcept;
 
   Method method() const noexcept { return method_; }
   bool set_method(std::string method) {
@@ -45,7 +46,7 @@ class HttpRequest final {
     auto it = headers_.find(field);
     return (it != headers_.end()) ? it->second : "";
   }
-  const HeaderMap& headers() const noexcept { return headers_; }
+  const StringMap& headers() const noexcept { return headers_; }
   void set_header(std::string field, std::string value) noexcept {
     headers_[field] = value;
   }
@@ -53,12 +54,22 @@ class HttpRequest final {
   std::string body() const noexcept { return body_; }
   void set_body(std::string body) noexcept { body_ = body; }
 
+  std::string form(std::string key) const noexcept {
+    auto it = forms_.find(key);
+    return (it != forms_.end()) ? it->second : "";
+  }
+
+  void set_form(std::string key, std::string value) noexcept {
+    forms_[key] = value;
+  }
+
  private:
   Method method_;
   Version version_;
   std::string path_;
   std::string query_;
-  HeaderMap headers_;
+  StringMap forms_;  // 执行ParseForm()后才有效
+  StringMap headers_;
   std::string body_;
 };
 

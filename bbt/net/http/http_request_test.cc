@@ -58,7 +58,7 @@ TEST(HttpRequest, SetterOther) {
 
 TEST(HttpRequest, Parse) {
   const char* text =
-      "GET /index.html HTTP/1.1\r\n"
+      "GET /index.html?key1=value1&key2 HTTP/1.1\r\n"
       "Host: www.hello.com\r\n"
       "User-Agent:\r\n"
       "Accept-Encoding: \r\n"
@@ -72,13 +72,19 @@ TEST(HttpRequest, Parse) {
   auto st = request.Parse(buffer);
   ASSERT_TRUE(st) << st.ToString();
   ASSERT_EQ(request.method(), bbt::HttpRequest::kGet);
-  ASSERT_EQ(request.path(), bbt::string_view("/index.html"));
+  ASSERT_EQ(request.path(), "/index.html");
+  ASSERT_EQ(request.query(), "key1=value1&key2");
   ASSERT_EQ(request.version(), bbt::HttpRequest::kHttp11);
-  ASSERT_EQ(request.header("Host"), bbt::string_view("www.hello.com"));
-  ASSERT_EQ(request.header("User-Agent"), bbt::string_view(""));
-  ASSERT_EQ(request.header("Accept-Encoding"), bbt::string_view(""));
-  ASSERT_EQ(request.header("Accept-Encoding"), bbt::string_view(""));
-  ASSERT_EQ(request.body(), bbt::string_view("I'am Body: hello"));
+  ASSERT_EQ(request.header("Host"), "www.hello.com");
+  ASSERT_EQ(request.header("User-Agent"), "");
+  ASSERT_EQ(request.header("Accept-Encoding"), "");
+  ASSERT_EQ(request.header("Accept-Encoding"), "");
+
+  request.ParseForm();
+  ASSERT_EQ(request.form("key1"), "value1");
+  ASSERT_EQ(request.form("key2"), "");
+
+  ASSERT_EQ(request.body(), "I'am Body: hello");
 }
 
 }  // namespace

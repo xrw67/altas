@@ -19,9 +19,11 @@ class HttpResponse {
 
   explicit HttpResponse(bool close)
       : status_code_(kUnknown), close_connection_(close) {}
-      
+
+  HttpStatusCode status_code() const noexcept { return status_code_; }
   void set_status_code(HttpStatusCode code) noexcept { status_code_ = code; }
 
+  std::string status_message() const noexcept { return status_message_; }
   void set_status_message(const std::string& message) noexcept {
     status_message_ = message;
   }
@@ -36,6 +38,7 @@ class HttpResponse {
     headers_[key] = value;
   }
 
+  std::string body() const noexcept { return body_; }
   void set_body(const std::string& body) { body_ = body; }
 
   void AppendToBuffer(Buffer* output) const;
