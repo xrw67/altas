@@ -1,4 +1,4 @@
-#include "bbt/net/http/http_response.h"
+#include "bbt/net/http/response.h"
 
 #include "gtest/gtest.h"
 

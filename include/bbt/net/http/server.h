@@ -1,5 +1,5 @@
-#ifndef BBT_NET_HTTP_HTTP_SERVER_H_
-#define BBT_NET_HTTP_HTTP_SERVER_H_
+#ifndef BBT_NET_HTTP_SERVER_H_
+#define BBT_NET_HTTP_SERVER_H_
 
 #include <functional>
 
@@ -22,4 +22,4 @@ class HttpServer {
 
 }  // namespace bbt
 
-#endif  // BBT_NET_HTTP_HTTP_SERVER_H_
+#endif  // BBT_NET_HTTP_SERVER_H_
