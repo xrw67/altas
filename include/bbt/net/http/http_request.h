@@ -30,12 +30,16 @@ class HttpRequest final {
   const HeaderMap& headers() const noexcept;
   void set_header(string_view field, string_view value) noexcept;
 
+  string_view body() const noexcept;
+  void set_body(string_view body) noexcept;
+
  private:
   Method method_;
   Version version_;
   string_view path_;
   string_view query_;
   HeaderMap headers_;
+  string_view body_;
 };
 
 inline HttpRequest::Method HttpRequest::method() const noexcept {
@@ -80,6 +84,10 @@ inline string_view HttpRequest::header(string_view field) const noexcept {
 inline const HttpRequest::HeaderMap& HttpRequest::headers() const noexcept {
   return headers_;
 }
+
+inline string_view HttpRequest::body() const noexcept { return body_; }
+
+void HttpRequest::set_body(string_view body) noexcept { body_ = body; }
 
 }  // namespace bbt
 
