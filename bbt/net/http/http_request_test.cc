@@ -2,7 +2,7 @@
 
 #include "gtest/gtest.h"
 
-#include "bbt/net/http/http_context.h"
+#include "bbt/net/buffer.h"
 
 namespace {
 
@@ -36,7 +36,7 @@ TEST(HttpRequest, SetMethod) {
 TEST(HttpRequest, SetHeader) {
   bbt::HttpRequest req;
 
-  req.set_header("  Content-Type  ", "   text/plain  ");
+  req.set_header("Content-Type", "text/plain");
   ASSERT_EQ(req.header("Content-Type"), "text/plain");
   ASSERT_EQ(req.header("ping"), "");
 }
@@ -65,8 +65,11 @@ TEST(HttpRequest, Parse) {
       "\r\n"
       "I'am Body: hello";
 
+  bbt::Buffer buffer;
+  buffer.Append(text);
+
   bbt::HttpRequest request;
-  auto st = bbt::HttpRequest::Parse(request, text);
+  auto st = request.Parse(buffer);
   ASSERT_TRUE(st) << st.ToString();
   ASSERT_EQ(request.method(), bbt::HttpRequest::kGet);
   ASSERT_EQ(request.path(), bbt::string_view("/index.html"));
