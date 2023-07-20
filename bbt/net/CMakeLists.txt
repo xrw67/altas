@@ -1,6 +1,6 @@
 add_library(bbt_net 
     ipaddr.cc
-    http/http_context.cc
+    http/http_request.cc
 )
 target_link_libraries(bbt_net bbt_util)
 

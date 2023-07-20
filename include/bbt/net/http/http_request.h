@@ -3,8 +3,9 @@
 
 #include <map>
 
+#include "bbt/util/status.h"
 #include "bbt/util/string_view.h"
-#include "bbt/util/str_util.h"
+
 
 namespace bbt {
 
@@ -15,7 +16,10 @@ class HttpRequest final {
   enum Method { kInvalid, kGet, kPost, kHead, kPut, kDelete };
   enum Version { kUnknown, kHttp10, kHttp11 };
 
-  HttpRequest() noexcept : method_(kInvalid), version_(kUnknown) {}
+  HttpRequest() noexcept;
+  ~HttpRequest() noexcept;
+
+  static Status Parse(HttpRequest& request, string_view content) noexcept;
 
   Method method() const noexcept;
   bool set_method(string_view method);
@@ -41,53 +45,6 @@ class HttpRequest final {
   HeaderMap headers_;
   string_view body_;
 };
-
-inline HttpRequest::Method HttpRequest::method() const noexcept {
-  return method_;
-}
-
-inline bool HttpRequest::set_method(string_view method) {
-  method_ = (method == "GET")      ? kGet
-            : (method == "POST")   ? kPost
-            : (method == "HEAD")   ? kHead
-            : (method == "PUT")    ? kPut
-            : (method == "DELETE") ? kDelete
-                                   : kInvalid;
-  return method_ != kInvalid;
-}
-
-inline HttpRequest::Version HttpRequest::version() const noexcept {
-  return version_;
-}
-
-inline void HttpRequest::set_version(Version version) noexcept {
-  version_ = version;
-}
-
-inline string_view HttpRequest::path() const noexcept { return path_; }
-inline void HttpRequest::set_path(string_view path) noexcept { path_ = path; }
-inline string_view HttpRequest::query() const noexcept { return query_; }
-inline void HttpRequest::set_query(string_view query) noexcept {
-  query_ = query;
-}
-
-inline void HttpRequest::set_header(string_view field,
-                                    string_view value) noexcept {
-  headers_[StrTrim(field)] = StrTrim(value);
-}
-
-inline string_view HttpRequest::header(string_view field) const noexcept {
-  auto it = headers_.find(field);
-  return (it != headers_.end()) ? it->second : string_view();
-}
-
-inline const HttpRequest::HeaderMap& HttpRequest::headers() const noexcept {
-  return headers_;
-}
-
-inline string_view HttpRequest::body() const noexcept { return body_; }
-
-void HttpRequest::set_body(string_view body) noexcept { body_ = body; }
 
 }  // namespace bbt
 

@@ -65,11 +65,9 @@ TEST(HttpRequest, Parse) {
       "\r\n"
       "I'am Body: hello";
 
-  bbt::HttpContext context;
-  auto st = context.ParseRequest(text);
+  bbt::HttpRequest request;
+  auto st = bbt::HttpRequest::Parse(request, text);
   ASSERT_TRUE(st) << st.ToString();
-
-  auto request = context.request();
   ASSERT_EQ(request.method(), bbt::HttpRequest::kGet);
   ASSERT_EQ(request.path(), bbt::string_view("/index.html"));
   ASSERT_EQ(request.version(), bbt::HttpRequest::kHttp11);
@@ -77,7 +75,6 @@ TEST(HttpRequest, Parse) {
   ASSERT_EQ(request.header("User-Agent"), bbt::string_view(""));
   ASSERT_EQ(request.header("Accept-Encoding"), bbt::string_view(""));
   ASSERT_EQ(request.header("Accept-Encoding"), bbt::string_view(""));
-
   ASSERT_EQ(request.body(), bbt::string_view("I'am Body: hello"));
 }
 
