@@ -1,8 +1,10 @@
 #ifndef BBT_UTIL_LOG_H_
 #define BBT_UTIL_LOG_H_
 
+#include <string>
 #include "bbt/util/attributes.h"
 #include "bbt/util/optimization.h"
+#include "bbt/util/fmt.h"
 
 //
 // 高层次的打印，可以使用各种花样
@@ -16,11 +18,11 @@
                                  __VA_ARGS__);                             \
   } while (0)
 
-#define BBT_CHECK(condition, message)                             \
-  do {                                                            \
-    if (BBT_PREDICT_FALSE(!(condition))) {                        \
-      BBT_LOG(FATAL, "Check %s failed: %s", #condition, message); \
-    }                                                             \
+#define BBT_CHECK(condition, message)                                 \
+  do {                                                                \
+    if (BBT_PREDICT_FALSE(!(condition))) {                            \
+      BBT_LOG(FATAL, "Check {:s} failed: {:s}", #condition, message); \
+    }                                                                 \
   } while (0)
 
 //
@@ -38,7 +40,7 @@
 #define BBT_RAW_CHECK(condition, message)                             \
   do {                                                                \
     if (BBT_PREDICT_FALSE(!(condition))) {                            \
-      BBT_RAW_LOG(FATAL, "Check %s failed: %s", #condition, message); \
+      BBT_RAW_LOG(FATAL, "Check {:s} failed: {:s}", #condition, message); \
     }                                                                 \
   } while (0)
 
@@ -73,7 +75,7 @@ constexpr const char* LogSeverityName(LogSeverity s) {
 
 // Internal logging function for BBT_LOG to dispatch to.
 using InternalLogFunction = void (*)(LogSeverity severity, const char* file,
-                                     int line, const char* message, int size);
+                                     int line, const std::string& message);
 
 void RegisterInternalLogFunction(InternalLogFunction func);
 
@@ -88,15 +90,28 @@ constexpr const char* Basename(const char* fname, int offset) {
              : Basename(fname, offset - 1);
 }
 
+void CallRawLogHandler(LogSeverity severity, const char* file, int line,
+                       const std::string& message);
+void CallLogHandler(LogSeverity severity, const char* file, int line,
+                    const std::string& message);
+
 // Helper function to implement ABSL_RAW_LOG
 // Logs format... at "severity" level, reporting it
 // as called from file:line.
 // This does not allocate memory or acquire locks.
+template <typename... T>
 void RawLog(LogSeverity severity, const char* file, int line,
-            const char* format, ...) BBT_PRINTF_ATTRIBUTE(4, 5);
+            format_string<T...> fmt, T&&... args) {
+  auto message = vformat(fmt, fmt::make_format_args(args...));
+  CallRawLogHandler(severity, file, line, message);
+}
 
-void Log(LogSeverity severity, const char* file, int line, const char* format,
-         ...);
+template <typename... T>
+void Log(LogSeverity severity, const char* file, int line,
+         format_string<T...> fmt, T&&... args) {
+  auto message = vformat(fmt, fmt::make_format_args(args...));
+  CallLogHandler(severity, file, line, message);
+}
 
 }  // namespace logging_internal
 }  // namespace bbt

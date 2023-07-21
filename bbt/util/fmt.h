@@ -57,6 +57,8 @@ struct fmt::formatter<bbt::Status> {
 namespace bbt {
 
 using fmt::format;
+using fmt::vformat;
+using fmt::format_string;
 using fmt::format_error;
 using fmt::print;
 using fmt::println;

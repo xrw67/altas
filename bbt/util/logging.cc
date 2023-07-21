@@ -1,15 +1,13 @@
 #include "bbt/util/logging.h"
 
 #include <cstdio>
-#include <cstdarg>
 
 namespace bbt {
 
 namespace {
-constexpr int kLogBufSize = 3000;
 
 void null_log_func(LogSeverity severity, const char* file, int line,
-                   const char* message, int size) {
+                   const std::string& message) {
   // nothing
   return;
 }
@@ -24,29 +22,14 @@ void RegisterInternalLogFunction(InternalLogFunction func) {
 
 namespace logging_internal {
 
-void RawLogVA(LogSeverity severity, const char* file, int line,
-              const char* format, va_list ap) {
-  char buf[kLogBufSize];
-  int size = sizeof(buf);
-
-  int n = vsnprintf(buf, size, format, ap);
-  internal_log_function(severity, file, line, buf, n);
+void CallRawLogHandler(LogSeverity severity, const char* file, int line,
+                       const std::string& message) {
+  internal_log_function(severity, file, line, message);
 }
 
-void RawLog(LogSeverity severity, const char* file, int line,
-            const char* format, ...) {
-  va_list ap;
-  va_start(ap, format);
-  RawLogVA(severity, file, line, format, ap);
-  va_end(ap);
-}
-
-void Log(LogSeverity severity, const char* file, int line, const char* format,
-         ...) {
-  va_list ap;
-  va_start(ap, format);
-  RawLogVA(severity, file, line, format, ap);
-  va_end(ap);
+void CallLogHandler(LogSeverity severity, const char* file, int line,
+                    const std::string& message) {
+  internal_log_function(severity, file, line, message);
 }
 
 }  // namespace logging_internal

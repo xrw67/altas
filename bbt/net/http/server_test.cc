@@ -29,33 +29,30 @@ TEST(HttpServer, nothing) {
       resp->set_body(std::to_string(sum));
     } else {
       resp->set_status_code(bbt::HttpResponse::k404NotFound);
+      resp->set_status_message("Not Found");
+      resp->set_close_connection(true);
     }
   });
   svr.Start();
 
-{
-  bbt::Buffer buffer;
-  bbt::HttpRequest request;
-  bbt::HttpResponse response(true);
+#define CHECK(req_text, resp_code, resp_body)     \
+  do {                                            \
+    bbt::Buffer buffer;                           \
+    bbt::HttpRequest request;                     \
+    bbt::HttpResponse response(true);             \
+    buffer.Append(req_text);                      \
+    ASSERT_TRUE(request.Parse(buffer));           \
+    svr.Call(request, &response);                 \
+    ASSERT_EQ(response.status_code(), resp_code); \
+    ASSERT_EQ(response.body(), resp_body);        \
+  } while (0)
 
-  buffer.Append("GET /math/add?a=100&b=200 HTTP/1.1\r\n");
-  ASSERT_TRUE(request.Parse(buffer));
-  svr.Call(request, &response);
-  ASSERT_EQ(response.status_code(), bbt::HttpResponse::k200Ok);
-  ASSERT_EQ(response.body(), "300");
-}
+  CHECK("GET /math/add?a=100&b=200 HTTP/1.1\r\n", bbt::HttpResponse::k200Ok,
+        "300");
 
-{
-  bbt::Buffer buffer;
-  bbt::HttpRequest request;
-  bbt::HttpResponse response(true);
+  CHECK("GET /math/dec?a=100&b=200 HTTP/1.1\r\n",
+        bbt::HttpResponse::k404NotFound, "");
 
-  buffer.Append("GET /math/dec?a=100&b=200 HTTP/1.1\r\n");
-  ASSERT_TRUE(request.Parse(buffer));
-  svr.Call(request, &response);
-  ASSERT_EQ(response.status_code(), bbt::HttpResponse::k404NotFound);
-}
-
-}
+}  // namespace
 
 }  // namespace

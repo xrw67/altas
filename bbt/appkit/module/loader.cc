@@ -21,8 +21,7 @@ class DllLoader : public ModuleLoader {
   ~DllLoader() {
     for (auto h : handles_) {
       if (::dlclose(h.second)) {
-        BBT_RAW_LOG(ERROR, "unload module %s failed: %s", h.first.c_str(),
-                    dlerror());
+        BBT_RAW_LOG(ERROR, "unload module {} failed: {}", h.first, dlerror());
       }
     }
   }
@@ -47,8 +46,8 @@ class DllLoader : public ModuleLoader {
         (PBBT_MODULE_HEADER)::dlsym(handle, "bbt_module_header");
     if (!hdr) {
       ::dlclose(handle);
-      return CancelledError(format(
-          "load module {} failed: no symbol bbt_module_header", name));
+      return CancelledError(
+          format("load module {} failed: no symbol bbt_module_header", name));
     }
 
     handles_[name] = handle;
