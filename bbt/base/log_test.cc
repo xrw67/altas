@@ -17,13 +17,13 @@ TEST(Logging, Print) {
   RegisterInternalLogFunction(mock_log_func);
 
   BBT_LOG(DEBUG, "it is {} msg", "debug");
-  ASSERT_STREQ(msg_buffer, "[DEBUG logging_test.cc] it is debug msg");
+  ASSERT_STREQ(msg_buffer, "[DEBUG log_test.cc] it is debug msg");
   BBT_LOG(INFO, "it is {} msg", "info");
-  ASSERT_STREQ(msg_buffer, "[INFO logging_test.cc] it is info msg");
+  ASSERT_STREQ(msg_buffer, "[INFO log_test.cc] it is info msg");
   BBT_LOG(WARNING, "it is {} msg", "warning");
-  ASSERT_STREQ(msg_buffer, "[WARNING logging_test.cc] it is warning msg");
+  ASSERT_STREQ(msg_buffer, "[WARNING log_test.cc] it is warning msg");
   BBT_LOG(ERROR, "it is {} msg", "error");
-  ASSERT_STREQ(msg_buffer, "[ERROR logging_test.cc] it is error msg");
+  ASSERT_STREQ(msg_buffer, "[ERROR log_test.cc] it is error msg");
 }
 
 }  // namespace bbt
