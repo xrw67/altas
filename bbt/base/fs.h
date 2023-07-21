@@ -1,11 +1,11 @@
-#ifndef BBT_UTIL_FS_H_
-#define BBT_UTIL_FS_H_
+#ifndef BBT_BASE_FS_H_
+#define BBT_BASE_FS_H_
 
 #include <string>
 #include <vector>
 
-#include "bbt/util/status.h"
-#include "bbt/util/string_view.h"
+#include "bbt/base/status.h"
+#include "bbt/base/string_view.h"
 
 namespace bbt {
 
@@ -48,4 +48,4 @@ bool AppendFile(const std::string& filename, const std::string& data);
 std::vector<std::string> GetDirectoryChildren(const std::string& path);
 
 }  // namespace bbt
-#endif  // BBT_UTIL_FS_H_
+#endif  // BBT_BASE_FS_H_

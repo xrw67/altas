@@ -4,7 +4,7 @@
 #include <vector>
 #include <algorithm>
 
-#include "bbt/util/string_view.h"
+#include "bbt/base/string_view.h"
 
 namespace bbt {
 
@@ -117,4 +117,4 @@ class Buffer {
 
 }  // namespace bbt
 
-#endif  // BBT_UTIL_BUFFER_H_
+#endif  // BBT_BASE_BUFFER_H_

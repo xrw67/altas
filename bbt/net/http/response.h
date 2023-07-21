@@ -4,7 +4,7 @@
 #include <map>
 #include <string>
 
-#include "bbt/util/status.h"
+#include "bbt/base/status.h"
 
 namespace bbt {
 

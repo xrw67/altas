@@ -1,7 +1,7 @@
-#include "bbt/util/logging.h"
+#include "bbt/base/log.h"
 #include "gmock/gmock.h"
 
-#include "bbt/util/fmt.h"
+#include "bbt/base/fmt.h"
 
 namespace bbt {
 

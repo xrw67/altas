@@ -1,7 +1,7 @@
-#ifndef BBT_UTIL_ATTRIBUTES_H_
-#define BBT_UTIL_ATTRIBUTES_H_
+#ifndef BBT_BASE_ATTRIBUTES_H_
+#define BBT_BASE_ATTRIBUTES_H_
 
-#include "bbt/util/config.h"
+#include "bbt/base/config.h"
 
 // BBT_HAVE_ATTRIBUTE
 //
@@ -59,7 +59,7 @@
 #define BBT_PRINTF_ATTRIBUTE(string_index, first_to_check)
 #define BBT_SCANF_ATTRIBUTE(string_index, first_to_check)
 #endif
-
+ 
 // BBT_ATTRIBUTE_ALWAYS_INLINE
 // BBT_ATTRIBUTE_NOINLINE
 //
@@ -143,4 +143,4 @@
 #define BBT_ATTRIBUTE_LIFETIME_BOUND
 #endif
 
-#endif  // BBT_UTIL_ATTRIBUTES_H_
+#endif  // BBT_BASE_ATTRIBUTES_H_

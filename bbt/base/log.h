@@ -1,10 +1,10 @@
-#ifndef BBT_UTIL_LOG_H_
-#define BBT_UTIL_LOG_H_
+#ifndef BBT_BASE_LOG_H_
+#define BBT_BASE_LOG_H_
 
 #include <string>
-#include "bbt/util/attributes.h"
-#include "bbt/util/optimization.h"
-#include "bbt/util/fmt.h"
+#include "bbt/base/attributes.h"
+#include "bbt/base/optimization.h"
+#include "bbt/base/fmt.h"
 
 //
 // 高层次的打印，可以使用各种花样
@@ -116,4 +116,4 @@ void Log(LogSeverity severity, const char* file, int line,
 }  // namespace logging_internal
 }  // namespace bbt
 
-#endif  // BBT_UTIL_LOG_H_
+#endif  // BBT_BASE_LOG_H_

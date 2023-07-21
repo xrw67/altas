@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "bbt/util/json.h"
-#include "bbt/util/string_view.h"
+#include "bbt/base/json.h"
+#include "bbt/base/string_view.h"
 
 namespace {
 

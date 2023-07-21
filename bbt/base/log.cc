@@ -1,4 +1,4 @@
-#include "bbt/util/logging.h"
+#include "bbt/base/log.h"
 
 #include <cstdio>
 

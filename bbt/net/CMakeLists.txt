@@ -5,7 +5,7 @@ add_library(bbt_net
     http/response.cc
     http/server.cc
 )
-target_link_libraries(bbt_net bbt_util)
+target_link_libraries(bbt_net bbt_base)
 
 add_executable(bbt_net_test
     buffer_test.cc

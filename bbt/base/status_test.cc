@@ -1,11 +1,11 @@
-#include "bbt/util/status.h"
+#include "bbt/base/status.h"
 
 #include <utility>
 
 #include "gmock/gmock.h"
 
-#include "bbt/util/fmt.h"
-#include "bbt/util/str_util.h"
+#include "bbt/base/fmt.h"
+#include "bbt/base/str_util.h"
 
 using namespace bbt;
 

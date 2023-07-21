@@ -1,4 +1,4 @@
-#include "bbt/util/status.h"
+#include "bbt/base/status.h"
 
 #include <cstring>
 #include <cerrno>
@@ -8,7 +8,7 @@
 #include <ostream>
 #include <vector>
 
-#include "bbt/util/fmt.h"
+#include "bbt/base/fmt.h"
 
 namespace bbt {
 

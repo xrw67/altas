@@ -2,8 +2,8 @@
 
 #include <cctype>
 
-#include "bbt/util/fmt.h"
-#include "bbt/util/str_util.h"
+#include "bbt/base/fmt.h"
+#include "bbt/base/str_util.h"
 #include "bbt/net/buffer.h"
 
 namespace bbt {

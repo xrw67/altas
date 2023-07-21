@@ -1,5 +1,5 @@
 add_library(mod_debugger debugger.cc)
-target_link_libraries(mod_debugger bbt_util bbt_appkit)
+target_link_libraries(mod_debugger bbt_base bbt_appkit)
 
 add_executable(bbt_mod_debugger_test
     debugger_test.cc

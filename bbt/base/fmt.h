@@ -6,8 +6,8 @@
  * Format String Syntax: https://fmt.dev/latest/syntax.html
  *
  */
-#ifndef BBT_UTIL_FMT_H_
-#define BBT_UTIL_FMT_H_
+#ifndef BBT_BASE_FMT_H_
+#define BBT_BASE_FMT_H_
 
 #define FMT_HEADER_ONLY 1
 
@@ -65,4 +65,4 @@ using fmt::println;
 
 }  // namespace bbt
 
-#endif  // BBT_UTIL_FMT_H_
+#endif  // BBT_BASE_FMT_H_

@@ -1,10 +1,10 @@
-#ifndef BBT_UTIL_STR_UTIL_H_
-#define BBT_UTIL_STR_UTIL_H_
+#ifndef BBT_BASE_STR_UTIL_H_
+#define BBT_BASE_STR_UTIL_H_
 
 #include <vector>
 #include <string>
 
-#include "bbt/util/string_view.h"
+#include "bbt/base/string_view.h"
 
 namespace bbt {
 
@@ -89,4 +89,4 @@ std::string StrReplace(std::string& str, const std::string& from,
                        const std::string& to);
 }  // namespace bbt
 
-#endif  // BBT_UTIL_STR_UTIL_H_
+#endif  // BBT_BASE_STR_UTIL_H_

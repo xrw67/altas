@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "bbt/util/fmt.h"
+#include "bbt/base/fmt.h"
 
 namespace {
 

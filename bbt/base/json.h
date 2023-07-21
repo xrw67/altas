@@ -3,8 +3,8 @@
  * https://github.com/nlohmann/json
  */
 
-#ifndef BBT_UTIL_JSON_H_
-#define BBT_UTIL_JSON_H_
+#ifndef BBT_BASE_JSON_H_
+#define BBT_BASE_JSON_H_
 
 #include "internal/json/json.hpp"
 
@@ -14,4 +14,4 @@ using nlohmann::json;
 
 }
 
-#endif  // BBT_UTIL_JSON_H_
+#endif  // BBT_BASE_JSON_H_

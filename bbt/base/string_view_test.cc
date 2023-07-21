@@ -1,4 +1,4 @@
-#include "bbt/util/string_view.h"
+#include "bbt/base/string_view.h"
 
 #include <stdlib.h>
 #include <iomanip>
@@ -13,7 +13,7 @@
 
 #include "gmock/gmock.h"
 
-#include "bbt/util/config.h"
+#include "bbt/base/config.h"
 
 namespace {
 

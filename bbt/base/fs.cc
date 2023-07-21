@@ -1,4 +1,4 @@
-#include "bbt/util/fs.h"
+#include "bbt/base/fs.h"
 
 #include <cstring>
 #include <stdarg.h>
@@ -21,7 +21,7 @@
 #include <fcntl.h>
 #endif
 
-#include "bbt/util/str_util.h"
+#include "bbt/base/str_util.h"
 
 namespace bbt {
 
