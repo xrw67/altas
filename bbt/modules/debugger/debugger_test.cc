@@ -1,4 +1,4 @@
-#include "bbt/modules/debugger.h"
+#include "bbt/modules/debugger/debugger.h"
 
 #include <map>
 #include <string>

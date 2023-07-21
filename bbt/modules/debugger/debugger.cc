@@ -1,9 +1,9 @@
-#include "bbt/appkit/module.h"
+#include "bbt/modules/debugger/debugger.h"
 
 #include <map>
 
 #include "bbt/util/logging.h"
-#include "bbt/modules/debugger.h"
+#include "bbt/appkit/module.h"
 
 namespace bbt {
 class DebuggerImpl : public Debugger {

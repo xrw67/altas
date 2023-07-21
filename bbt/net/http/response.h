@@ -4,6 +4,8 @@
 #include <map>
 #include <string>
 
+#include "bbt/util/status.h"
+
 namespace bbt {
 
 class Buffer;

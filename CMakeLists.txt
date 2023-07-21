@@ -31,9 +31,9 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -fPIC -std=c++11 -Wall  -O0 -g --c
 add_definitions(-DBBT_OPTION_HARDENED=0)
 
 include_directories(
+    ${PROJECT_SOURCE_DIR}
     ${THIRD_PARTY_DIR}/googletest-1.8.1/googlemock/include
     ${THIRD_PARTY_DIR}/googletest-1.8.1/googletest/include
-    ${PROJECT_SOURCE_DIR}/include
 )
 
 enable_testing()
