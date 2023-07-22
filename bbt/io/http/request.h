@@ -1,5 +1,5 @@
-#ifndef BBT_NET_HTTP_REQUEST_H_
-#define BBT_NET_HTTP_REQUEST_H_
+#ifndef BBT_IO_HTTP_REQUEST_H_
+#define BBT_IO_HTTP_REQUEST_H_
 
 #include <map>
 #include <string>
@@ -75,4 +75,4 @@ class HttpRequest final {
 
 }  // namespace bbt
 
-#endif  // BBT_NET_HTTP_REQUEST_H_
+#endif  // BBT_IO_HTTP_REQUEST_H_

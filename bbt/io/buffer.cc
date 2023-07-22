@@ -1,4 +1,4 @@
-#include "bbt/net/buffer.h"
+#include "bbt/io/buffer.h"
 
 namespace bbt {
 

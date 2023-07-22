@@ -1,10 +1,10 @@
-#include "bbt/net/http/request.h"
+#include "bbt/io/http/request.h"
 
 #include <cctype>
 
 #include "bbt/base/fmt.h"
 #include "bbt/base/str_util.h"
-#include "bbt/net/buffer.h"
+#include "bbt/io/buffer.h"
 
 namespace bbt {
 

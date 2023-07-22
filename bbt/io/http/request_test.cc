@@ -1,8 +1,8 @@
-#include "bbt/net/http/request.h"
+#include "bbt/io/http/request.h"
 
 #include "gtest/gtest.h"
 
-#include "bbt/net/buffer.h"
+#include "bbt/io/buffer.h"
 
 namespace {
 

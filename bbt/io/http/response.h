@@ -1,5 +1,5 @@
-#ifndef BBT_NET_HTTP_RESPONSE_H_
-#define BBT_NET_HTTP_RESPONSE_H_
+#ifndef BBT_IO_HTTP_RESPONSE_H_
+#define BBT_IO_HTTP_RESPONSE_H_
 
 #include <map>
 #include <string>
@@ -55,4 +55,4 @@ class HttpResponse {
 
 }  // namespace bbt
 
-#endif  // BBT_NET_HTTP_RESPONSE_H_
+#endif  // BBT_IO_HTTP_RESPONSE_H_

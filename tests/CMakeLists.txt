@@ -5,7 +5,7 @@ target_link_libraries(bbt_tests
     gmock 
     gmock_main
     bbt_base 
-    bbt_net 
+    bbt_io 
     bbt_appkit
     )
 add_test(NAME bbt_integration_test COMMAND bbt_tests)

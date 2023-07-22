@@ -1,9 +1,9 @@
 #include "gtest/gtest.h"
 
-#include "bbt/net/buffer.h"
-#include "bbt/net/http/request.h"
-#include "bbt/net/http/response.h"
-#include "bbt/net/http/server.h"
+#include "bbt/io/buffer.h"
+#include "bbt/io/http/request.h"
+#include "bbt/io/http/response.h"
+#include "bbt/io/http/server.h"
 
 namespace {
 

@@ -1,5 +1,5 @@
-#ifndef BBT_NET_BUFFER_H_
-#define BBT_NET_BUFFER_H_
+#ifndef BBT_IO_BUFFER_H_
+#define BBT_IO_BUFFER_H_
 
 #include <vector>
 #include <algorithm>

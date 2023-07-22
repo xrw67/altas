@@ -1,6 +1,6 @@
-#include "bbt/net/http/response.h"
+#include "bbt/io/http/response.h"
 
-#include "bbt/net/buffer.h"
+#include "bbt/io/buffer.h"
 
 namespace bbt {
 
