@@ -34,6 +34,7 @@ include_directories(
     ${PROJECT_SOURCE_DIR}
     ${THIRD_PARTY_DIR}/googletest-1.8.1/googlemock/include
     ${THIRD_PARTY_DIR}/googletest-1.8.1/googletest/include
+    ${THIRD_PARTY_DIR}/asio-1.28.0/include
 )
 
 enable_testing()
@@ -63,5 +64,7 @@ add_custom_target(lcov_html
 )
 
 if(BBT_BUILD_EXAMPLES)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/examples)
     add_subdirectory(examples)
+    add_subdirectory(${THIRD_PARTY_DIR}/asio-1.28.0/src/examples)
 endif()
