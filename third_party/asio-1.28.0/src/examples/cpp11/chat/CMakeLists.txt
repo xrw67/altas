@@ -1,0 +1,2 @@
+add_executable(asio_chat_client chat_client.cpp)
+add_executable(asio_chat_server chat_server.cpp)
