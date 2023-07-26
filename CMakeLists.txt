@@ -18,10 +18,6 @@ option(BBT_BUILD_EXAMPLES "Build samples" ON)
 
 set(THIRD_PARTY_DIR ${PROJECT_SOURCE_DIR}/third_party)
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -Wall")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -std=c++11 -Wall")
 
@@ -32,14 +28,14 @@ add_definitions(-DBBT_OPTION_HARDENED=0)
 
 include_directories(
     ${PROJECT_SOURCE_DIR}
-    ${THIRD_PARTY_DIR}/googletest-1.8.1/googlemock/include
-    ${THIRD_PARTY_DIR}/googletest-1.8.1/googletest/include
+    ${THIRD_PARTY_DIR}/googletest-1.12.1/googlemock/include
+    ${THIRD_PARTY_DIR}/googletest-1.12.1/googletest/include
     ${THIRD_PARTY_DIR}/asio-1.28.0/include
 )
 
 enable_testing()
 
-add_subdirectory(${THIRD_PARTY_DIR}/googletest-1.8.1)
+add_subdirectory(${THIRD_PARTY_DIR}/googletest-1.12.1)
 add_subdirectory(bbt)
 add_subdirectory(tests)
 
@@ -64,7 +60,6 @@ add_custom_target(lcov_html
 )
 
 if(BBT_BUILD_EXAMPLES)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/examples)
     add_subdirectory(examples)
     add_subdirectory(${THIRD_PARTY_DIR}/asio-1.28.0/src/examples)
 endif()
