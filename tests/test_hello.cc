@@ -6,11 +6,11 @@ using namespace bbt;
 namespace {
 
 struct DB {
-  virtual void Query(const char* sql) = 0;
+  virtual int Query(const char* sql) = 0;
 };
 
 struct MockDB : public DB {
-  MOCK_METHOD(void, Query, (const char* sql), (override));
+  MOCK_METHOD(int, Query, (const char* sql), (override));
 };
 
 struct DBClient {
@@ -26,6 +26,7 @@ using ::testing::AtLeast;
 TEST(MockTest, Example) {
   MockDB mock;
   DBClient client(&mock);
+
 
   EXPECT_CALL(mock, Query("SELECT * FROM t1;")).Times(AtLeast(1));
 

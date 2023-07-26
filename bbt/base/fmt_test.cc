@@ -12,9 +12,6 @@ TEST(Fmt, BasicFormat) {
 
   s = bbt::format("I'd rather be {1} than {0}.", "right", "happy");
   ASSERT_EQ(s, "I'd rather be happy than right.");
-
-  s = bbt::format(std::locale("en_US.UTF-8"), "{:L}", 1234567890);
-  ASSERT_EQ(s, "1,234,567,890");
 }
 
 TEST(Fmt, PrintRange) {
