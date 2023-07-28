@@ -4,11 +4,12 @@ add_executable(todo_server
 )
 target_link_libraries(todo_server bbt_base bbt_appkit)
 
-add_executable(todo_client
-    client.cc
+add_executable(todo
+    core.cc
+    todo.cc
 )
 
-target_link_libraries(todo_client bbt_base bbt_appkit)
+target_link_libraries(todo bbt_base bbt_appkit)
 
 
 

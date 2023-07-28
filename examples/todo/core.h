@@ -11,18 +11,32 @@
 
 namespace todo {
 
-class Data {
- public:
-  struct Item {
-    int id;
-    std::string text;
-    bbt::Timestamp update_at;
-  };
+struct Item {
+  int id;
+  std::string text;
+  bbt::Timestamp update_at;
+};
 
 typedef std::shared_ptr<Item> ItemPtr;
-  typedef std::list<ItemPtr> ItemList;
+typedef std::list<ItemPtr> ItemList;
 
+class Repository {
+ public:
+  virtual bbt::Status LoadAllItems(ItemList* items, int* id_max) = 0;
+  virtual bbt::Status SaveAllItems(const ItemList& items) = 0;
+
+ protected:
+  virtual ~Repository() {}
+};
+
+Repository* CreateFileRepository(bbt::string_view filename);
+
+class Data {
+ public:
   Data() : next_id_(0) {}
+
+  void set_repository(Repository* repository);
+
   bbt::Status Add(bbt::string_view text, int* id);
   bbt::Status Delete(int id);
   bbt::Status Update(int id, bbt::string_view text);
@@ -33,8 +47,8 @@ typedef std::shared_ptr<Item> ItemPtr;
  private:
   int GetNextID();
   ItemPtr Find(int id);
-  bbt::Status Insert(int id, bbt::string_view text);
 
+  Repository* repository_;
   std::atomic_int next_id_;
   ItemList items_;
 };

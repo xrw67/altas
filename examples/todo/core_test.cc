@@ -4,26 +4,43 @@
 
 namespace {
 
-//
-// ToDo Test
-//
-// MemoryData
+struct MockRepository : public todo::Repository {
+  bbt::Status LoadAllItems(todo::ItemList* items, int* id_max) {
+    return bbt::OkStatus();
+  }
 
-TEST(TodoData, should_not_add_empty_item) {
+  bbt::Status SaveAllItems(const todo::ItemList& items) {
+    return bbt::OkStatus();
+  }
+};
+
+struct TodoDataTest : public ::testing::Test {
+  MockRepository repo;
   todo::Data data;
+
+  void SetUp()
+  {
+    data.set_repository(&repo);
+  }
+
+  void TearDown()
+  {
+
+  }
+};
+
+TEST_F(TodoDataTest, should_not_add_empty_item) {
   int id;
   ASSERT_EQ(data.Add("", &id).code(), bbt::StatusCode::kInvalidArgument);
 }
 
-TEST(TodoData, should_add_normal_item) {
-  todo::Data data;
+TEST_F(TodoDataTest, should_add_normal_item) {
   int id = 0;
   ASSERT_TRUE(data.Add("My first item", &id));
   ASSERT_EQ(id, 1);
 }
 
-TEST(TodoData, should_add_repeat_item) {
-  todo::Data data;
+TEST_F(TodoDataTest, should_add_repeat_item) {
   int id1 = 0;
   int id2 = 0;
   ASSERT_TRUE(data.Add("My first item", &id1));
@@ -32,8 +49,7 @@ TEST(TodoData, should_add_repeat_item) {
   ASSERT_EQ(id2, 2);
 }
 
-TEST(TodoData, should_list_items) {
-  todo::Data data;
+TEST_F(TodoDataTest, should_list_items) {
   int id1 = 0;
   int id2 = 0;
   ASSERT_TRUE(data.Add("My first item", &id1));
@@ -57,8 +73,7 @@ TEST(TodoData, should_list_items) {
   }
 }
 
-TEST(TodoData, should_show_specified_item) {
-  todo::Data data;
+TEST_F(TodoDataTest, should_show_specified_item) {
   int id = 0;
   ASSERT_TRUE(data.Add("My first item", &id));
 
@@ -70,8 +85,7 @@ TEST(TodoData, should_show_specified_item) {
   ASSERT_FALSE(item);
 }
 
-TEST(TodoData, should_delete_item) {
-  todo::Data data;
+TEST_F(TodoDataTest, should_delete_item) {
   int id1 = 0;
   int id2 = 0;
   ASSERT_TRUE(data.Add("My first item", &id1));
@@ -86,8 +100,7 @@ TEST(TodoData, should_delete_item) {
   ASSERT_EQ(data.items().size(), 0);
 }
 
-TEST(TodoData, should_update_item) {
-  todo::Data data;
+TEST_F(TodoDataTest, should_update_item) {
   int id = 0;
   ASSERT_TRUE(data.Add("My first item", &id));
 
