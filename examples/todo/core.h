@@ -33,7 +33,7 @@ Repository* CreateFileRepository(bbt::string_view filename);
 
 class Data {
  public:
-  Data() : next_id_(0) {}
+  Data() : repository_(nullptr), next_id_(0) {}
 
   void set_repository(Repository* repository);
 

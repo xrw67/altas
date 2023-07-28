@@ -12,7 +12,7 @@ void Data::set_repository(Repository* repository) {
   if (repository_) {
     int id_max = 0;
     repository_->LoadAllItems(&items_, &id_max);
-    next_id_ = id_max;
+    next_id_ = id_max + 1;
   }
 }
 
@@ -69,8 +69,8 @@ const ItemPtr Data::Show(int id) const {
 }
 
 int Data::GetNextID() {
-  int id = next_id_.fetch_add(1) + 1;
-  if (id >= 0) id = next_id_.fetch_add(1);
+  int id = next_id_.fetch_add(1);
+  if (id <= 0) id = next_id_.fetch_add(1);
 
   return id;
 }
