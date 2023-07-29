@@ -8,8 +8,7 @@ namespace {
 
 void null_log_func(LogSeverity severity, const char* file, int line,
                    const std::string& message) {
-  // nothing
-  return;
+  bbt::println("[{} {}:{}] {}", LogSeverityName(severity), file, line, message);
 }
 
 InternalLogFunction internal_log_function = null_log_func;
