@@ -1,11 +1,12 @@
 #bbt_http
 add_library(bbt_http
+    client.cc
     server.cc
     connection.cc
     connection_manager.cc
     request_parser.cc
     request_handler.cc
-    reply.cc
+    response.cc
 )
 target_link_libraries(bbt_http bbt_base)
 
@@ -14,3 +15,11 @@ add_executable(bbt_http_server_example
     server_example.cc
 )
 target_link_libraries(bbt_http_server_example bbt_http)
+
+
+
+# bbt_http_client_example
+add_executable(bbt_http_client_example
+    client_example.cc
+)
+target_link_libraries(bbt_http_client_example bbt_http)

@@ -15,11 +15,11 @@ namespace bbt {
 namespace http {
 
 struct Request;
-struct Reply;
+struct Response;
 
 class Server {
  public:
-  typedef std::function<void(const Request&, Reply*)> Handler;
+  typedef std::function<void(const Request&, Response*)> Handler;
 
   Server();
   ~Server();

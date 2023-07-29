@@ -1,5 +1,5 @@
-#ifndef BBT_HTTP_REPLY_H_
-#define BBT_HTTP_REPLY_H_
+#ifndef BBT_HTTP_RESPONSE_H_
+#define BBT_HTTP_RESPONSE_H_
 
 
 #include <string>
@@ -12,7 +12,7 @@ namespace http {
 
 
 /// A reply to be sent to a client.
-struct Reply
+struct Response
 {
   /// The status of the reply.
   enum status_type
@@ -47,10 +47,10 @@ struct Reply
   std::vector<asio::const_buffer> to_buffers();
 
   /// Get a stock reply.
-  static Reply stock_reply(status_type status);
+  static Response stock_reply(status_type status);
 };
 
 }  // namespace http
 }  // namespace bbt
 
-#endif  // BBT_HTTP_REPLY_H_
+#endif  // BBT_HTTP_RESPONSE_H_

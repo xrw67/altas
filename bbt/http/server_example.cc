@@ -1,6 +1,6 @@
 #include "bbt/http/server.h"
 #include "bbt/http/request.h"
-#include "bbt/http/reply.h"
+#include "bbt/http/response.h"
 #include "bbt/base/fmt.h"
 
 int main(int argc, char* argv[]) {
@@ -11,7 +11,7 @@ int main(int argc, char* argv[]) {
 
   bbt::http::Server server;
 
-  server.Handle("/", [](const bbt::http::Request& req, bbt::http::Reply* rep) {
+  server.Handle("/", [](const bbt::http::Request& req, bbt::http::Response* rep) {
     
   });
 

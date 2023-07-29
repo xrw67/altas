@@ -4,14 +4,14 @@
 
 #include "bbt/base/log.h"
 #include "bbt/http/request.h"
-#include "bbt/http/reply.h"
+#include "bbt/http/response.h"
 
 namespace bbt {
 namespace http {
 
 RequestHandler::RequestHandler() {}
 
-void RequestHandler::HandleRequest(const Request& req, Reply* rep) {
+void RequestHandler::HandleRequest(const Request& req, Response* rep) {
   BBT_LOG(DEBUG, ">>>>> New Requset <<<<<");
   BBT_LOG(DEBUG, "req.method: {}", req.method);
   BBT_LOG(DEBUG, "req.uri: {}", req.uri);
@@ -19,7 +19,7 @@ void RequestHandler::HandleRequest(const Request& req, Reply* rep) {
     BBT_LOG(DEBUG, "req.header: {}: {}", header.name, header.value);
   }
 
-  rep->status = Reply::ok;
+  rep->status = Response::ok;
   rep->content = "Hello World!";
 }
 

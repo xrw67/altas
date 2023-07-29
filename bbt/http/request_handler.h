@@ -7,7 +7,7 @@ namespace bbt {
 namespace http {
 
 struct Request;
-struct Reply;
+struct Response;
 
 class RequestHandler {
  public:
@@ -15,7 +15,7 @@ class RequestHandler {
   RequestHandler& operator=(const RequestHandler&) = delete;
 
   RequestHandler();
-  void HandleRequest(const Request& req, Reply* rep);
+  void HandleRequest(const Request& req, Response* rep);
 
  private:
   bool UrlDecode(const std::string& in, std::string& out);

@@ -31,7 +31,7 @@ void Connection::DoRead() {
             request_handler_.HandleRequest(request_, &reply_);
             DoWrite();
           } else if (result == RequestParser::bad) {
-            reply_ = Reply::stock_reply(Reply::bad_request);
+            reply_ = Response::stock_reply(Response::bad_request);
             DoWrite();
           } else {
             DoRead();

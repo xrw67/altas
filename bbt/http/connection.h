@@ -6,10 +6,10 @@
 
 #include "asio.hpp"
 
-#include "request.h"
-#include "request_parser.h"
-#include "request_handler.h"
-#include "reply.h"
+#include "bbt/http/request.h"
+#include "bbt/http/request_parser.h"
+#include "bbt/http/request_handler.h"
+#include "bbt/http/response.h"
 
 namespace bbt {
 namespace http {
@@ -57,7 +57,7 @@ class Connection : public std::enable_shared_from_this<Connection> {
   RequestParser request_parser_;
 
 /// The reply to be sent back to the client.
-  Reply reply_;
+  Response reply_;
 };
 
 typedef std::shared_ptr<Connection> ConnectionPtr;
