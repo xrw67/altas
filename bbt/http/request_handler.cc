@@ -19,11 +19,12 @@ void RequestHandler::HandleRequest(const Request& req, Response* resp) {
       return;
     }
   }
-  resp->status = Response::not_found;
-  resp->WriteText("Not found");
+
+  resp->WriteText(Response::not_found, "Not found");
 }
 
-void RequestHandler::set_handler(const std::string& path, const HandlefFunc& func) {
+void RequestHandler::set_handler(const std::string& path,
+                                 const HandlefFunc& func) {
   handlers_[path] = func;
 }
 

@@ -48,8 +48,21 @@ struct Response {
   /// Get a stock reply.
   static Response stock_reply(status_type status);
 
-  void WriteText(const std::string& text);
-  void WriteJson(const json& root);
+  /**
+   * @brief set text into response body with "text/html"
+   *
+   * @param code Status code
+   * @param body text content
+   */
+  void WriteText(status_type code, const std::string& body);
+
+  /**
+   * @brief JSON serializes into the response body with "application/json".
+   *
+   * @param code Status code
+   * @param body Json content
+   */
+  void WriteJson(status_type code, const json& body);
 };
 
 }  // namespace http

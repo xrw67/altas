@@ -15,46 +15,41 @@
 
 namespace {
 
+using bbt::http::Request;
+using bbt::http::Response;
+
 TEST(Http, HttpServerAndClient) {
   std::string this_name;
 
   bbt::http::Server server;
-  server.Handle("/hello",
-                [&](const bbt::http::Request& req, bbt::http::Response* resp) {
-                  // Get
-                  if (req.method == "GET") {
-                    auto name = req.Param("name");
-                    resp->status = bbt::http::Response::ok;
-                    resp->WriteText("Hello, " + name);
-                  }
-                });
+  server.Handle("/hello", [&](const Request& req, Response* resp) {
+    // Get
+    if (req.method == "GET") {
+      auto name = req.Param("name");
+      resp->WriteText(Response::ok, "Hello, " + name);
+    }
+  });
 
-  server.Handle("/name",
-                [&](const bbt::http::Request& req, bbt::http::Response* resp) {
-                  // Post
-                  if (req.method == "POST") {
-                    // set post value
-                    auto json = bbt::json::parse(req.content);
-                    this_name = json["name"];
+  server.Handle("/name", [&](const Request& req, Response* resp) {
+    // Post
+    if (req.method == "POST") {
+      // set post value
+      auto json = bbt::json::parse(req.content);
+      this_name = json["name"];
+      resp->WriteText(Response::ok, "Post Ok");
+    }
 
-                    resp->status = bbt::http::Response::ok;
-                    resp->WriteText("Post Ok");
-                  }
+    // Get
+    if (req.method == "GET") {
+      bbt::json root;
+      root["name"] = this_name;
+      resp->WriteJson(Response::ok, root);
+    }
 
-                  // Get
-                  if (req.method == "GET") {
-                    resp->status = bbt::http::Response::ok;
-
-                    bbt::json root;
-                    root["name"] = this_name;
-                    resp->WriteJson(root);
-                  }
-
-                  if (req.method == "DELETE") {
-                    resp->status = bbt::http::Response::ok;
-                    resp->WriteText("Delete Ok");
-                  }
-                });
+    if (req.method == "DELETE") {
+      resp->WriteText(Response::ok, "Delete Ok");
+    }
+  });
 
   auto st = server.Listen("127.0.0.1", "59999");
   ASSERT_TRUE(st) << st.ToString();
@@ -63,10 +58,10 @@ TEST(Http, HttpServerAndClient) {
 
   // Query
   {
-    bbt::http::Response resp;
+    Response resp;
     auto st = bbt::http::Get("http://127.0.0.1:59999/hello?name=xrw", &resp);
     ASSERT_TRUE(st) << st.ToString();
-    ASSERT_EQ(resp.status, bbt::http::Response::ok);
+    ASSERT_EQ(resp.status, Response::ok);
     ASSERT_EQ(resp.content, "Hello, xrw");
   }
 
@@ -74,19 +69,19 @@ TEST(Http, HttpServerAndClient) {
 
   // Post
   {
-    bbt::http::Response resp;
+    Response resp;
     bbt::json content;
     content["name"] = "xrw";
     auto st =
         bbt::http::Post("http://127.0.0.1:59999/name", content.dump(), &resp);
     ASSERT_TRUE(st) << st.ToString();
-    ASSERT_EQ(resp.status, bbt::http::Response::ok);
+    ASSERT_EQ(resp.status, Response::ok);
     ASSERT_EQ(resp.content, "Post Ok");
   }
 
   // Get
   {
-    bbt::http::Response resp;
+    Response resp;
     st = bbt::http::Get("http://127.0.0.1:59999/name", &resp);
     bbt::json j = bbt::json::parse(resp.content);
     ASSERT_EQ(j["name"], "xrw");
@@ -94,13 +89,13 @@ TEST(Http, HttpServerAndClient) {
 
   // Delete
   {
-    bbt::http::Request req("DELETE", "http://127.0.0.1:59999/name/xrw");
+    Request req("DELETE", "http://127.0.0.1:59999/name/xrw");
     bbt::http::Client client;
-    bbt::http::Response resp;
+    Response resp;
 
     st = client.Do(req, &resp);
     ASSERT_TRUE(st) << st.ToString();
-    ASSERT_EQ(resp.status, bbt::http::Response::ok);
+    ASSERT_EQ(resp.status, Response::ok);
     ASSERT_EQ(resp.content, "Delete Ok");
   }
 

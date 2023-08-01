@@ -219,8 +219,9 @@ Response Response::stock_reply(Response::status_type status) {
   return rep;
 }
 
-void Response::WriteText(const std::string& text) {
-  content = text;
+void Response::WriteText(status_type code, const std::string& body) {
+  status = code;
+  content = body;
   headers.resize(2);
   headers[0].name = "Content-Length";
   headers[0].value = std::to_string(content.size());
@@ -228,8 +229,9 @@ void Response::WriteText(const std::string& text) {
   headers[1].value = "text/html";
 }
 
-void Response::WriteJson(const json& root) {
-  content = root.dump();
+void Response::WriteJson(status_type code, const json& body) {
+  status = code;
+  content = body.dump();
   headers.resize(2);
   headers[0].name = "Content-Length";
   headers[0].value = std::to_string(content.size());
