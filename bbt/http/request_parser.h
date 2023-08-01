@@ -2,11 +2,10 @@
 #define BBT_HTTP_REQUEST_PARSER_H_
 
 #include <tuple>
+#include "bbt/http/request.h"
 
 namespace bbt {
 namespace http {
-
-struct Request;
 
 /// Parser for incoming requests.
 class RequestParser {
@@ -32,6 +31,7 @@ class RequestParser {
       result_type result = consume(req, *begin++);
       if (result == good || result == bad) {
         if (result == good) {
+          req.content.assign(begin, end);
           parse_uri(req);
         }
         return std::make_tuple(result, begin);

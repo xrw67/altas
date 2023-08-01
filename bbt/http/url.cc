@@ -8,13 +8,13 @@ namespace http {
 
 namespace {
 
-string_view ConsumeUtil(const char** start, char util) {
+string_view ConsumeUtil(const char** start, const char* end, char util) {
   const char* p = *start;
-  while (*p != '\0' && *p != util) {
+  while (p != end && *p != util) {
     ++p;
   }
   auto result = string_view(*start, p - *start);
-  *start = p + 1;
+  *start = p;
   return result;
 }
 
@@ -22,26 +22,33 @@ string_view ConsumeUtil(const char** start, char util) {
 
 Url::Url(string_view raw_url) noexcept {
   const char* p = raw_url.data();
-  auto scheme_view = ConsumeUtil(&p, ':');
+  const char* end = raw_url.data() + raw_url.length();
+
+  auto scheme_view = ConsumeUtil(&p, end, ':');
   if (scheme_view.empty()) {
     return;
   }
+  scheme = scheme_view.str();
 
+  p++;
   if (p[0] != '/' || p[1] != '/' || p[2] == '/') {
     return;
   }
   p += 2;
 
-  auto host_view = ConsumeUtil(&p, '/');
+  auto host_view = ConsumeUtil(&p, end, '/');
   if (host_view.empty()) {
     return;
   }
-
-  auto path_view = ConsumeUtil(&p, '?');
-  scheme = scheme_view.str();
   host = host_view.str();
-  raw_path = "/" + path_view.str();
-  raw_query = p;
+
+  auto path_view = ConsumeUtil(&p, end, '?');
+  raw_path = path_view.str();
+
+  if (*p == '?') {
+    p++;
+    raw_query = std::string(p, end - p);
+  }
 }
 
 }  // namespace http

@@ -28,7 +28,7 @@ void RequestParser::reset() { state_ = method_start; }
 void RequestParser::parse_uri(Request& req) {
   auto sep = req.uri.find_first_of('?');
   if (sep == std::string::npos) {
-    req.path = uri;
+    req.path = req.uri;
     return;
   }
 

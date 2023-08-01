@@ -19,6 +19,8 @@ struct Request {
   int http_version_minor;
   std::vector<Header> headers;
 
+  std::string content;
+
   std::string path;
   std::map<std::string, std::string> params;
 

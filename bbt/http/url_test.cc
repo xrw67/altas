@@ -15,6 +15,16 @@ TEST(Url, Copy) {
   ASSERT_EQ(url2.scheme, "http");
 }
 
+TEST(Url, ParseWithoutQuery) {
+  bbt::http::Url url("http://127.0.0.1:59999/name");
+  ASSERT_TRUE(url.IsValid());
+
+  ASSERT_EQ(url.scheme, "http");
+  ASSERT_EQ(url.host, "127.0.0.1:59999");
+  ASSERT_EQ(url.raw_path, "/name");
+  ASSERT_EQ(url.raw_query, "");
+}
+
 TEST(Url, ParseHttp) {
   bbt::http::Url url("http://bing.com/search?q=dotnet");
   ASSERT_TRUE(url.IsValid());
