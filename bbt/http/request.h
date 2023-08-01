@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 #include "header.h"
 
@@ -17,6 +18,14 @@ struct Request {
   int http_version_major;
   int http_version_minor;
   std::vector<Header> headers;
+
+  std::string path;
+  std::map<std::string, std::string> params;
+
+  std::string Param(const std::string& key) const noexcept {
+    auto it = params.find(key);
+    return (it != params.end()) ? it->second : "";
+  }
 };
 
 }  // namespace http

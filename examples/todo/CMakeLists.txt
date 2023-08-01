@@ -2,7 +2,7 @@ add_executable(todo_server
     core.cc
     server.cc
 )
-target_link_libraries(todo_server bbt_base bbt_appkit)
+target_link_libraries(todo_server bbt_base bbt_appkit bbt_http)
 
 add_executable(todo
     core.cc

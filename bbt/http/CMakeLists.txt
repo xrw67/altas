@@ -7,19 +7,16 @@ add_library(bbt_http
     request_parser.cc
     request_handler.cc
     response.cc
+    url.cc
 )
 target_link_libraries(bbt_http bbt_base)
 
-# bbt_http_server_example
-add_executable(bbt_http_server_example
-    server_example.cc
-)
-target_link_libraries(bbt_http_server_example bbt_http)
 
+# bbt_http_test
+add_executable(bbt_http_test
+    server_test.cc
+    url_test.cc
+    )
+target_link_libraries(bbt_http_test bbt_http gmock gmock_main)
+add_test(NAME bbt_http COMMAND bbt_http_test)
 
-
-# bbt_http_client_example
-add_executable(bbt_http_client_example
-    client_example.cc
-)
-target_link_libraries(bbt_http_client_example bbt_http)

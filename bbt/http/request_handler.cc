@@ -11,16 +11,8 @@ namespace http {
 
 RequestHandler::RequestHandler() {}
 
-void RequestHandler::HandleRequest(const Request& req, Response* rep) {
-  BBT_LOG(DEBUG, ">>>>> New Requset <<<<<");
-  BBT_LOG(DEBUG, "req.method: {}", req.method);
-  BBT_LOG(DEBUG, "req.uri: {}", req.uri);
-  for (auto header : req.headers) {
-    BBT_LOG(DEBUG, "req.header: {}: {}", header.name, header.value);
-  }
-
-  rep->status = Response::ok;
-  rep->content = "Hello World!";
+void RequestHandler::HandleRequest(const Request& req, Response* resp) {
+  handler_(req, resp);
 }
 
 bool RequestHandler::UrlDecode(const std::string& in, std::string& out) {

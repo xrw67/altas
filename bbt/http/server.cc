@@ -4,15 +4,15 @@
 namespace bbt {
 namespace http {
 
-Server::Server()
-    : io_context_(1), acceptor_(io_context_){}
+Server::Server() : io_context_(1), acceptor_(io_context_) {}
 
 Server::~Server() {}
 
-void Server::Handle(string_view path, const Handler& func) {}
+void Server::Handle(string_view path, const RequestHandler::Handler& func) {
+  request_handler_.set_handler(func);
+}
 
-Status Server::ListenAndServe(const std::string& address,
-                              const std::string& port) {
+Status Server::Listen(const std::string& address, const std::string& port) {
   asio::ip::tcp::resolver resolver(io_context_);
   asio::ip::tcp::endpoint endpoint = *resolver.resolve(address, port).begin();
 
@@ -22,9 +22,15 @@ Status Server::ListenAndServe(const std::string& address,
   acceptor_.listen();
 
   DoAccept();
-
-  io_context_.run();
   return bbt::OkStatus();
+}
+
+void Server::Serve() { io_context_.run(); }
+
+void Server::Shutdown() {
+  acceptor_.close();
+  connection_manager_.StopAll();
+  io_context_.stop();
 }
 
 void Server::DoAccept() {

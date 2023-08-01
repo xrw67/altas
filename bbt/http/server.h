@@ -19,13 +19,15 @@ struct Response;
 
 class Server {
  public:
-  typedef std::function<void(const Request&, Response*)> Handler;
+  
 
   Server();
   ~Server();
 
-  void Handle(string_view path, const Handler& func);
-  Status ListenAndServe(const std::string& address, const std::string& port);
+  void Handle(string_view path, const RequestHandler::Handler& func);
+  Status Listen(const std::string& address, const std::string& port);
+  void Serve();
+  void Shutdown();
 
  private:
   /// Perform an asynchronous accept operation.

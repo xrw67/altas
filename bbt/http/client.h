@@ -9,7 +9,7 @@
 namespace bbt {
 namespace http {
 
-Status Get(const std::string& address, const std::string& port, Response* rep);
+Status Get(const std::string& url, Response* rep);
 
 }
 }  // namespace bbt

@@ -30,13 +30,19 @@ class RequestParser {
                                                InputIterator end) {
     while (begin != end) {
       result_type result = consume(req, *begin++);
-      if (result == good || result == bad)
+      if (result == good || result == bad) {
+        if (result == good) {
+          parse_uri(req);
+        }
         return std::make_tuple(result, begin);
+      }
     }
     return std::make_tuple(indeterminate, begin);
   }
 
  private:
+  static void parse_uri(Request& req);
+
   /// Handle the next character of input.
   result_type consume(Request& req, char input);
 

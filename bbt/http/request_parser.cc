@@ -4,9 +4,53 @@
 namespace bbt {
 namespace http {
 
+namespace {
+
+std::string GetNextToken(const char** next, const char* end, char quota) {
+  const char* p = *next;
+  const char* start = p;
+
+  if (p >= end) return std::string();
+
+  while (p != end && *p != quota) p++;
+  std::string token(start, p - start);
+
+  *next = ++p;
+  return token;
+}
+
+}  // namespace
+
 RequestParser::RequestParser() : state_(method_start) {}
 
 void RequestParser::reset() { state_ = method_start; }
+
+void RequestParser::parse_uri(Request& req) {
+  auto sep = req.uri.find_first_of('?');
+  if (sep == std::string::npos) {
+    req.path = uri;
+    return;
+  }
+
+  req.path = req.uri.substr(0, sep);
+
+  // query
+  const char* next = req.uri.c_str() + sep + 1;
+  const char* end = req.uri.c_str() + req.uri.length();
+
+  for (;;) {
+    auto param = GetNextToken(&next, end, '&');
+    if (param.empty()) {
+      break;
+    }
+    auto sep = param.find('=');
+    if (sep == param.npos) {
+      req.params[param] = "";
+    } else {
+      req.params[param.substr(0, sep)] = param.substr(sep + 1);
+    }
+  }
+}
 
 RequestParser::result_type RequestParser::consume(Request& req, char input) {
   switch (state_) {

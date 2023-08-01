@@ -1,5 +1,5 @@
 #include "bbt/base/fmt.h"
-
+#include "bbt/http/server.h"
 #include "bbt/appkit/args.h"
 
 int main(int argc, char *argv[])
@@ -12,6 +12,8 @@ int main(int argc, char *argv[])
     if (!st) {
         bbt::println("{}", st);
     }
+
+    bbt::http::Server server;
 
 
 
