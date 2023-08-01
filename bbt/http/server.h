@@ -19,12 +19,10 @@ struct Response;
 
 class Server {
  public:
-  
-
   Server();
   ~Server();
 
-  void Handle(string_view path, const RequestHandler::Handler& func);
+  void Handle(const std::string& path, const RequestHandler::HandlefFunc& func);
   Status Listen(const std::string& address, const std::string& port);
   void Serve();
   void Shutdown();
@@ -41,7 +39,7 @@ class Server {
   /// The connection manager which owns all live connections.
   ConnectionManager connection_manager_;
 
-   /// The handler for all incoming requests.
+  /// The handler for all incoming requests.
   RequestHandler request_handler_;
 };
 

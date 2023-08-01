@@ -1,22 +1,21 @@
 #ifndef BBT_HTTP_RESPONSE_H_
 #define BBT_HTTP_RESPONSE_H_
 
-
 #include <string>
 #include <vector>
 #include <asio.hpp>
+
+#include "bbt/base/json.h"
+
 #include "header.h"
 
 namespace bbt {
 namespace http {
 
-
 /// A reply to be sent to a client.
-struct Response
-{
+struct Response {
   /// The status of the reply.
-  enum status_type
-  {
+  enum status_type {
     ok = 200,
     created = 201,
     accepted = 202,
@@ -48,6 +47,9 @@ struct Response
 
   /// Get a stock reply.
   static Response stock_reply(status_type status);
+
+  void WriteText(const std::string& text);
+  void WriteJson(const json& root);
 };
 
 }  // namespace http

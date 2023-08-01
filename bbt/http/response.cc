@@ -219,5 +219,23 @@ Response Response::stock_reply(Response::status_type status) {
   return rep;
 }
 
+void Response::WriteText(const std::string& text) {
+  content = text;
+  headers.resize(2);
+  headers[0].name = "Content-Length";
+  headers[0].value = std::to_string(content.size());
+  headers[1].name = "Content-Type";
+  headers[1].value = "text/html";
+}
+
+void Response::WriteJson(const json& root) {
+  content = root.dump();
+  headers.resize(2);
+  headers[0].name = "Content-Length";
+  headers[0].value = std::to_string(content.size());
+  headers[1].name = "Content-Type";
+  headers[1].value = "application/json";
+}
+
 }  // namespace http
 }  // namespace bbt

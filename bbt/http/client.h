@@ -11,6 +11,8 @@
 namespace bbt {
 namespace http {
 
+// TODO: add https support
+
 Status Get(const std::string& url, Response* resp);
 Status Post(const std::string& url, const std::string& content, Response* resp);
 

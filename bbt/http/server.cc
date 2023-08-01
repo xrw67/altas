@@ -8,8 +8,9 @@ Server::Server() : io_context_(1), acceptor_(io_context_) {}
 
 Server::~Server() {}
 
-void Server::Handle(string_view path, const RequestHandler::Handler& func) {
-  request_handler_.set_handler(func);
+void Server::Handle(const std::string& path,
+                    const RequestHandler::HandlefFunc& func) {
+  request_handler_.set_handler(path, func);
 }
 
 Status Server::Listen(const std::string& address, const std::string& port) {

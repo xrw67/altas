@@ -2,6 +2,7 @@
 #define BBT_HTTP_REQUEST_HANDLER_H_
 
 #include <string>
+#include <unordered_map>
 #include <functional>
 
 namespace bbt {
@@ -12,7 +13,7 @@ struct Response;
 
 class RequestHandler {
  public:
-  typedef std::function<void(const Request&, Response*)> Handler;
+  typedef std::function<void(const Request&, Response*)> HandlefFunc;
 
   RequestHandler(const RequestHandler&) = delete;
   RequestHandler& operator=(const RequestHandler&) = delete;
@@ -20,12 +21,12 @@ class RequestHandler {
   RequestHandler();
   void HandleRequest(const Request& req, Response* rep);
 
-  void set_handler(const Handler& h) { handler_ = h; }
+  void set_handler(const std::string& path, const HandlefFunc& h);
 
  private:
   bool UrlDecode(const std::string& in, std::string& out);
 
-  Handler handler_;
+  std::unordered_map<std::string, HandlefFunc> handlers_;
 };
 
 }  // namespace http

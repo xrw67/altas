@@ -19,52 +19,37 @@ TEST(Http, HttpServerAndClient) {
   std::string this_name;
 
   bbt::http::Server server;
-  server.Handle(
-      "/", [&](const bbt::http::Request& req, bbt::http::Response* resp) {
-        // Get
-        if (req.method == "GET" && bbt::StartsWith(req.path, "/hello")) {
-          auto name = req.Param("name");
-          resp->status = bbt::http::Response::ok;
-          resp->content = "Hello, " + name;
+  server.Handle("/hello",
+                [&](const bbt::http::Request& req, bbt::http::Response* resp) {
+                  // Get
+                  if (req.method == "GET") {
+                    auto name = req.Param("name");
+                    resp->status = bbt::http::Response::ok;
+                    resp->WriteText("Hello, " + name);
+                  }
+                });
 
-          resp->headers.resize(2);
-          resp->headers[0].name = "Content-Length";
-          resp->headers[0].value = std::to_string(resp->content.size());
-          resp->headers[1].name = "Content-Type";
-          resp->headers[1].value = "text/html";
-        }
+  server.Handle("/name",
+                [&](const bbt::http::Request& req, bbt::http::Response* resp) {
+                  // Post
+                  if (req.method == "POST") {
+                    // set post value
+                    auto json = bbt::json::parse(req.content);
+                    this_name = json["name"];
 
-        // Post
-        if (req.method == "POST" && bbt::StartsWith(req.path, "/name")) {
-          // set post value
-          auto json = bbt::json::parse(req.content);
-          this_name = json["name"];
+                    resp->status = bbt::http::Response::ok;
+                    resp->WriteText("Post Ok");
+                  }
 
-          resp->status = bbt::http::Response::ok;
-          resp->content = "Post Ok";
+                  // Get & name
+                  if (req.method == "GET") {
+                    resp->status = bbt::http::Response::ok;
 
-          resp->headers.resize(2);
-          resp->headers[0].name = "Content-Length";
-          resp->headers[0].value = std::to_string(resp->content.size());
-          resp->headers[1].name = "Content-Type";
-          resp->headers[1].value = "text/html";
-        }
-
-        // Get & name
-        if (req.method == "GET" && bbt::StartsWith(req.path, "/name")) {
-          resp->status = bbt::http::Response::ok;
-
-          bbt::json content;
-          content["name"] = this_name;
-          resp->content = content.dump();
-
-          resp->headers.resize(2);
-          resp->headers[0].name = "Content-Length";
-          resp->headers[0].value = std::to_string(resp->content.size());
-          resp->headers[1].name = "Content-Type";
-          resp->headers[1].value = "text/html";
-        }
-      });
+                    bbt::json root;
+                    root["name"] = this_name;
+                    resp->WriteJson(root);
+                  }
+                });
 
   auto st = server.Listen("127.0.0.1", "59999");
   ASSERT_TRUE(st) << st.ToString();

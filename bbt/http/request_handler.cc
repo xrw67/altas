@@ -3,6 +3,7 @@
 #include <sstream>
 
 #include "bbt/base/log.h"
+#include "bbt/base/str_util.h"
 #include "bbt/http/request.h"
 #include "bbt/http/response.h"
 
@@ -12,7 +13,18 @@ namespace http {
 RequestHandler::RequestHandler() {}
 
 void RequestHandler::HandleRequest(const Request& req, Response* resp) {
-  handler_(req, resp);
+  for (auto& i : handlers_) {
+    if (StartsWithIgnoreCase(req.path, i.first)) {
+      i.second(req, resp);
+      return;
+    }
+  }
+  resp->status = Response::not_found;
+  resp->WriteText("Not found");
+}
+
+void RequestHandler::set_handler(const std::string& path, const HandlefFunc& func) {
+  handlers_[path] = func;
 }
 
 bool RequestHandler::UrlDecode(const std::string& in, std::string& out) {
