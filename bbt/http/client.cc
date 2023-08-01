@@ -15,12 +15,40 @@ namespace http {
 
 using asio::ip::tcp;
 
-namespace {
+Status Get(const std::string& url, Response* resp) {
+  Request req("GET", url);
+  Client client;
+  return client.Do(req, resp);
+}
 
-tcp::resolver::results_type GetEndpointFromUrl(asio::io_context& io_context,
-                                               const bbt::http::Url& url) {
+Status Post(const std::string& url, const std::string& content,
+            Response* resp) {
+  Request req("POST", url);
+  req.content = content;
+  Client client;
+  return client.Do(req, resp);
+}
+
+Client::Client() : socket_(io_context_) {}
+
+Client::~Client() {}
+
+Status Client::Do(const Request& req, Response* resp) {
+  auto endpoints = GetEndpointFromUrl(req.url);
+
+  // Try each endpoint until we successfully establish a connection.
+  asio::connect(socket_, endpoints);
+  asio::streambuf request;
+  req.to_buffers(&request);
+  asio::write(socket_, request);
+
+  return ReadResponse(resp);
+}
+
+tcp::resolver::results_type Client::GetEndpointFromUrl(
+    const bbt::http::Url& url) {
   // Get a list of endpoints corresponding to the server name.
-  tcp::resolver resolver(io_context);
+  tcp::resolver resolver(io_context_);
   tcp::resolver::results_type endpoints;
 
   auto colon = url.host.find_last_of(":");
@@ -32,39 +60,13 @@ tcp::resolver::results_type GetEndpointFromUrl(asio::io_context& io_context,
   return resolver.resolve(url.host, url.scheme);
 }
 
-void CreateRequestStream(asio::streambuf& request, bbt::http::Url& url,
-                         const std::string& method,
-                         const std::string& content) {
-  // Form the request. We specify the "Connection: close" header so that the
-  // server will close the socket after transmitting the response. This will
-  // allow us to treat all data up until the EOF as the content.
-
-  std::ostream request_stream(&request);
-  request_stream << method << " ";
-  if (url.raw_query.empty())
-    request_stream << url.raw_path;
-  else
-    request_stream << url.raw_path << "?" << url.raw_query;
-
-  request_stream << " HTTP/1.0\r\n";
-  request_stream << "Host: " << url.host << "\r\n";
-  request_stream << "Accept: */*\r\n";
-  if (!content.empty()) {
-    request_stream << "Content-Length: " << content.length() << "\r\n";
-  }
-  request_stream << "Connection: close\r\n\r\n";
-  if (!content.empty()) {
-    request_stream << content;
-  }
-}
-
-Status ReadResponse(tcp::socket& socket, Response* resp) {
+Status Client::ReadResponse(Response* resp) {
   try {
     // Read the response status line. The response streambuf will automatically
     // grow to accommodate the entire line. The growth may be limited by passing
     // a maximum size to the streambuf constructor.
     asio::streambuf response;
-    asio::read_until(socket, response, "\r\n");
+    asio::read_until(socket_, response, "\r\n");
 
     // Check that response is OK.
     std::istream response_stream(&response);
@@ -86,7 +88,7 @@ Status ReadResponse(tcp::socket& socket, Response* resp) {
     Response reply;
     reply.status = Response::ok;
     // Read the response headers, which are terminated by a blank line.
-    asio::read_until(socket, response, "\r\n\r\n");
+    asio::read_until(socket_, response, "\r\n\r\n");
 
     // Process the response headers.
     std::string header;
@@ -103,7 +105,7 @@ Status ReadResponse(tcp::socket& socket, Response* resp) {
 
     // Read until EOF, writing data to output as we go.
     asio::error_code error;
-    while (asio::read(socket, response, asio::transfer_at_least(1), error)) {
+    while (asio::read(socket_, response, asio::transfer_at_least(1), error)) {
       content << &response;
     }
     if (error != asio::error::eof) {
@@ -117,70 +119,6 @@ Status ReadResponse(tcp::socket& socket, Response* resp) {
   }
 
   return bbt::OkStatus();
-}
-
-}  // namespace
-
-Status Get(const std::string& url, Response* resp) {
-  bbt::http::Url u(url);
-  if (!u.IsValid()) {
-    return InvalidArgumentError(bbt::format("invalid url: {}", url));
-  }
-
-  asio::io_context io_context;
-  auto endpoints = GetEndpointFromUrl(io_context, u);
-
-  // Try each endpoint until we successfully establish a connection.
-  tcp::socket socket(io_context);
-  asio::connect(socket, endpoints);
-
-  asio::streambuf request;
-  CreateRequestStream(request, u, "GET", "");
-  asio::write(socket, request);
-
-  return ReadResponse(socket, resp);
-}
-
-Status Post(const std::string& url, const std::string& content,
-            Response* resp) {
-  bbt::http::Url u(url);
-  if (!u.IsValid()) {
-    return InvalidArgumentError(bbt::format("invalid url: {}", url));
-  }
-
-  asio::io_context io_context;
-  auto endpoints = GetEndpointFromUrl(io_context, u);
-
-  // Try each endpoint until we successfully establish a connection.
-  tcp::socket socket(io_context);
-  asio::connect(socket, endpoints);
-
-  asio::streambuf request;
-  CreateRequestStream(request, u, "POST", content);
-  asio::write(socket, request);
-
-  return ReadResponse(socket, resp);
-}
-
-//
-// class Client
-//
-Client::Client() {}
-
-Client::~Client() {}
-
-Status Client::Do(const Request& req, Response* resp) {
-  asio::io_context io_context;
-  auto endpoints = GetEndpointFromUrl(io_context, req.url);
-
-  // Try each endpoint until we successfully establish a connection.
-  tcp::socket socket(io_context);
-  asio::connect(socket, endpoints);
-  asio::streambuf request;
-  req.to_buffers(&request);
-  asio::write(socket, request);
-
-  return ReadResponse(socket, resp);
 }
 
 }  // namespace http

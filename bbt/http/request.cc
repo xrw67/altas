@@ -22,6 +22,10 @@ Request::Request(const std::string& method, const std::string& raw_url)
 Request::~Request() {}
 
 void Request::to_buffers(asio::streambuf* buf) const noexcept {
+  // Form the request. We specify the "Connection: close" header so that the
+  // server will close the socket after transmitting the response. This will
+  // allow us to treat all data up until the EOF as the content.
+
   std::ostream request_stream(buf);
   request_stream << method << " ";
   if (url.raw_query.empty())

@@ -24,6 +24,14 @@ class Client {
   Client();
   ~Client();
   Status Do(const Request& req, Response* resp);
+
+ private:
+  asio::ip::tcp::resolver::results_type GetEndpointFromUrl(
+      const bbt::http::Url& url);
+  Status ReadResponse(Response* resp);
+
+  asio::io_context io_context_;
+  asio::ip::tcp::socket socket_;
 };
 
 }  // namespace http
