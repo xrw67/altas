@@ -226,7 +226,7 @@ void Response::WriteText(status_type code, const std::string& body) {
   headers[0].name = "Content-Length";
   headers[0].value = std::to_string(content.size());
   headers[1].name = "Content-Type";
-  headers[1].value = "text/html";
+  headers[1].value = "text/plain";
 }
 
 void Response::WriteJson(status_type code, const json& body) {

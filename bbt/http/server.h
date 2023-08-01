@@ -22,7 +22,7 @@ class Server {
   Server();
   ~Server();
 
-  void Handle(const std::string& path, const RequestHandler::HandlefFunc& func);
+  void Handle(const std::string& path, const RequestHandler::Func& func);
   Status Listen(const std::string& address, const std::string& port);
   void Serve();
   void Shutdown();

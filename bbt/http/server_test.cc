@@ -51,6 +51,12 @@ TEST(Http, HttpServerAndClient) {
     }
   });
 
+  server.Handle("/name/", [&](const Request& req, Response* resp) {
+    if (req.method == "DELETE") {
+      resp->WriteText(Response::ok, "Delete Ok");
+    }
+  });
+
   auto st = server.Listen("127.0.0.1", "59999");
   ASSERT_TRUE(st) << st.ToString();
 

@@ -2,6 +2,7 @@
 #define BBT_HTTP_REQUEST_HANDLER_H_
 
 #include <string>
+#include <list>
 #include <unordered_map>
 #include <functional>
 
@@ -13,7 +14,7 @@ struct Response;
 
 class RequestHandler {
  public:
-  typedef std::function<void(const Request&, Response*)> HandlefFunc;
+  typedef std::function<void(const Request&, Response*)> Func;
 
   RequestHandler(const RequestHandler&) = delete;
   RequestHandler& operator=(const RequestHandler&) = delete;
@@ -21,12 +22,18 @@ class RequestHandler {
   RequestHandler();
   void HandleRequest(const Request& req, Response* rep);
 
-  void set_handler(const std::string& path, const HandlefFunc& h);
+  void set_handler(const std::string& path, const Func& h);
 
  private:
   bool UrlDecode(const std::string& in, std::string& out);
 
-  std::unordered_map<std::string, HandlefFunc> handlers_;
+  struct FuncEntry {
+    std::string pattern;
+    Func fn;
+  };
+
+  std::unordered_map<std::string, FuncEntry> funcs_;
+  std::list<FuncEntry> prefix_funcs_;
 };
 
 }  // namespace http

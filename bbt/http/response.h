@@ -49,7 +49,7 @@ struct Response {
   static Response stock_reply(status_type status);
 
   /**
-   * @brief set text into response body with "text/html"
+   * @brief set text into response body with "text/plain"
    *
    * @param code Status code
    * @param body text content

@@ -9,7 +9,7 @@ Server::Server() : io_context_(1), acceptor_(io_context_) {}
 Server::~Server() {}
 
 void Server::Handle(const std::string& path,
-                    const RequestHandler::HandlefFunc& func) {
+                    const RequestHandler::Func& func) {
   request_handler_.set_handler(path, func);
 }
 

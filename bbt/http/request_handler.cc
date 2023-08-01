@@ -13,9 +13,15 @@ namespace http {
 RequestHandler::RequestHandler() {}
 
 void RequestHandler::HandleRequest(const Request& req, Response* resp) {
-  for (auto& i : handlers_) {
-    if (StartsWithIgnoreCase(req.path, i.first)) {
-      i.second(req, resp);
+  auto it = funcs_.find(req.path);
+  if (it != funcs_.end()) {
+    it->second.fn(req, resp);
+    return;
+  }
+
+  for (auto& i : prefix_funcs_) {
+    if (StartsWithIgnoreCase(req.path, i.pattern)) {
+      i.fn(req, resp);
       return;
     }
   }
@@ -23,9 +29,22 @@ void RequestHandler::HandleRequest(const Request& req, Response* resp) {
   resp->WriteText(Response::not_found, "Not found");
 }
 
-void RequestHandler::set_handler(const std::string& path,
-                                 const HandlefFunc& func) {
-  handlers_[path] = func;
+void RequestHandler::set_handler(const std::string& pattern, const Func& func) {
+  if (pattern.empty()) return;
+  if (funcs_.find(pattern) != funcs_.end()) return;
+
+  FuncEntry entry = {pattern, func};
+  funcs_[pattern] = entry;
+
+  if (pattern[pattern.length() - 1] == '/') {
+    for (auto it = prefix_funcs_.begin(); it != prefix_funcs_.end(); it++) {
+      if (pattern.length() > it->pattern.length()) {
+        prefix_funcs_.insert(it, entry);
+        return;
+      }
+    }
+    prefix_funcs_.push_back(entry);
+  }
 }
 
 bool RequestHandler::UrlDecode(const std::string& in, std::string& out) {
