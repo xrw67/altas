@@ -1,0 +1,45 @@
+#include "bbt/http/request.h"
+#include "bbt/http/url.h"
+
+namespace bbt {
+namespace http {
+
+Request::Request() : url("") {}
+
+Request::Request(const std::string& method, const std::string& raw_url)
+    : method(method), url(raw_url) {
+  if (url.IsValid()) {
+    path = url.raw_path;
+    if (url.raw_query.empty())
+      uri = url.raw_path;
+    else
+      uri = url.raw_path + "?" + url.raw_query;
+
+    host = url.host;
+  }
+}
+
+Request::~Request() {}
+
+void Request::to_buffers(asio::streambuf* buf) const noexcept {
+  std::ostream request_stream(buf);
+  request_stream << method << " ";
+  if (url.raw_query.empty())
+    request_stream << url.raw_path;
+  else
+    request_stream << url.raw_path << "?" << url.raw_query;
+
+  request_stream << " HTTP/1.0\r\n";
+  request_stream << "Host: " << url.host << "\r\n";
+  request_stream << "Accept: */*\r\n";
+  if (!content.empty()) {
+    request_stream << "Content-Length: " << content.length() << "\r\n";
+  }
+  request_stream << "Connection: close\r\n\r\n";
+  if (!content.empty()) {
+    request_stream << content;
+  }
+}
+
+}  // namespace http
+}  // namespace bbt

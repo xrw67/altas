@@ -7,6 +7,7 @@ add_library(bbt_http
     request_parser.cc
     request_handler.cc
     response.cc
+    request.cc
     url.cc
 )
 target_link_libraries(bbt_http bbt_base)

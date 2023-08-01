@@ -6,6 +6,7 @@
 #include "asio.hpp"
 
 #include "bbt/base/status.h"
+#include "bbt/http/request.h"
 #include "bbt/http/response.h"
 
 namespace bbt {
@@ -17,6 +18,13 @@ Status Get(const std::string& url, Response* resp);
 Status Post(const std::string& url, const std::string& content, Response* resp);
 
 // PostForm
+
+class Client {
+ public:
+  Client();
+  ~Client();
+  Status Do(const Request& req, Response* resp);
+};
 
 }  // namespace http
 }  // namespace bbt

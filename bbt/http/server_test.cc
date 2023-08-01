@@ -41,13 +41,18 @@ TEST(Http, HttpServerAndClient) {
                     resp->WriteText("Post Ok");
                   }
 
-                  // Get & name
+                  // Get
                   if (req.method == "GET") {
                     resp->status = bbt::http::Response::ok;
 
                     bbt::json root;
                     root["name"] = this_name;
                     resp->WriteJson(root);
+                  }
+
+                  if (req.method == "DELETE") {
+                    resp->status = bbt::http::Response::ok;
+                    resp->WriteText("Delete Ok");
                   }
                 });
 
@@ -85,6 +90,18 @@ TEST(Http, HttpServerAndClient) {
     st = bbt::http::Get("http://127.0.0.1:59999/name", &resp);
     bbt::json j = bbt::json::parse(resp.content);
     ASSERT_EQ(j["name"], "xrw");
+  }
+
+  // Delete
+  {
+    bbt::http::Request req("DELETE", "http://127.0.0.1:59999/name/xrw");
+    bbt::http::Client client;
+    bbt::http::Response resp;
+
+    st = client.Do(req, &resp);
+    ASSERT_TRUE(st) << st.ToString();
+    ASSERT_EQ(resp.status, bbt::http::Response::ok);
+    ASSERT_EQ(resp.content, "Delete Ok");
   }
 
   server.Shutdown();

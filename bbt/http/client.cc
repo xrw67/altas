@@ -18,7 +18,7 @@ using asio::ip::tcp;
 namespace {
 
 tcp::resolver::results_type GetEndpointFromUrl(asio::io_context& io_context,
-                                               bbt::http::Url& url) {
+                                               const bbt::http::Url& url) {
   // Get a list of endpoints corresponding to the server name.
   tcp::resolver resolver(io_context);
   tcp::resolver::results_type endpoints;
@@ -157,6 +157,27 @@ Status Post(const std::string& url, const std::string& content,
 
   asio::streambuf request;
   CreateRequestStream(request, u, "POST", content);
+  asio::write(socket, request);
+
+  return ReadResponse(socket, resp);
+}
+
+//
+// class Client
+//
+Client::Client() {}
+
+Client::~Client() {}
+
+Status Client::Do(const Request& req, Response* resp) {
+  asio::io_context io_context;
+  auto endpoints = GetEndpointFromUrl(io_context, req.url);
+
+  // Try each endpoint until we successfully establish a connection.
+  tcp::socket socket(io_context);
+  asio::connect(socket, endpoints);
+  asio::streambuf request;
+  req.to_buffers(&request);
   asio::write(socket, request);
 
   return ReadResponse(socket, resp);
