@@ -33,7 +33,6 @@ TEST(Http, HttpServerAndClient) {
   server.Handle("/name", [&](const Request& req, Response* resp) {
     // Post
     if (req.method == "POST") {
-      // set post value
       auto json = bbt::json::parse(req.content);
       this_name = json["name"];
       resp->WriteText(Response::ok, "Post Ok");
@@ -104,6 +103,24 @@ TEST(Http, HttpServerAndClient) {
     ASSERT_EQ(resp.status, Response::ok);
     ASSERT_EQ(resp.content, "Delete Ok");
   }
+
+  // PostForm
+  // {
+  //   Response resp;
+  //   bbt::http::FormData values;
+
+  //   values["key1"] = "value1";
+  //   values["key2"] = 1001;
+
+  //   st = bbt::http::PostForm("http://127.0.0.1:59999/name?format=form", values,
+  //                            &resp);
+
+  //   st = client.Do(req, &resp);
+  //   ASSERT_TRUE(st) << st.ToString();
+  //   ASSERT_EQ(resp.status, Response::ok);
+
+  //   ASSERT_EQ(resp.content, "PostForm Ok");
+  // }
 
   server.Shutdown();
   t.join();

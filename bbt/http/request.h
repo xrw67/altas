@@ -7,6 +7,7 @@
 
 #include "asio.hpp"
 #include "header.h"
+#include "form_data.h"
 #include "bbt/http/url.h"
 
 namespace bbt {
@@ -24,8 +25,7 @@ struct Request {
   std::string content;
 
   std::string path;
-  std::map<std::string, std::string> params;
-
+  FormData params;
   std::string host;
   Url url;
 
@@ -33,10 +33,7 @@ struct Request {
   Request(const std::string& method, const std::string& raw_url);
   ~Request();
 
-  std::string Param(const std::string& key) const noexcept {
-    auto it = params.find(key);
-    return (it != params.end()) ? it->second : "";
-  }
+  std::string Param(const char* key) const noexcept { return params.Get(key); }
 
   void to_buffers(asio::streambuf* buf) const noexcept;
 };

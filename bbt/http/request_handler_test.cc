@@ -23,10 +23,10 @@ struct RequestHandlerTest : public ::testing::Test {
   ~RequestHandlerTest() {}
 
   void SetUp() {
-    h.set_handler("/a/b/", func1);
-    h.set_handler("/a/b/", func2);  // invalid
     h.set_handler("/a/", func2);
     h.set_handler("/a/b", func3);
+    h.set_handler("/a/b/", func1);
+    h.set_handler("/a/b/", func2);  // invalid
   }
 };
 

@@ -6,6 +6,7 @@
 #include "asio.hpp"
 
 #include "bbt/base/status.h"
+#include "bbt/base/json.h"
 #include "bbt/http/request.h"
 #include "bbt/http/response.h"
 
@@ -16,8 +17,9 @@ namespace http {
 
 Status Get(const std::string& url, Response* resp);
 Status Post(const std::string& url, const std::string& content, Response* resp);
+//Status PostJson(const std::string& url, const json& content,Response *resp);
+//Status PostForm(const std::string& url, const Param& content,Response *resp);
 
-// PostForm
 
 class Client {
  public:
