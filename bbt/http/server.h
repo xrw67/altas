@@ -10,12 +10,11 @@
 
 #include "bbt/http/connection_manager.h"
 #include "bbt/http/request_handler.h"
+#include "bbt/http/request.h"
+#include "bbt/http/response.h"
 
 namespace bbt {
 namespace http {
-
-struct Request;
-struct Response;
 
 class Server {
  public:
