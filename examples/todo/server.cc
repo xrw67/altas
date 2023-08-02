@@ -39,18 +39,19 @@ int main(int argc, char* argv[]) {
           new bbt::html::Link("Contect Me!", "https://www.baidu.com"));
 
       {
-        auto table = new bbt::html::Table(3);
+        auto table = new bbt::html::Table({"head1", "head2", "head3"});
         body->AddChild(table);
-        table->SetHead({"head1", "head2", "head3"});
         table->AddRow({"row1-1", "row1-2", "row1-3"});
         table->AddRow({"row2-1", "row2-2", "row2-3"});
         table->AddRow({"row3-1", "row3-2"});
       }
 
+      body->AddChild(new Element("br"));
       {
         auto form = body->AddChild(new bbt::html::Form("/items/show"));
         form->AddChild(new bbt::html::Input("id", "Please input ID:", "0"));
-        form->AddChild(new bbt::html::Button("提交"));
+        form->AddChild(new bbt::html::Input("text", "Please input Text:", ""));
+        form->AddChild(new bbt::html::SubmitButton("提交"));
       }
     }
     resp->WriteHtml(Response::ok, doc);
