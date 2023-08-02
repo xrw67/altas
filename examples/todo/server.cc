@@ -2,6 +2,7 @@
 
 #include "bbt/base/fmt.h"
 #include "bbt/base/status.h"
+#include "bbt/base/str_util.h"
 #include "bbt/http/server.h"
 #include "bbt/html/document.h"
 #include "bbt/appkit/args.h"
@@ -10,9 +11,52 @@
 
 bbt::Status do_add(const char* text);
 std::string do_list(void);
-std::string do_show(int id);
 void do_delete(int id);
 void do_modify(int id, const char* new_text);
+
+class HtmlUi {
+ public:
+  HtmlUi() : doc_("My TODO") {
+    // 命令行
+    auto body = doc_.body();
+
+    auto form = body->AddChild(new bbt::html::Form("/todo"));
+    form->AddChild(new bbt::html::Input("cmd", "请输入命令：", ""));
+    form->AddChild(new bbt::html::SubmitButton("执行"));
+
+    body->AddChild(new bbt::html::Element("hr"));
+  }
+
+  const bbt::html::Document& doc() {
+    // 收尾
+    auto body = doc_.body();
+    if (!cmd_.empty())
+      body->AddChild(new bbt::html::Element("p", "CMD: " + cmd_));
+
+    body->AddChild(new bbt::html::Element("p", "LIST:"));
+    body->AddChild(new bbt::html::Element("p", do_list()));
+    return doc_;
+  }
+
+  void set_cmd(const std::string& cmd) { cmd_ = cmd; }
+
+ private:
+  bbt::html::Document doc_;
+  std::string cmd_;
+};
+
+void DoCommand(HtmlUi& ui, const std::string& cmdline) {
+  auto sep = cmdline.find_first_of(' ');
+
+  if (sep != std::string::npos) {
+    auto cmd = cmdline.substr(0, sep);
+    if (cmd == "add") {
+      do_add(cmdline.substr(sep).c_str());
+    } else if (cmd == "del") {
+      do_delete(std::stoi(cmdline.substr(sep)));
+    }
+  }
+}
 
 int main(int argc, char* argv[]) {
   using bbt::html::Element;
@@ -29,67 +73,16 @@ int main(int argc, char* argv[]) {
   }
 
   bbt::http::Server server;
-  server.Handle("/", [](const Request& req, Response* resp) {
-    bbt::html::Document doc("Todo Application");
-    {
-      auto body = doc.body();
-      body->AddChild(new Element("h2", "Todo App"));
-      body->AddChild(new Element("p", "This is a todo app^_^"));
-      body->AddChild(
-          new bbt::html::Link("Contect Me!", "https://www.baidu.com"));
+  server.Handle("/todo", [](const Request& req, Response* resp) {
+    HtmlUi ui;
 
-      {
-        auto table = new bbt::html::Table({"head1", "head2", "head3"});
-        body->AddChild(table);
-        table->AddRow({"row1-1", "row1-2", "row1-3"});
-        table->AddRow({"row2-1", "row2-2", "row2-3"});
-        table->AddRow({"row3-1", "row3-2"});
-      }
+    auto cmd = req.Param("cmd");
+    if (!cmd.empty()) {
+      ui.set_cmd(cmd);
+      DoCommand(ui, cmd);
+    }
 
-      body->AddChild(new Element("br"));
-      {
-        auto form = body->AddChild(new bbt::html::Form("/items/show"));
-        form->AddChild(new bbt::html::Input("id", "Please input ID:", "0"));
-        form->AddChild(new bbt::html::Input("text", "Please input Text:", ""));
-        form->AddChild(new bbt::html::SubmitButton("提交"));
-      }
-    }
-    resp->WriteHtml(Response::ok, doc);
-  });
-
-  server.Handle("/items/add", [](const Request& req, Response* resp) {
-    if (req.method == "POST" && !req.content.empty()) {
-      do_add(req.content.c_str());
-      resp->WriteText(Response::ok, "OK");
-    }
-  });
-
-  server.Handle("/items/list", [](const Request& req, Response* resp) {
-    if (req.method == "GET") {
-      resp->WriteText(Response::ok, do_list());
-    }
-  });
-
-  server.Handle("/items/show", [](const Request& req, Response* resp) {
-    if (req.method == "GET") {
-      auto id = std::stoi(req.Param("id"));
-      resp->WriteText(Response::ok, do_show(id));
-    }
-  });
-  server.Handle("/items/delete", [](const Request& req, Response* resp) {
-    if (req.method == "POST") {
-      auto id = std::stoi(req.Param("id"));
-      do_delete(id);
-      resp->WriteText(Response::ok, "OK");
-    }
-  });
-  server.Handle("/items/modify", [](const Request& req, Response* resp) {
-    if (req.method == "POST") {
-      auto id = std::stoi(req.Param("id"));
-      auto new_text = req.Param("text");
-      do_modify(id, new_text.c_str());
-      resp->WriteText(Response::ok, "OK");
-    }
+    resp->WriteHtml(Response::ok, ui.doc());
   });
 
   auto port = std::to_string(args.GetLong("port"));
@@ -119,24 +112,7 @@ std::string do_list(void) {
     data.set_repository(repo);
     auto items = data.items();
     for (auto item : items) {
-      result += bbt::format("{}\t{}\n", item->id, item->text);
-    }
-  }
-  return result;
-}
-
-std::string do_show(int id) {
-  std::string result;
-
-  auto repo = todo::CreateFileRepository("/tmp/todo-data.json");
-  if (repo) {
-    todo::Data data;
-    data.set_repository(repo);
-    auto item = data.Show(id);
-    if (item) {
-      result += bbt::format("{}\t{}\n", item->id, item->text);
-    } else {
-      result += bbt::format("Not found\n");
+      result += bbt::format("<p>{}\t{}</p>", item->id, item->text);
     }
   }
   return result;

@@ -32,6 +32,9 @@ class RequestParser {
       if (result == good || result == bad) {
         if (result == good) {
           req.content.assign(begin, end);
+          std::string url_decode;
+          UrlDecode(req.uri, url_decode);
+          req.uri = url_decode;
           parse_uri(req);
         }
         return std::make_tuple(result, begin);
@@ -41,6 +44,8 @@ class RequestParser {
   }
 
  private:
+  static bool UrlDecode(const std::string& in, std::string& out);
+
   static void parse_uri(Request& req);
 
   /// Handle the next character of input.

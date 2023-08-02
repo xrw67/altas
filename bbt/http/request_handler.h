@@ -25,7 +25,7 @@ class RequestHandler {
   void set_handler(const std::string& path, const Func& h);
 
  private:
-  bool UrlDecode(const std::string& in, std::string& out);
+ 
 
   struct FuncEntry {
     std::string pattern;
