@@ -3,6 +3,7 @@
 #include "bbt/base/fmt.h"
 #include "bbt/base/status.h"
 #include "bbt/http/server.h"
+#include "bbt/html/document.h"
 #include "bbt/appkit/args.h"
 
 #include "core.h"
@@ -14,6 +15,7 @@ void do_delete(int id);
 void do_modify(int id, const char* new_text);
 
 int main(int argc, char* argv[]) {
+  using bbt::html::Element;
   using bbt::http::Request;
   using bbt::http::Response;
 
@@ -27,6 +29,32 @@ int main(int argc, char* argv[]) {
   }
 
   bbt::http::Server server;
+  server.Handle("/", [](const Request& req, Response* resp) {
+    bbt::html::Document doc("Todo Application");
+    {
+      auto body = doc.body();
+      body->AddChild(new Element("h2", "Todo App"));
+      body->AddChild(new Element("p", "This is a todo app^_^"));
+      body->AddChild(
+          new bbt::html::Link("Contect Me!", "https://www.baidu.com"));
+
+      {
+        auto table = new bbt::html::Table(3);
+        body->AddChild(table);
+        table->SetHead({"head1", "head2", "head3"});
+        table->AddRow({"row1-1", "row1-2", "row1-3"});
+        table->AddRow({"row2-1", "row2-2", "row2-3"});
+        table->AddRow({"row3-1", "row3-2"});
+      }
+
+      {
+        auto form = body->AddChild(new bbt::html::Form("/items/show"));
+        form->AddChild(new bbt::html::Input("id", "Please input ID:", "0"));
+        form->AddChild(new bbt::html::Button("提交"));
+      }
+    }
+    resp->WriteHtml(Response::ok, doc);
+  });
 
   server.Handle("/items/add", [](const Request& req, Response* resp) {
     if (req.method == "POST" && !req.content.empty()) {

@@ -16,13 +16,14 @@ const char* style =
 }
 
 Document::Document(const std::string& title)
-    : title_(title), body_(Element::New("body")) {}
+    : title_(title), body_(new Element("body")) {}
 
 std::string Document::Dump() const noexcept {
   std::stringstream ss;
   ss << "<!DOCTYPE html>\n";
   ss << "<html>\n";
   ss << "<head>\n";
+  ss << "<meta charset=\"UTF-8\">\n";
   ss << style;
   ss << "<title>" << title_ << "</title>\n";
   ss << "</head>\n";

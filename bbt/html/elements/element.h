@@ -17,17 +17,15 @@ typedef std::shared_ptr<Element> ElementPtr;
 
 class Element {
  public:
+  Element(const std::string& name);
   Element(const std::string& name, const std::string& text);
   virtual ~Element();
-
-  static ElementPtr New(const std::string& name,
-                        const std::string& text = std::string());
 
   void set_attribute(const std::string& name, const std::string& value) {
     attr_[name] = value;
   };
 
-  ElementPtr AddChild(ElementPtr e);
+  Element* AddChild(Element* e);
 
   virtual void Dump(std::stringstream& ss, int depth);
 

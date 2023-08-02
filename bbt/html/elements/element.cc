@@ -3,18 +3,16 @@
 namespace bbt {
 namespace html {
 
+Element::Element(const std::string& name) : name_(name) {}
+
 Element::Element(const std::string& name,
                  const std::string& text = std::string())
     : name_(name), text_(text) {}
 
 Element::~Element() {}
 
-ElementPtr Element::New(const std::string& name, const std::string& text) {
-  return std::make_shared<Element>(Element(name, text));
-}
-
-ElementPtr Element::AddChild(ElementPtr e) {
-  children_.push_back(e);
+Element* Element::AddChild(Element* e) {
+  children_.push_back(ElementPtr(e));
   return e;
 }
 

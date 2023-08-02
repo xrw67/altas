@@ -13,7 +13,7 @@ class Table : public Element {
  public:
   typedef std::vector<std::string> Row;
 
-  Table(size_t columns) : Element("table", ""), columns_(columns) {}
+  Table(size_t columns) : Element("table"), columns_(columns) {}
 
   void SetHead(const Row& head) { head_ = head; }
   void AddRow(const Row& row) { data_.push_back(row); }

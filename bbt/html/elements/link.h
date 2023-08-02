@@ -8,8 +8,6 @@ namespace html {
 
 class Link : public Element {
  public:
-  typedef std::vector<std::string> Row;
-
   Link(const std::string& text, const std::string& url) : Element("a", text) {
     set_attribute("href", url);
     set_attribute("target", "_blank");

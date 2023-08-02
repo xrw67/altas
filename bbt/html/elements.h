@@ -4,5 +4,6 @@
 #include "elements/element.h"
 #include "elements/table.h"
 #include "elements/link.h"
+#include "elements/form.h"
 
-#endif // BBT_HTML_ELEMENTS_H_
+#endif  // BBT_HTML_ELEMENTS_H_
