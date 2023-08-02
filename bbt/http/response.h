@@ -10,6 +10,11 @@
 #include "header.h"
 
 namespace bbt {
+
+namespace html {
+class Document;
+}
+
 namespace http {
 
 /// A reply to be sent to a client.
@@ -57,6 +62,8 @@ struct Response {
    * @param body text content
    */
   void WriteText(status_type code, const std::string& body);
+
+  void WriteHtml(status_type code, const html::Document& doc);
 
   /**
    * @brief JSON serializes into the response body with "application/json".

@@ -1,4 +1,6 @@
 #include "bbt/http/response.h"
+#include "bbt/html/document.h"
+
 #include <string>
 
 namespace bbt {
@@ -235,6 +237,13 @@ void Response::WriteText(status_type code, const std::string& body) {
   content = body;
   set_header("Content-Length", std::to_string(content.size()));
   set_header("Content-Type", "text/plain");
+}
+
+void Response::WriteHtml(status_type code, const html::Document& doc) {
+  status = code;
+  content = doc.Dump();
+  set_header("Content-Length", std::to_string(content.size()));
+  set_header("Content-Type", "text/html");
 }
 
 void Response::WriteJson(status_type code, const json& body) {

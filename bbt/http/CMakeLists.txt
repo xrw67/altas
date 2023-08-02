@@ -11,7 +11,7 @@ add_library(bbt_http
     url.cc
     form_data.cc
 )
-target_link_libraries(bbt_http bbt_base)
+target_link_libraries(bbt_http bbt_base bbt_html)
 
 
 # bbt_http_test
