@@ -25,6 +25,29 @@ Status Post(const std::string& url, const std::string& content,
             Response* resp) {
   Request req("POST", url);
   req.content = content;
+  req.set_header("Content-Length", std::to_string(req.content.size()));
+  req.set_header("Content-Type", "text/plain");
+
+  Client client;
+  return client.Do(req, resp);
+}
+
+Status PostJson(const std::string& url, const json& data, Response* resp) {
+  Request req("POST", url);
+  req.content = data.dump();
+  req.set_header("Content-Length", std::to_string(req.content.size()));
+  req.set_header("Content-Type", "application/json");
+
+  Client client;
+  return client.Do(req, resp);
+}
+
+Status PostForm(const std::string& url, const FormData& data, Response* resp) {
+  Request req("POST", url);
+  req.content = data.Encode();
+  req.set_header("Content-Length", std::to_string(req.content.size()));
+  req.set_header("Content-Type", "text/html");
+
   Client client;
   return client.Do(req, resp);
 }

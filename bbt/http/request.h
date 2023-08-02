@@ -33,6 +33,8 @@ struct Request {
   Request(const std::string& method, const std::string& raw_url);
   ~Request();
 
+  void set_header(const std::string& name, const std::string& value) noexcept;
+
   std::string Param(const char* key) const noexcept { return params.Get(key); }
 
   void to_buffers(asio::streambuf* buf) const noexcept;

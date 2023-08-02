@@ -48,6 +48,8 @@ struct Response {
   /// Get a stock reply.
   static Response stock_reply(status_type status);
 
+  void set_header(const std::string& name, const std::string& value) noexcept;
+
   /**
    * @brief set text into response body with "text/plain"
    *

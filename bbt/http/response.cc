@@ -211,32 +211,37 @@ Response Response::stock_reply(Response::status_type status) {
   Response rep;
   rep.status = status;
   rep.content = stock_replies::to_string(status);
-  rep.headers.resize(2);
-  rep.headers[0].name = "Content-Length";
-  rep.headers[0].value = std::to_string(rep.content.size());
-  rep.headers[1].name = "Content-Type";
-  rep.headers[1].value = "text/html";
+  rep.set_header("Content-Length", std::to_string(rep.content.size()));
+  rep.set_header("Content-Type", "text/html");
   return rep;
+}
+
+// TODO: duplicate
+void Response::set_header(const std::string& name,
+                          const std::string& value) noexcept {
+  for (auto& i : headers) {
+    if (i.name == name) {
+      i.value = value;
+      return;
+    }
+  }
+
+  Header h = {name, value};
+  headers.push_back(h);
 }
 
 void Response::WriteText(status_type code, const std::string& body) {
   status = code;
   content = body;
-  headers.resize(2);
-  headers[0].name = "Content-Length";
-  headers[0].value = std::to_string(content.size());
-  headers[1].name = "Content-Type";
-  headers[1].value = "text/plain";
+  set_header("Content-Length", std::to_string(content.size()));
+  set_header("Content-Type", "text/plain");
 }
 
 void Response::WriteJson(status_type code, const json& body) {
   status = code;
   content = body.dump();
-  headers.resize(2);
-  headers[0].name = "Content-Length";
-  headers[0].value = std::to_string(content.size());
-  headers[1].name = "Content-Type";
-  headers[1].value = "application/json";
+  set_header("Content-Length", std::to_string(content.size()));
+  set_header("Content-Type", "application/json");
 }
 
 }  // namespace http

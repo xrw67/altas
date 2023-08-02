@@ -21,6 +21,19 @@ Request::Request(const std::string& method, const std::string& raw_url)
 
 Request::~Request() {}
 
+void Request::set_header(const std::string& name,
+                         const std::string& value) noexcept {
+  for (auto& i : headers) {
+    if (i.name == name) {
+      i.value = value;
+      return;
+    }
+  }
+
+  Header h = {name, value};
+  headers.push_back(h);
+}
+
 void Request::to_buffers(asio::streambuf* buf) const noexcept {
   // Form the request. We specify the "Connection: close" header so that the
   // server will close the socket after transmitting the response. This will
