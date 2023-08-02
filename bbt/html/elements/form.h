@@ -37,9 +37,9 @@ class Input : public Element {
   std::string value_;
 };
 
-class Button : public Element {
+class SubmitButton : public Element {
  public:
-  Button(const std::string& text) : Element("input") {
+  SubmitButton(const std::string& text) : Element("input") {
     set_attribute("type", "submit");
     set_attribute("value", text);
   }

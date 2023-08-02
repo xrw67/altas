@@ -13,16 +13,13 @@ class Table : public Element {
  public:
   typedef std::vector<std::string> Row;
 
-  Table(size_t columns) : Element("table"), columns_(columns) {}
-
-  void SetHead(const Row& head) { head_ = head; }
+  explicit Table(const Row& heads) : Element("table"), heads_(heads) {}
   void AddRow(const Row& row) { data_.push_back(row); }
 
   void Dump(std::stringstream& ss, int depth);
 
  private:
-  const size_t columns_;
-  std::vector<std::string> head_;
+  Row heads_;
   std::vector<Row> data_;
 };
 

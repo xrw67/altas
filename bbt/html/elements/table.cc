@@ -23,21 +23,20 @@ void Table::Dump(std::stringstream& ss, int depth) {
       </tr>
       </table>
   */
-
   std::string prefix(depth, '\t');
   ss << prefix << "<table>\n";
 
-  if (!head_.empty()) {
+  if (!heads_.empty()) {
     ss << prefix << "\t<tr>\n";
-    for (size_t i = 0; i < columns_ && i < head_.size(); i++) {
-      ss << prefix << "\t\t<th>" << head_[i] << "</th>\n";
+    for (size_t i = 0; i < heads_.size(); i++) {
+      ss << prefix << "\t\t<th>" << heads_[i] << "</th>\n";
     }
     ss << prefix << "\t</tr>\n";
   }
 
   for (auto row : data_) {
     ss << prefix << "\t<tr>\n";
-    for (size_t i = 0; i < columns_ && i < row.size(); i++) {
+    for (size_t i = 0; i < heads_.size() && i < row.size(); i++) {
       ss << prefix << "\t\t<td>" << row[i] << "</td>\n";
     }
     ss << prefix << "\t</tr>\n";
