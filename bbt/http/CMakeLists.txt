@@ -4,6 +4,7 @@ add_library(bbt_http
     server/connection.cc
     server/connection_manager.cc
     server/request_parser.cc
+    server/file_server.cc
     client.cc
     server.cc
     response.cc
@@ -17,6 +18,7 @@ target_link_libraries(bbt_http bbt_base bbt_html)
 # bbt_http_test
 add_executable(bbt_http_test
     server/serve_mux_test.cc
+    server/file_server_test.cc
     server_test.cc
     url_test.cc
     form_data_test.cc
