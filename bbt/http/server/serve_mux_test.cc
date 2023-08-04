@@ -2,12 +2,12 @@
 
 #include "bbt/http/request.h"
 #include "bbt/http/response.h"
-#include "bbt/http/request_handler.h"
+#include "bbt/http/server/serve_mux.h"
 
 namespace {
 
 using bbt::http::Request;
-using bbt::http::RequestHandler;
+using bbt::http::ServeMux;
 using bbt::http::Response;
 
 void func1(const Request& req, Response* resp) { resp->content = "func1"; }
@@ -15,7 +15,7 @@ void func2(const Request& req, Response* resp) { resp->content = "func2"; }
 void func3(const Request& req, Response* resp) { resp->content = "func3"; }
 
 struct RequestHandlerTest : public ::testing::Test {
-  RequestHandler h;
+  ServeMux h;
   Request req;
   Response resp;
 

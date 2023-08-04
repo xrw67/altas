@@ -1,4 +1,4 @@
-#include "bbt/http/request_handler.h"
+#include "bbt/http/server/serve_mux.h"
 
 #include <sstream>
 
@@ -10,9 +10,9 @@
 namespace bbt {
 namespace http {
 
-RequestHandler::RequestHandler() {}
+ServeMux::ServeMux() {}
 
-void RequestHandler::HandleRequest(const Request& req, Response* resp) {
+void ServeMux::HandleRequest(const Request& req, Response* resp) {
   auto it = funcs_.find(req.path);
   if (it != funcs_.end()) {
     it->second.fn(req, resp);
@@ -29,7 +29,7 @@ void RequestHandler::HandleRequest(const Request& req, Response* resp) {
   resp->WriteText(Response::not_found, "Not found");
 }
 
-void RequestHandler::set_handler(const std::string& pattern, const Func& func) {
+void ServeMux::set_handler(const std::string& pattern, const Func& func) {
   if (pattern.empty()) return;
   if (funcs_.find(pattern) != funcs_.end()) return;
 

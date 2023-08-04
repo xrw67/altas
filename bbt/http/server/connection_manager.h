@@ -3,7 +3,7 @@
 
 #include <set>
 
-#include "bbt/http/connection.h"
+#include "bbt/http/server/connection.h"
 
 namespace bbt {
 namespace http {

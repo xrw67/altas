@@ -7,14 +7,14 @@
 #include "asio.hpp"
 
 #include "bbt/http/request.h"
-#include "bbt/http/request_parser.h"
-#include "bbt/http/request_handler.h"
+#include "bbt/http/server/request_parser.h"
+#include "bbt/http/server/serve_mux.h"
 #include "bbt/http/response.h"
 
 namespace bbt {
 namespace http {
 
-class RequestHandler;
+class ServeMux;
 class ConnectionManager;
 
 class Connection : public std::enable_shared_from_this<Connection> {
@@ -24,7 +24,7 @@ class Connection : public std::enable_shared_from_this<Connection> {
 
   /// Construct a connection with the given socket.
   explicit Connection(asio::ip::tcp::socket socket, ConnectionManager& manager,
-                      RequestHandler& handler);
+                      ServeMux& handler);
 
   /// Start the first asynchronous operation for the connection.
   void Start();
@@ -45,7 +45,7 @@ class Connection : public std::enable_shared_from_this<Connection> {
   ConnectionManager& connection_manager_;
 
   /// The handler used to process the incoming request.
-  RequestHandler& request_handler_;
+  ServeMux& request_handler_;
 
   /// Buffer for incoming data.
   std::array<char, 8192> buffer_;

@@ -12,14 +12,14 @@ namespace http {
 struct Request;
 struct Response;
 
-class RequestHandler {
+class ServeMux {
  public:
   typedef std::function<void(const Request&, Response*)> Func;
 
-  RequestHandler(const RequestHandler&) = delete;
-  RequestHandler& operator=(const RequestHandler&) = delete;
+  ServeMux(const ServeMux&) = delete;
+  ServeMux& operator=(const ServeMux&) = delete;
 
-  RequestHandler();
+  ServeMux();
   void HandleRequest(const Request& req, Response* rep);
 
   void set_handler(const std::string& path, const Func& h);

@@ -8,8 +8,8 @@
 #include "bbt/base/status.h"
 #include "bbt/base/string_view.h"
 
-#include "bbt/http/connection_manager.h"
-#include "bbt/http/request_handler.h"
+#include "bbt/http/server/connection_manager.h"
+#include "bbt/http/server/serve_mux.h"
 #include "bbt/http/request.h"
 #include "bbt/http/response.h"
 
@@ -21,7 +21,7 @@ class Server {
   Server();
   ~Server();
 
-  void Handle(const std::string& path, const RequestHandler::Func& func);
+  void Handle(const std::string& path, const ServeMux::Func& func);
   Status Listen(const std::string& address, const std::string& port);
   void Serve();
   void Shutdown();
@@ -39,7 +39,7 @@ class Server {
   ConnectionManager connection_manager_;
 
   /// The handler for all incoming requests.
-  RequestHandler request_handler_;
+  ServeMux request_handler_;
 };
 
 }  // namespace http

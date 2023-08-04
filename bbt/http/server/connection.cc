@@ -1,14 +1,14 @@
-#include "bbt/http/connection.h"
+#include "bbt/http/server/connection.h"
 
 #include <tuple>
 #include <algorithm>
 
-#include "bbt/http/connection_manager.h"
+#include "bbt/http/server/connection_manager.h"
 
 namespace bbt {
 namespace http {
 Connection::Connection(asio::ip::tcp::socket socket, ConnectionManager& manager,
-                       RequestHandler& handler)
+                       ServeMux& handler)
     : socket_(std::move(socket)),
       connection_manager_(manager),
       request_handler_(handler) {}
