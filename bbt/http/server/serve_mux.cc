@@ -12,7 +12,7 @@ namespace http {
 
 ServeMux::ServeMux() {}
 
-void ServeMux::HandleRequest(const Request& req, Response* resp) {
+void ServeMux::ServeHttp(const Request& req, Response* resp) {
   auto it = funcs_.find(req.path);
   if (it != funcs_.end()) {
     it->second.fn(req, resp);

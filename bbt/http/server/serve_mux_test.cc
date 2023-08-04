@@ -14,13 +14,13 @@ void func1(const Request& req, Response* resp) { resp->content = "func1"; }
 void func2(const Request& req, Response* resp) { resp->content = "func2"; }
 void func3(const Request& req, Response* resp) { resp->content = "func3"; }
 
-struct RequestHandlerTest : public ::testing::Test {
+struct ServeMuxTest : public ::testing::Test {
   ServeMux h;
   Request req;
   Response resp;
 
-  RequestHandlerTest() {}
-  ~RequestHandlerTest() {}
+  ServeMuxTest() {}
+  ~ServeMuxTest() {}
 
   void SetUp() {
     h.set_handler("/a/", func2);
@@ -30,27 +30,27 @@ struct RequestHandlerTest : public ::testing::Test {
   }
 };
 
-TEST_F(RequestHandlerTest, shound_match_longest_path_prefix) {
+TEST_F(ServeMuxTest, shound_match_longest_path_prefix) {
   req.path = "/a/b/c";
-  h.HandleRequest(req, &resp);
+  h.ServeHttp(req, &resp);
   ASSERT_EQ(resp.content, "func1");
 }
 
-TEST_F(RequestHandlerTest, should_match_specific_path) {
+TEST_F(ServeMuxTest, should_match_specific_path) {
   req.path = "/a/b";
-  h.HandleRequest(req, &resp);
+  h.ServeHttp(req, &resp);
   ASSERT_EQ(resp.content, "func3");
 }
 
-TEST_F(RequestHandlerTest, example3) {
+TEST_F(ServeMuxTest, example3) {
   req.path = "/a/";
-  h.HandleRequest(req, &resp);
+  h.ServeHttp(req, &resp);
   ASSERT_EQ(resp.content, "func2");
 }
 
-TEST_F(RequestHandlerTest, should_match_404) {
+TEST_F(ServeMuxTest, should_match_404) {
   req.path = "/";
-  h.HandleRequest(req, &resp);
+  h.ServeHttp(req, &resp);
   ASSERT_EQ(resp.status, Response::not_found);
 }
 

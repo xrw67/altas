@@ -28,7 +28,7 @@ void Connection::DoRead() {
               request_, buffer_.data(), buffer_.data() + bytes_transferred);
 
           if (result == RequestParser::good) {
-            request_handler_.HandleRequest(request_, &reply_);
+            request_handler_.ServeHttp(request_, &reply_);
             DoWrite();
           } else if (result == RequestParser::bad) {
             reply_ = Response::stock_reply(Response::bad_request);

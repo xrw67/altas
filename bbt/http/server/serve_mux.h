@@ -20,7 +20,7 @@ class ServeMux {
   ServeMux& operator=(const ServeMux&) = delete;
 
   ServeMux();
-  void HandleRequest(const Request& req, Response* rep);
+  void ServeHttp(const Request& req, Response* rep);
 
   void set_handler(const std::string& path, const Func& h);
 
