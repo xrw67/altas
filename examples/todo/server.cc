@@ -4,46 +4,16 @@
 #include "bbt/base/status.h"
 #include "bbt/base/str_util.h"
 #include "bbt/http/server.h"
-#include "bbt/html/document.h"
+
 #include "bbt/appkit/args.h"
 
 #include "core.h"
+#include "ui.h"
 
 bbt::Status do_add(const char* text);
 std::string do_list(void);
 void do_delete(int id);
 void do_modify(int id, const char* new_text);
-
-class HtmlUi {
- public:
-  HtmlUi() : doc_("My TODO") {
-    // 命令行
-    auto body = doc_.body();
-
-    auto form = body->AddChild(new bbt::html::Form("/todo"));
-    form->AddChild(new bbt::html::Input("cmd", "请输入命令：", ""));
-    form->AddChild(new bbt::html::SubmitButton("执行"));
-
-    body->AddChild(new bbt::html::Element("hr"));
-  }
-
-  const bbt::html::Document& doc() {
-    // 收尾
-    auto body = doc_.body();
-    if (!cmd_.empty())
-      body->AddChild(new bbt::html::Element("p", "CMD: " + cmd_));
-
-    body->AddChild(new bbt::html::Element("p", "LIST:"));
-    body->AddChild(new bbt::html::Element("p", do_list()));
-    return doc_;
-  }
-
-  void set_cmd(const std::string& cmd) { cmd_ = cmd; }
-
- private:
-  bbt::html::Document doc_;
-  std::string cmd_;
-};
 
 void DoCommand(HtmlUi& ui, const std::string& cmdline) {
   auto sep = cmdline.find_first_of(' ');
