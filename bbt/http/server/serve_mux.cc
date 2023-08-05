@@ -12,7 +12,7 @@ namespace http {
 
 ServeMux::ServeMux() {}
 
-void ServeMux::ServeHttp(const Request& req, Response* resp) {
+void ServeMux::ServeHttp(Request& req, Response* resp) {
   auto it = funcs_.find(req.path);
   if (it != funcs_.end()) {
     it->second.fn(req, resp);
@@ -21,6 +21,7 @@ void ServeMux::ServeHttp(const Request& req, Response* resp) {
 
   for (auto& i : prefix_funcs_) {
     if (StartsWithIgnoreCase(req.path, i.pattern)) {
+      req.subpath = req.path.substr(i.pattern.length() - 1);
       i.fn(req, resp);
       return;
     }
@@ -46,7 +47,6 @@ void ServeMux::set_handler(const std::string& pattern, const Func& func) {
     prefix_funcs_.push_back(entry);
   }
 }
-
 
 }  // namespace http
 }  // namespace bbt

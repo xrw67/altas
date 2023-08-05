@@ -20,13 +20,11 @@ class ServeMux {
   ServeMux& operator=(const ServeMux&) = delete;
 
   ServeMux();
-  void ServeHttp(const Request& req, Response* rep);
+  void ServeHttp(Request& req, Response* rep);
 
   void set_handler(const std::string& path, const Func& h);
 
  private:
- 
-
   struct FuncEntry {
     std::string pattern;
     Func fn;

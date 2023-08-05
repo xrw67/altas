@@ -33,14 +33,13 @@ std::string ExtensionToType(const std::string& extension) {
 }  // namespace
 
 void FileServer::ServeHttp(const Request& req, Response* rep) {
-#if 0
   // Decode url to path.
-  std::string request_path = req.path;
+  std::string request_path = req.subpath;
 
   // Request path must be absolute and not contain "..".
   if (request_path.empty() || request_path[0] != '/' ||
       request_path.find("..") != std::string::npos) {
-    rep = reply::stock_reply(reply::bad_request);
+    *rep = Response::stock_reply(Response::bad_request);
     return;
   }
 
@@ -57,25 +56,33 @@ void FileServer::ServeHttp(const Request& req, Response* rep) {
     extension = request_path.substr(last_dot_pos + 1);
   }
 
-  // Open the file to send back.
-  std::string full_path = root_ + request_path;
-  std::ifstream is(full_path.c_str(), std::ios::in | std::ios::binary);
-  if (!is) {
-    rep = reply::stock_reply(reply::not_found);
-    return;
+  auto it = files_.find(request_path);
+  if (it != files_.end()) {
+    rep->content = it->second;
+  } else {
+    // Open the file to send back.
+    std::string full_path = root_ + request_path;
+    std::ifstream is(full_path.c_str(), std::ios::in | std::ios::binary);
+    if (!is) {
+      *rep = Response::stock_reply(Response::not_found);
+      return;
+    }
+    char buf[512];
+    while (is.read(buf, sizeof(buf)).gcount() > 0)
+      rep->content.append(buf, is.gcount());
   }
 
   // Fill out the reply to be sent to the client.
-  rep.status = reply::ok;
-  char buf[512];
-  while (is.read(buf, sizeof(buf)).gcount() > 0)
-    rep.content.append(buf, is.gcount());
-  rep.headers.resize(2);
-  rep.headers[0].name = "Content-Length";
-  rep.headers[0].value = std::to_string(rep.content.size());
-  rep.headers[1].name = "Content-Type";
-  rep.headers[1].value = mime_types::extension_to_type(extension);
-#endif
+  rep->status = Response::ok;
+  rep->headers.resize(2);
+  rep->headers[0].name = "Content-Length";
+  rep->headers[0].value = std::to_string(rep->content.size());
+  rep->headers[1].name = "Content-Type";
+  rep->headers[1].value = ExtensionToType(extension);
+}
+
+void FileServer::AddFile(const std::string& path, const std::string& content) {
+  files_[path] = content;
 }
 
 }  // namespace http

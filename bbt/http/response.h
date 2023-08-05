@@ -53,6 +53,8 @@ struct Response {
   /// Get a stock reply.
   static Response stock_reply(status_type status);
 
+  std::string header(const std::string& name) noexcept;
+
   void set_header(const std::string& name, const std::string& value) noexcept;
 
   /**

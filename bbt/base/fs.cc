@@ -165,6 +165,11 @@ bool IsDir(const std::string& path) {
   return (::lstat(path.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode));
 }
 
+size_t FileSize(const std::string& path) {
+  struct stat st;
+  return !stat(path.c_str(), &st) ? st.st_size : 0;
+}
+
 std::vector<std::string> GetDirectoryChildren(const std::string& path) {
   std::vector<std::string> children;
 

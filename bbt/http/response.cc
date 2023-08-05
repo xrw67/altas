@@ -218,6 +218,15 @@ Response Response::stock_reply(Response::status_type status) {
   return rep;
 }
 
+std::string Response::header(const std::string& name) noexcept {
+  for (auto& i : headers) {
+    if (i.name == name) {
+      return i.value;
+    }
+  }
+  return {};
+}
+
 // TODO: duplicate
 void Response::set_header(const std::string& name,
                           const std::string& value) noexcept {

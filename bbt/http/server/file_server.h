@@ -2,6 +2,7 @@
 #define BBT_HTTP_SERVER_FILE_SERVER_H_
 
 #include <string>
+#include <map>
 
 namespace bbt {
 namespace http {
@@ -17,11 +18,15 @@ class FileServer final {
 
   void ServeHttp(const Request& req, Response* rep);
 
-  const std::string& root() const noexcept { return root_; }
+  void AddFile(const std::string& path, const std::string& content);
+
+  std::string root() const noexcept { return root_; }
   void set_root(const std::string& root) noexcept { root_ = root; }
 
  private:
   std::string root_;
+
+  std::map<std::string, std::string> files_;
 };
 
 }  // namespace http

@@ -7,6 +7,7 @@
 #include "asio.hpp"
 #include "bbt/base/fmt.h"
 #include "bbt/base/log.h"
+#include "bbt/base/str_util.h"
 #include "bbt/http/response.h"
 #include "bbt/http/url.h"
 
@@ -113,7 +114,13 @@ Status Client::ReadResponse(Response* resp) {
     // Process the response headers.
     std::string header;
     while (std::getline(response_stream, header) && header != "\r") {
-      BBT_LOG(DEBUG, "{}", header);
+      auto colon = header.find_first_of(":");
+      if (colon != header.npos) {
+        resp->set_header(header.substr(0, colon),
+                         bbt::StrTrim(header.substr(colon + 1)).str());
+      } else {
+        BBT_LOG(DEBUG, "{}", header);
+      }
     }
 
     std::stringstream content;

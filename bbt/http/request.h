@@ -25,6 +25,8 @@ struct Request {
   std::string content;
 
   std::string path;
+  std::string subpath;
+
   FormData params;
   std::string host;
   Url url;

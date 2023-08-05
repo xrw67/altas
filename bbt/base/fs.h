@@ -35,6 +35,8 @@ string_view Basename(string_view path);
 bool IsFileExist(const std::string& filename);
 bool IsDir(const std::string& path);
 
+size_t FileSize(const std::string &path);
+
 /**
  * @brief 读文件内容
  *

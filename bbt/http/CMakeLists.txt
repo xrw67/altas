@@ -26,3 +26,5 @@ add_executable(bbt_http_test
 target_link_libraries(bbt_http_test bbt_http gmock gmock_main)
 add_test(NAME bbt_http COMMAND bbt_http_test)
 
+add_executable(file_server server/file_server_demo.cc)
+target_link_libraries(file_server bbt_base bbt_http)
