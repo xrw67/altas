@@ -31,21 +31,6 @@ class Msg {
   Type values_;
 };
 
-class MsgPacker {
- public:
-  virtual void Pack(const Msg& msg, std::string* data) = 0;
-  virtual Status UnPack(const std::string& data, Msg* msg) = 0;
-
- protected:
-  virtual ~MsgPacker() {}
-};
-
-class JsonPacker : public MsgPacker {
- public:
-  void Pack(const Msg& msg, std::string* result);
-  Status UnPack(const std::string& data, Msg* msg);
-};
-
 }  // namespace bus
 }  // namespace bbt
 
