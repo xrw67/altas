@@ -28,6 +28,8 @@ class ConnectionManager {
   void StopAll();
 
  private:
+  void HandleConnectionClose(ConnectionPtr c);
+
   /// The managed connections.
   std::set<ConnectionPtr> connections_;
 };

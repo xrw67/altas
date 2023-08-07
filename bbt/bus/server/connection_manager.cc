@@ -2,11 +2,13 @@
 
 namespace bbt {
 namespace bus {
-    
+
 ConnectionManager::ConnectionManager() {}
 
 void ConnectionManager::Start(ConnectionPtr c) {
   connections_.insert(c);
+  c->set_on_close_handler(std::bind(&ConnectionManager::HandleConnectionClose,
+                                    this, std::placeholders::_1));
   c->Start();
 }
 
@@ -20,5 +22,7 @@ void ConnectionManager::StopAll() {
   connections_.clear();
 }
 
-}  // namespace http
+void ConnectionManager::HandleConnectionClose(ConnectionPtr c) { Stop(c); }
+
+}  // namespace bus
 }  // namespace bbt

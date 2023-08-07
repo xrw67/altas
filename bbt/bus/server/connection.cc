@@ -4,17 +4,13 @@
 #include <functional>
 
 #include "bbt/bus/msg_packer.h"
-#include "bbt/bus/server/connection_manager.h"
 
 namespace bbt {
 
 namespace bus {
 
-Connection::Connection(asio::ip::tcp::socket socket, ConnectionManager& manager,
-                       const MsgHandler& handler)
-    : socket_(std::move(socket)),
-      connection_manager_(manager),
-      msg_handler_(handler) {}
+Connection::Connection(asio::ip::tcp::socket socket, const MsgHandler& handler)
+    : socket_(std::move(socket)), msg_handler_(handler) {}
 
 void Connection::Start() { DoRead(); }
 
@@ -90,7 +86,7 @@ void Connection::DoWriteComplete(const asio::error_code& error) {
   DoRead();
 }
 
-void Connection::DoClose() { connection_manager_.Stop(shared_from_this()); }
+void Connection::DoClose() { on_close_handler_(shared_from_this()); }
 
 }  // namespace bus
 }  // namespace bbt

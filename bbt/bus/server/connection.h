@@ -2,6 +2,8 @@
 #define BBT_BUS_SERVER_CONNCECTION_H_
 
 #include <memory>
+#include <functional>
+
 #include "asio.hpp"
 
 #include "bbt/bus/msg_queue.h"
@@ -10,7 +12,10 @@ namespace bbt {
 
 namespace bus {
 
-class ConnectionManager;
+class Connection;
+typedef std::shared_ptr<Connection> ConnectionPtr;
+
+typedef std::function<void(ConnectionPtr)> OnCloseHandler;
 
 class Connection : public std::enable_shared_from_this<Connection> {
  public:
@@ -18,14 +23,17 @@ class Connection : public std::enable_shared_from_this<Connection> {
   Connection& operator=(const Connection&) = delete;
 
   /// Construct a connection with the given socket.
-  explicit Connection(asio::ip::tcp::socket socket, ConnectionManager& manager,
-                      const MsgHandler& handler);
+  explicit Connection(asio::ip::tcp::socket socket, const MsgHandler& handler);
 
   /// Start the first asynchronous operation for the connection.
   void Start();
 
   /// Stop all asynchronous operations associated with the connection.
   void Stop();
+
+  void set_on_close_handler(const OnCloseHandler& handler) {
+    on_close_handler_ = handler;
+  }
 
  private:
   /// Perform an asynchronous read operation.
@@ -42,10 +50,9 @@ class Connection : public std::enable_shared_from_this<Connection> {
   /// Socket for the connection.
   asio::ip::tcp::socket socket_;
 
-  /// The manager for this connection.
-  ConnectionManager& connection_manager_;
-
   MsgHandler msg_handler_;
+
+  OnCloseHandler on_close_handler_;
 
   // /// 每个连接一个自己的消息队列
   // /// - TODO: 新来的消息入队列，
@@ -61,8 +68,6 @@ class Connection : public std::enable_shared_from_this<Connection> {
   MsgHeader msg_header_;
   std::string msg_body_;
 };
-
-typedef std::shared_ptr<Connection> ConnectionPtr;
 
 }  // namespace bus
 }  // namespace bbt
