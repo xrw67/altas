@@ -4,19 +4,34 @@
 #include "asio.hpp"
 
 #include "bbt/base/status.h"
-
+#include "bbt/bus/server/connection_manager.h"
 namespace bbt {
 namespace bus {
 
 class Server {
  public:
-  Server(asio::io_context& io) {}
+  explicit Server(const std::string& name, asio::io_context& io_context);
+  ~Server();
+  Status Listen(const std::string& address, const std::string& port);
+  void Shutdown();
 
-  Status Listen(const std::string& address, const std::string& port) {
-    return OkStatus();
-  }
-  void Serve() {}
-  void Shutdown() {}
+ protected:
+  /// Perform an asynchronous accept operation.
+  void DoAccept();
+
+  void HandleMsg(const Msg& in, Msg* out);
+
+  /// Server name, used by multi server enviroment;
+  std::string name_;
+
+  /// The io_context used to perform asynchronous operations.
+  asio::io_context& io_context_;
+
+  /// Acceptor used to listen for incoming connections.
+  asio::ip::tcp::acceptor acceptor_;
+
+  /// The connection manager which owns all live connections.
+  ConnectionManager connection_manager_;
 };
 
 }  // namespace bus

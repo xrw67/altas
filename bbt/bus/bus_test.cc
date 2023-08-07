@@ -8,16 +8,16 @@
 namespace {
 
 TEST(Service, DISABLED_EchoService) {
-  asio::io_context io_ctx;
-  std::thread t([&]() { io_ctx.run(); });
+  asio::io_context io_context(1);
+  std::thread t([&]() { io_context.run(); });
 
   // Server
-  bbt::bus::Server server(io_ctx);
+  bbt::bus::Server server("mybus", io_context);
   auto st = server.Listen("127.0.0.1", "59998");
   ASSERT_TRUE(st) << st.ToString();
 
   // client1 发布服务
-  bbt::bus::Client c1(io_ctx);
+  bbt::bus::Client c1("my_client1", io_context);
   st = c1.Connect("127.0.0.1", "59998");
   ASSERT_TRUE(st) << st.ToString();
 
@@ -27,7 +27,7 @@ TEST(Service, DISABLED_EchoService) {
   });
 
   // client2 调用服务
-  bbt::bus::Client c2(io_ctx);
+  bbt::bus::Client c2("my_client2", io_context);
   st = c2.Connect("127.0.0.1", "59998");
   ASSERT_TRUE(st) << st.ToString();
 
@@ -50,7 +50,7 @@ TEST(Service, DISABLED_EchoService) {
   server.Shutdown();
   // c1.Shutdown();
   // c2.Shutdown();
-  io_ctx.stop();
+  io_context.stop();
   t.join();
 }
 

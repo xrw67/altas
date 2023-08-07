@@ -5,11 +5,19 @@
 #include <string>
 #include <map>
 #include <memory>
+#include <functional>
 
 #include "bbt/base/status.h"
 
 namespace bbt {
 namespace bus {
+
+static const uint32_t kMsgMagic = 0x20141021;
+
+struct MsgHeader {
+  uint32_t magic;
+  uint32_t length;
+};
 
 class Msg {
  public:
@@ -36,6 +44,8 @@ class Msg {
 };
 
 typedef std::shared_ptr<Msg> MsgPtr;
+
+typedef std::function<void(const Msg& in, Msg* out)> MsgHandler;
 
 }  // namespace bus
 }  // namespace bbt

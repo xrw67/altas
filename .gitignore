@@ -15,3 +15,5 @@ _deps
 .DS_Store
 
 /.vscode/settings.json
+docs/.$*.drawio.bkp
+docs/.$*.drawio.dtmp
