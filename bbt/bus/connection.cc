@@ -1,4 +1,4 @@
-#include "bbt/bus/server/connection.h"
+#include "bbt/bus/connection.h"
 
 #include <algorithm>
 #include <functional>

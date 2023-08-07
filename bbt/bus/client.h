@@ -11,6 +11,8 @@
 #include "bbt/bus/method.h"
 #include "bbt/bus/msg.h"
 
+#include "bbt/bus/connection.h"
+
 namespace bbt {
 namespace bus {
 

@@ -4,7 +4,7 @@
 #include "asio.hpp"
 
 #include "bbt/base/status.h"
-#include "bbt/bus/server/connection_manager.h"
+#include "bbt/bus/connection_manager.h"
 namespace bbt {
 namespace bus {
 

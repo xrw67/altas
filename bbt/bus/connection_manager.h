@@ -1,9 +1,9 @@
-#ifndef BBT_BUS_SERVRE_CONNECTION_MANAGER_H_
-#define BBT_BUS_SERVER_CONNECTION_MANAGER_H_
+#ifndef BBT_BUS_CONNECTION_MANAGER_H_
+#define BBT_BUS_CONNECTION_MANAGER_H_
 
 #include <set>
 
-#include "bbt/bus/server/connection.h"
+#include "bbt/bus/connection.h"
 
 namespace bbt {
 namespace bus {
@@ -37,4 +37,4 @@ class ConnectionManager {
 }  // namespace bus
 }  // namespace bbt
 
-#endif  // BBT_BUS_SERVER_CONNECTION_MANAGER_H_
+#endif  // BBT_BUS_CONNECTION_MANAGER_H_

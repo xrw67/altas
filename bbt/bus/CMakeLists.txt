@@ -4,8 +4,8 @@ add_library(bbt_bus
     msg.cc
     msg_packer.cc
     msg_queue.cc
-    server/connection.cc
-    server/connection_manager.cc
+    connection.cc
+    connection_manager.cc
 )
 target_link_libraries(bbt_bus bbt_base)
 

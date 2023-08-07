@@ -1,5 +1,5 @@
-#ifndef BBT_BUS_SERVER_CONNCECTION_H_
-#define BBT_BUS_SERVER_CONNCECTION_H_
+#ifndef BBT_BUS_CONNCECTION_H_
+#define BBT_BUS_CONNCECTION_H_
 
 #include <memory>
 #include <functional>
@@ -72,4 +72,4 @@ class Connection : public std::enable_shared_from_this<Connection> {
 }  // namespace bus
 }  // namespace bbt
 
-#endif  // BBT_BUS_SERVER_CONNCECTION_H_
+#endif  // BBT_BUS_CONNCECTION_H_
