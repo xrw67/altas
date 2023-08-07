@@ -3,81 +3,85 @@
 #include <algorithm>
 #include <functional>
 
+#include "bbt/bus/msg.h"
 #include "bbt/bus/msg_packer.h"
 
 namespace bbt {
 
 namespace bus {
 
-Connection::Connection(asio::ip::tcp::socket socket, const MsgHandler& handler)
-    : socket_(std::move(socket)), msg_handler_(handler) {}
+BaseConnection::BaseConnection(asio::ip::tcp::socket socket)
+    : socket_(std::move(socket)) {}
 
-void Connection::Start() { DoRead(); }
+//
+// BusConnection
+//
+BusConnection::BusConnection(asio::ip::tcp::socket socket, const MsgCallback& cb)
+    : BaseConnection(std::move(socket)), msg_callback_(cb) {}
 
-void Connection::Stop() { socket_.close(); }
+void BusConnection::Start() { DoRead(); }
 
-void Connection::DoRead() {
+void BusConnection::Stop() { socket_.close(); }
+
+void BusConnection::DoRead() {
   asio::async_read(
-      socket_, asio::buffer(&msg_header_, sizeof(msg_header_)),
-      std::bind(&Connection::HandleReadMsgHeader, this, std::placeholders::_1));
+      socket_, asio::buffer(&parser_.msg_header_, sizeof(parser_.msg_header_)),
+      std::bind(&BusConnection::OnReadMsgHeader, this, std::placeholders::_1));
 }
 
-void Connection::HandleReadMsgHeader(const asio::error_code& error) {
+void BusConnection::OnReadMsgHeader(const asio::error_code& error) {
   if (error) {
     DoClose();
     return;
   }
 
-  if (msg_header_.magic != kMsgMagic) {
+  if (parser_.msg_header_.magic != kMsgMagic) {
     DoClose();
     return;
   }
 
-  msg_body_.resize(msg_header_.length);
+  parser_.msg_body_.resize(parser_.msg_header_.length);
 
   asio::async_read(
-      socket_, asio::buffer((char*)msg_body_.data(), msg_header_.length),
-      std::bind(&Connection::HandleReadMsgBody, this, std::placeholders::_1));
+      socket_,
+      asio::buffer((char*)parser_.msg_body_.data(), parser_.msg_header_.length),
+      std::bind(&BusConnection::OnReadMsgBody, this, std::placeholders::_1));
 }
 
-void Connection::HandleReadMsgBody(const asio::error_code& error) {
+void BusConnection::OnReadMsgBody(const asio::error_code& error) {
   if (error) {
     DoClose();
     return;
   }
 
   JsonPacker p;
-  Msg in;
+  MsgPtr in(new Msg());
 
-  auto st = p.Unpack(msg_body_, &in);
+  auto st = p.Unpack(parser_.msg_body_, in.get());
   if (st) {
     DoClose();
     return;
   }
 
-  Msg out(in.id());
-  msg_handler_(in, &out);
-
-  p.Pack(out, &msg_body_);
-  msg_header_.length = msg_body_.length() + 1;
-
-  DoWrite();
+  msg_callback_(in);
+  DoRead();  // Next msg
 }
 
-void Connection::DoWrite() {
+void BusConnection::DoWrite() {
   auto self(shared_from_this());
   asio::async_write(
-      socket_, asio::buffer(&msg_header_, sizeof(msg_header_)),
-      std::bind(&Connection::DoWriteMsgBody, this, std::placeholders::_1));
+      socket_, asio::buffer(&parser_.msg_header_, sizeof(parser_.msg_header_)),
+      std::bind(&BusConnection::DoWriteMsgBody, this, std::placeholders::_1));
 }
 
-void Connection::DoWriteMsgBody(const asio::error_code& error) {
+void BusConnection::DoWriteMsgBody(const asio::error_code& error) {
   asio::async_write(
-      socket_, asio::buffer(msg_body_.data(), msg_body_.length() + 1),
-      std::bind(&Connection::DoWriteComplete, this, std::placeholders::_1));
+      socket_,
+      asio::buffer(parser_.msg_body_.data(), parser_.msg_body_.length() + 1),
+      std::bind(&BusConnection::DoWriteComplete, this, std::placeholders::_1));
 }
 
-void Connection::DoWriteComplete(const asio::error_code& error) {
+void BusConnection::DoWriteComplete(const asio::error_code& error) {
   if (error) {
     DoClose();
     return;
@@ -86,7 +90,7 @@ void Connection::DoWriteComplete(const asio::error_code& error) {
   DoRead();
 }
 
-void Connection::DoClose() { on_close_handler_(shared_from_this()); }
+void BusConnection::DoClose() { on_close_callback_(shared_from_this()); }
 
 }  // namespace bus
 }  // namespace bbt

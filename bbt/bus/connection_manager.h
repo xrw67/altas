@@ -3,7 +3,7 @@
 
 #include <set>
 
-#include "bbt/bus/connection.h"
+#include "callbacks.h"
 
 namespace bbt {
 namespace bus {

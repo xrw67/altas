@@ -1,5 +1,5 @@
 #include "bbt/bus/connection_manager.h"
-
+#include "bbt/bus/connection.h"
 namespace bbt {
 namespace bus {
 

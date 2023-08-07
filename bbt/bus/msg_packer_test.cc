@@ -8,15 +8,15 @@ namespace {
 using bbt::bus::Msg;
 
 static const char* json_data =
-    "{\"id\":123,\"method\":\"foo\",\"param\":[{\"t\":\"key1\",\"v\":\"str1\"},"
-    "{\"t\":\"key2\",\"v\":\"1001\"}]}";
+    "{\"id\":123,\"is_req\":true,\"method\":\"foo\",\"param\":[{\"t\":\"key1\","
+    "\"v\":\"str1\"},{\"t\":\"key2\",\"v\":\"1001\"}]}";
 
 TEST(MsgPacker, should_pack_by_json) {
   Msg msg;
   msg.set_id(123);
   msg.set_method("foo");
-  msg.Set("key1", "str1");
-  msg.Set("key2", "1001");
+  msg.set_param("key1", "str1");
+  msg.set_param("key2", "1001");
 
   bbt::bus::JsonPacker j;
   std::string s;
@@ -33,8 +33,8 @@ TEST(MsgPacker, should_unpack_by_json) {
   ASSERT_TRUE(st) << st.ToString();
   ASSERT_EQ(msg.id(), 123);
   ASSERT_EQ(msg.method(), "foo");
-  ASSERT_EQ(msg.Get("key1"), "str1");
-  ASSERT_EQ(msg.Get("key2"), "1001");
+  ASSERT_EQ(msg.param("key1"), "str1");
+  ASSERT_EQ(msg.param("key2"), "1001");
 }
 
 TEST(MsgPacker, should_catch_exception_with_unpack) {

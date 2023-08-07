@@ -18,7 +18,7 @@ class MsgReceiver {
  private:
     void DoNewConnection(asio::ip::tcp::socket socket)
   asio::io_context& io_context_;
-  bbt::bus::Connection peer_;
+  bbt::bus::BusConnection peer_;
 };
 
 TEST(Client, should_register_method) {

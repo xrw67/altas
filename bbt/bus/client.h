@@ -8,17 +8,25 @@
 #include "asio.hpp"
 
 #include "bbt/base/status.h"
-#include "bbt/bus/method.h"
-#include "bbt/bus/msg.h"
 
-#include "bbt/bus/connection.h"
+#include "callbacks.h"
+#include "method.h"
 
 namespace bbt {
 namespace bus {
 
+class TcpClient {
+ public:
+  TcpClient(asio::io_context& ioctx);
+
+  Status Connect(const std::string& address, const std::string& port);
+  asio::io_context& io_context_;
+  asio::ip::tcp::socket socket_; // Temp
+};
+
 class Client {
  public:
-  Client(const std::string& name, asio::io_context& io_context);
+  Client(const std::string& name, asio::io_context& io);
   ~Client();
 
   Status Connect(const std::string& address, const std::string& port);
@@ -30,26 +38,20 @@ class Client {
   Status ACall(const std::string& method, const In& in, Result* result);
 
  private:
-  Msg::Id NextMsgId() noexcept;
+  MsgId NextMsgId() noexcept;
 
-  /// Perform an asynchronous read operation.
-  void DoRead();
-  /// Perform an asynchronous write operation.
-  void DoWrite();
-
-  /// Buffer for incoming data.
-  std::array<char, 8192> buffer_;
+  void HandleMsg(const MsgPtr& msg);
 
   std::string name_;
-  asio::io_context& io_context_;
-  asio::ip::tcp::socket socket_;
+  TcpClient tcp_;
+  ConnectionPtr conn_;
 
-  std::map<std::string, MethodFunc> services_;
+  std::map<std::string, MethodFunc> methods_;
 
-  std::atomic<Msg::Id> next_id_;
+  std::atomic<MsgId> next_id_;
 
   /// 等待结果的列表
-  std::map<Msg::Id, Result> waitings_;
+  std::map<MsgId, Result*> waitings_;
 };
 
 }  // namespace bus

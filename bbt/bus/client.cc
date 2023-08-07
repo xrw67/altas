@@ -2,35 +2,52 @@
 
 #include <exception>
 
+#include "bbt/bus/connection.h"
 #include "bbt/bus/method.h"
-#include "bbt/bus/msg_packer.h"
+#include "bbt/bus/msg.h"
 
 namespace bbt {
 namespace bus {
 
-Client::Client(const std::string& name, asio::io_context& io_context)
-    : name_(name), io_context_(io_context), socket_(io_context) {}
+TcpClient::TcpClient(asio::io_context& ioctx)
+    : io_context_(ioctx), socket_(ioctx) {}
 
-Client::~Client() { socket_.close(); }
-
-Status Client::Connect(const std::string& address, const std::string& port) {
+Status TcpClient::Connect(const std::string& address, const std::string& port) {
   try {
     asio::ip::tcp::resolver resolver(io_context_);
     auto endpoints = resolver.resolve(address, port);
     asio::connect(socket_, endpoints);
 
-    DoRead();
   } catch (std::exception& e) {
     return InvalidArgumentError(e.what());
   }
   return OkStatus();
 }
 
-void Client::Close() { socket_.close(); }
+//
+// Client
+//
+
+Client::Client(const std::string& name, asio::io_context& io)
+    : name_(name), tcp_(io) {}
+
+Client::~Client() { Close(); }
+
+Status Client::Connect(const std::string& address, const std::string& port) {
+  tcp_.Connect(address, port);
+
+  conn_ = std::make_shared<BusConnection>(
+      std::move(tcp_.socket_),
+      std::bind(&Client::HandleMsg, this, std::placeholders::_1));
+  // TODO: conn_->set_on_close_handler();
+  conn_->Start();
+  return OkStatus();
+}
+
+void Client::Close() { conn_->Stop(); }
 
 Status Client::RegisterMethod(const std::string& name, MethodFunc func) {
-  if (services_.find(name) != services_.end())
-    return AlreadyExistsError(name);
+  if (methods_.find(name) != methods_.end()) return AlreadyExistsError(name);
 
   // TODO： 支持一次性上传多个函数
   // CALL RegisterMethod RPC
@@ -42,7 +59,7 @@ Status Client::RegisterMethod(const std::string& name, MethodFunc func) {
 
   // ADD LocalServiceList
   // TODO: mutex
-  services_[name] = func;
+  methods_[name] = func;
   return st;
 }
 
@@ -62,30 +79,44 @@ Status Client::ACall(const std::string& method, const In& in, Result* result) {
   if (!result) return InvalidArgumentError("no result param");
 
   // Pack Message
-  Msg msg(NextMsgId());
-  msg.set_method(method);
+  MsgPtr msg(new Msg());
+  msg->set_id(NextMsgId());
+  msg->set_caller(name_);
+  msg->set_request(true);
+  msg->set_method(method);
   for (auto i : in.params()) {
-    msg.Set(i.first, i.second);
+    msg->set_param(i.first, i.second);
   }
-
-  JsonPacker packer;
-  std::string buffer;
-  packer.Pack(msg, &buffer);
-
   // Send to server
+  conn_->Send(msg);
 
-  // Add waiting list for response & timeout
-
-  // Return result
+  // result->set_in(msg);
+  // result->ResetWait();
+  // AddWaitintList(result);
 
   return OkStatus();
 }
 
-Msg::Id Client::NextMsgId() noexcept { return 0; }
+MsgId Client::NextMsgId() noexcept { return next_id_.fetch_add(1); }
 
-void Client::DoRead() {}
+void Client::HandleMsg(const MsgPtr& msg) {
+  // 服务端发过来的rpc请求，需要响应它
+  // if (msg.is_request()) {
+  //   // 其他客户端的访问请求
+  //   Msg resp(msg.id(), msg.caller());
+  //   HandleMethodRequest(msg, &resp);
+  //   conn_.Send(resp);
+  // } else {
+  //   // 我的请求应答来了
+  //   auto it = waitings_.find(msg.id());
+  //   if (it != waitings_.end()) {
+  //     auto result = it->second;
 
-void Client::DoWrite() {}
+  //     result->set_out(msg);
+  //     result->WeakUp();
+  //   }
+  // }
+}
 
 }  // namespace bus
 }  // namespace bbt

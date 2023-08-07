@@ -1,29 +1,42 @@
 #ifndef BBT_BUS_CONNCECTION_H_
 #define BBT_BUS_CONNCECTION_H_
 
-#include <memory>
-#include <functional>
-
 #include "asio.hpp"
-
-#include "bbt/bus/msg_queue.h"
+#include "callbacks.h"
 
 namespace bbt {
-
 namespace bus {
 
-class Connection;
-typedef std::shared_ptr<Connection> ConnectionPtr;
-
-typedef std::function<void(ConnectionPtr)> OnCloseHandler;
-
-class Connection : public std::enable_shared_from_this<Connection> {
+class BaseConnection {
  public:
-  Connection(const Connection&) = delete;
-  Connection& operator=(const Connection&) = delete;
+  BaseConnection(asio::ip::tcp::socket socket);
 
+  BaseConnection(const BaseConnection&) = delete;
+  BaseConnection& operator=(const BaseConnection&) = delete;
+
+
+  void set_on_close_handler(const ConnectionCloseCallback& cb) {
+    on_close_callback_ = cb;
+  }
+
+  /// Socket for the connection.
+  asio::ip::tcp::socket socket_;
+  ConnectionCloseCallback on_close_callback_;
+};
+
+class MsgParser {
+ public:
+ enum State { };
+
+  MsgHeader msg_header_;
+  std::string msg_body_;
+};
+
+class BusConnection : public BaseConnection,
+                   public std::enable_shared_from_this<BusConnection> {
+ public:
   /// Construct a connection with the given socket.
-  explicit Connection(asio::ip::tcp::socket socket, const MsgHandler& handler);
+  explicit BusConnection(asio::ip::tcp::socket socket, const MsgCallback& cb);
 
   /// Start the first asynchronous operation for the connection.
   void Start();
@@ -31,9 +44,7 @@ class Connection : public std::enable_shared_from_this<Connection> {
   /// Stop all asynchronous operations associated with the connection.
   void Stop();
 
-  void set_on_close_handler(const OnCloseHandler& handler) {
-    on_close_handler_ = handler;
-  }
+  void Send(const MsgPtr& msg) {}
 
  private:
   /// Perform an asynchronous read operation.
@@ -43,16 +54,11 @@ class Connection : public std::enable_shared_from_this<Connection> {
   void DoWriteMsgBody(const asio::error_code& error);
   void DoWriteComplete(const asio::error_code& error);
 
-  void HandleReadMsgHeader(const asio::error_code& error);
-  void HandleReadMsgBody(const asio::error_code& error);
+  void OnReadMsgHeader(const asio::error_code& error);
+  void OnReadMsgBody(const asio::error_code& error);
   void DoClose();
 
-  /// Socket for the connection.
-  asio::ip::tcp::socket socket_;
-
-  MsgHandler msg_handler_;
-
-  OnCloseHandler on_close_handler_;
+  MsgCallback msg_callback_;
 
   // /// 每个连接一个自己的消息队列
   // /// - TODO: 新来的消息入队列，
@@ -65,8 +71,7 @@ class Connection : public std::enable_shared_from_this<Connection> {
   // Cache
   //
 
-  MsgHeader msg_header_;
-  std::string msg_body_;
+  MsgParser parser_;
 };
 
 }  // namespace bus
