@@ -39,7 +39,7 @@ void Server::DoAccept() {
 
         if (!ec) {
           connection_manager_.Start(std::make_shared<Connection>(
-              std::move(socket), connection_manager_,
+              std::move(socket),
               std::bind(&Server::HandleMsg, this, std::placeholders::_1,
                         std::placeholders::_2)));
         }
