@@ -5,10 +5,24 @@
 #include <string>
 #include <map>
 
-#include "callbacks.h"
+#include "bbt/net/callbacks.h"
 
 namespace bbt {
 namespace bus {
+
+static const uint32_t kMsgMagic = 0x20141021;
+
+typedef uint32_t MsgId;
+
+struct MsgHeader {
+  uint32_t magic;
+  uint32_t length;
+};
+
+class Msg;
+typedef std::shared_ptr<Msg> MsgPtr;
+typedef std::function<void(const bbt::net::ConnectionPtr& conn, const MsgPtr&)>
+    BusMsgCallback;
 
 class Msg {
  public:
@@ -32,7 +46,7 @@ class Msg {
   bool has_param(const std::string& key) const;
   void set_param(const std::string& key, const std::string& value);
   std::string param(const std::string& key) const;
-  
+
   TypeConstIter begin() const noexcept { return values_.begin(); }
   TypeConstIter end() const noexcept { return values_.end(); }
 

@@ -4,40 +4,19 @@
 #include "bbt/base/status.h"
 
 #include "asio.hpp"
-#include "callbacks.h"
+#include "bbt/net/tcp_server.h"
+#include "bbt/net/tcp_connection_manager.h"
+#include "bbt/bus/msg.h"
 
 namespace bbt {
+
 namespace bus {
 
-class ConnectionManager;
-
-typedef std::function<void(std::error_code ec, asio::ip::tcp::socket socket)>
-    NewConnectionCallback;
-
-class TcpServer {
- public:
-  TcpServer(asio::io_context& ioctx);
-
-  Status Listen(const std::string& address, const std::string& port);
-  void Stop();
-
-  void set_new_connection_callback(const NewConnectionCallback& cb) {
-    new_connection_callback_ = cb;
-  }
-
-  /// Perform an asynchronous accept operation.
-  void DoAccept();
-
-  
-
-  /// The io_context used to perform asynchronous operations.
-  asio::io_context& io_context_;
-
-  /// Acceptor used to listen for incoming connections.
-  asio::ip::tcp::acceptor acceptor_;
-
-  NewConnectionCallback new_connection_callback_;
-};
+using bbt::net::Buffer;
+using bbt::net::Connection;
+using bbt::net::ConnectionPtr;
+using bbt::net::TcpServer;
+using bbt::net::ConnectionManager;
 
 class Server {
  public:
@@ -47,8 +26,15 @@ class Server {
   void Shutdown();
 
  protected:
- void OnNewConnection(std::error_code ec, asio::ip::tcp::socket socket);
-  void HandleMsg(const MsgPtr& msg);
+  // call when acceptor get a new connection
+  void OnNewConnection(std::error_code ec, asio::ip::tcp::socket socket);
+  // call when connection state changed
+  void OnConnection(const ConnectionPtr& conn);
+  // call when connection read bytes
+  void OnMessage(const ConnectionPtr& conn, Buffer* buf);
+
+  // call when receive bus message coming
+  void OnBusMsg(const ConnectionPtr& conn, const MsgPtr& msg);
 
   /// Server name, used by multi server enviroment;
   std::string name_;

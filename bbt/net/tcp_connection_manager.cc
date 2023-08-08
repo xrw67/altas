@@ -1,14 +1,13 @@
-#include "bbt/bus/connection_manager.h"
-#include "bbt/bus/connection.h"
+#include "bbt/net/tcp_connection_manager.h"
+#include "bbt/net/tcp_connection.h"
+
 namespace bbt {
-namespace bus {
+namespace net {
 
 ConnectionManager::ConnectionManager() {}
 
 void ConnectionManager::Start(ConnectionPtr c) {
   connections_.insert(c);
-  c->set_on_close_handler(std::bind(&ConnectionManager::HandleConnectionClose,
-                                    this, std::placeholders::_1));
   c->Start();
 }
 
@@ -22,7 +21,5 @@ void ConnectionManager::StopAll() {
   connections_.clear();
 }
 
-void ConnectionManager::HandleConnectionClose(ConnectionPtr c) { Stop(c); }
-
-}  // namespace bus
+}  // namespace net
 }  // namespace bbt

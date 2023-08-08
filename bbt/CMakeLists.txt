@@ -1,5 +1,6 @@
 add_subdirectory(base)
 add_subdirectory(appkit)
+add_subdirectory(net)
 add_subdirectory(bus)
 add_subdirectory(http)
 add_subdirectory(html)

@@ -4,10 +4,9 @@ add_library(bbt_bus
     msg.cc
     msg_packer.cc
     method_mux.cc
-    connection.cc
-    connection_manager.cc
+    context.cc
 )
-target_link_libraries(bbt_bus bbt_base)
+target_link_libraries(bbt_bus bbt_net bbt_base)
 
 add_executable(bbt_bus_test
     bus_test.cc

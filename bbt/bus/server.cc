@@ -1,42 +1,14 @@
 #include "bbt/bus/server.h"
-#include "bbt/bus/connection.h"
-#include "bbt/bus/connection_manager.h"
+#include "bbt/net/tcp_connection.h"
+#include "bbt/net/tcp_connection_manager.h"
+
+#include "bbt/bus/context.h"
 
 namespace bbt {
-
 namespace bus {
 
-TcpServer::TcpServer(asio::io_context& ioctx)
-    : io_context_(ioctx), acceptor_(ioctx) {}
-
-Status TcpServer::Listen(const std::string& address, const std::string& port) {
-  asio::ip::tcp::resolver resolver(io_context_);
-  asio::ip::tcp::endpoint endpoint = *resolver.resolve(address, port).begin();
-
-  acceptor_.open(endpoint.protocol());
-  acceptor_.set_option(asio::ip::tcp::acceptor::reuse_address(true));
-  acceptor_.bind(endpoint);
-  acceptor_.listen();
-
-  DoAccept();
-  return bbt::OkStatus();
-}
-
-void TcpServer::Stop() { acceptor_.close(); }
-
-void TcpServer::DoAccept() {
-  acceptor_.async_accept(
-      [this](std::error_code ec, asio::ip::tcp::socket socket) {
-        // Check whether the server was stopped by a signal before this
-        // completion handler had a chance to run.
-        if (!acceptor_.is_open()) {
-          return;
-        }
-
-        new_connection_callback_(ec, std::move(socket));
-        DoAccept();  // Wait Next
-      });
-}
+using bbt::net::_1;
+using bbt::net::_2;
 
 //
 // Server
@@ -50,7 +22,8 @@ Status Server::Listen(const std::string& address, const std::string& port) {
   auto st = tcp_.Listen(address, port);
   if (!st) return st;
 
-  tcp_.set_new_connection_callback(std::bind(&Server::OnNewConnection, this, _1, _2));
+  tcp_.set_new_connection_callback(
+      std::bind(&Server::OnNewConnection, this, _1, _2));
   return st;
 }
 
@@ -61,13 +34,34 @@ void Server::Shutdown() {
 
 void Server::OnNewConnection(std::error_code ec, asio::ip::tcp::socket socket) {
   if (!ec) {
-    connection_manager_->Start(std::make_shared<BusConnection>(
-        std::move(socket),
-        std::bind(&Server::HandleMsg, this, std::placeholders::_1)));
+    auto conn = std::make_shared<Connection>(std::move(socket));
+    conn->set_context(
+        new BusContext(std::bind(&Server::OnBusMsg, this, _1, _2)));
+    conn->set_connection_callback(std::bind(&Server::OnConnection, this, _1));
+    conn->set_message_callback(std::bind(&Server::OnMessage, this, _1, _2));
+    connection_manager_->Start(conn);
   }
 }
 
-void Server::HandleMsg(const MsgPtr& msg) {
+void Server::OnConnection(const ConnectionPtr& conn) {
+  switch (conn->state()) {
+    case Connection::kConnected:
+      break;
+    case Connection::kDisconnected:
+      connection_manager_->Stop(conn);
+      break;
+  }
+}
+
+void Server::OnMessage(const ConnectionPtr& conn, Buffer* buf) {
+  BusContext* ctx = reinterpret_cast<BusContext*>(conn->context());
+  if (!ctx->Parse(conn, buf)) {
+    // 解析失败,
+    conn->Stop();
+  }
+}
+
+void Server::OnBusMsg(const ConnectionPtr& conn, const MsgPtr& msg) {
   // 分发给具体的Client的服务来处理
 }
 

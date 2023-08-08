@@ -2,27 +2,16 @@
 
 #include <exception>
 
-#include "bbt/bus/connection.h"
+#include "bbt/net/tcp_connection.h"
 #include "bbt/bus/method.h"
 #include "bbt/bus/msg.h"
+#include "bbt/bus/context.h"
 
 namespace bbt {
 namespace bus {
 
-TcpClient::TcpClient(asio::io_context& ioctx)
-    : io_context_(ioctx), socket_(ioctx) {}
-
-Status TcpClient::Connect(const std::string& address, const std::string& port) {
-  try {
-    asio::ip::tcp::resolver resolver(io_context_);
-    auto endpoints = resolver.resolve(address, port);
-    asio::connect(socket_, endpoints);
-
-  } catch (std::exception& e) {
-    return InvalidArgumentError(e.what());
-  }
-  return OkStatus();
-}
+using bbt::net::_1;
+using bbt::net::_2;
 
 //
 // Client
@@ -36,10 +25,12 @@ Client::~Client() { Close(); }
 Status Client::Connect(const std::string& address, const std::string& port) {
   tcp_.Connect(address, port);
 
-  conn_ = std::make_shared<BusConnection>(
-      std::move(tcp_.socket_),
-      std::bind(&Client::HandleMsg, this, std::placeholders::_1));
-  // TODO: conn_->set_on_close_handler();
+  conn_ = std::make_shared<Connection>(std::move(tcp_.socket_));
+  conn_->set_context(
+      new BusContext(std::bind(&Client::OnBusMsg, this, _1, _2)));
+  conn_->set_connection_callback(std::bind(&Client::OnConnection, this, _1));
+  conn_->set_message_callback(std::bind(&Client::OnMessage, this, _1, _2));
+
   conn_->Start();
   return OkStatus();
 }
@@ -88,7 +79,8 @@ Status Client::ACall(const std::string& method, const In& in, Result* result) {
     msg->set_param(i.first, i.second);
   }
   // Send to server
-  conn_->Send(msg);
+  BusContext* ctx = reinterpret_cast<BusContext*>(conn_->context());
+  ctx->Write(msg);
 
   // result->set_in(msg);
   // result->ResetWait();
@@ -99,7 +91,25 @@ Status Client::ACall(const std::string& method, const In& in, Result* result) {
 
 MsgId Client::NextMsgId() noexcept { return next_id_.fetch_add(1); }
 
-void Client::HandleMsg(const MsgPtr& msg) {
+void Client::OnConnection(const ConnectionPtr& conn) {
+  switch (conn->state()) {
+    case Connection::kConnected:
+      break;
+    case Connection::kDisconnected:
+      conn->Stop(); // TODO 死循环？
+      break;
+  }
+}
+
+void Client::OnMessage(const ConnectionPtr& conn, Buffer* buf) {
+  BusContext* ctx = reinterpret_cast<BusContext*>(conn->context());
+  if (!ctx->Parse(conn, buf)) {
+    // 解析失败,
+    conn->Stop();
+  }
+}
+
+void Client::OnBusMsg(const ConnectionPtr& conn, const MsgPtr& msg) {
   // 服务端发过来的rpc请求，需要响应它
   // if (msg.is_request()) {
   //   // 其他客户端的访问请求

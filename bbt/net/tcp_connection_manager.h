@@ -1,12 +1,12 @@
-#ifndef BBT_BUS_CONNECTION_MANAGER_H_
-#define BBT_BUS_CONNECTION_MANAGER_H_
+#ifndef BBT_NET_TCP_CONNECTION_MANAGER_H_
+#define BBT_NET_TCP_CONNECTION_MANAGER_H_
 
 #include <set>
 
-#include "callbacks.h"
+#include "bbt/net/callbacks.h"
 
 namespace bbt {
-namespace bus {
+namespace net {
 
 /// Manages open connections so that they may be cleanly stopped when the server
 /// needs to shut down.
@@ -28,13 +28,11 @@ class ConnectionManager {
   void StopAll();
 
  private:
-  void HandleConnectionClose(ConnectionPtr c);
-
   /// The managed connections.
   std::set<ConnectionPtr> connections_;
 };
 
-}  // namespace bus
+}  // namespace net
 }  // namespace bbt
 
-#endif  // BBT_BUS_CONNECTION_MANAGER_H_
+#endif  // BBT_NET_TCP_CONNECTION_MANAGER_H_

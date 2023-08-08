@@ -8,21 +8,18 @@
 #include "asio.hpp"
 
 #include "bbt/base/status.h"
+#include "bbt/net/tcp_client.h"
 
-#include "callbacks.h"
 #include "method.h"
+#include "msg.h"
 
 namespace bbt {
 namespace bus {
 
-class TcpClient {
- public:
-  TcpClient(asio::io_context& ioctx);
-
-  Status Connect(const std::string& address, const std::string& port);
-  asio::io_context& io_context_;
-  asio::ip::tcp::socket socket_; // Temp
-};
+using bbt::net::Buffer;
+using bbt::net::TcpClient;
+using bbt::net::Connection;
+using bbt::net::ConnectionPtr;
 
 class Client {
  public:
@@ -40,7 +37,12 @@ class Client {
  private:
   MsgId NextMsgId() noexcept;
 
-  void HandleMsg(const MsgPtr& msg);
+  // call when connection state changed
+  void OnConnection(const ConnectionPtr& conn);
+  // call when connection read bytes
+  void OnMessage(const ConnectionPtr& conn, Buffer* buf);
+  // call when receive bus message coming
+  void OnBusMsg(const ConnectionPtr& conn, const MsgPtr& msg);
 
   std::string name_;
   TcpClient tcp_;
