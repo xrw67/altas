@@ -13,28 +13,28 @@ namespace bbt {
 namespace bus {
 
 using bbt::net::Buffer;
-using bbt::net::Connection;
-using bbt::net::ConnectionPtr;
-using bbt::net::TcpServer;
 using bbt::net::ConnectionManager;
+using bbt::net::TcpConnection;
+using bbt::net::TcpConnectionPtr;
+using bbt::net::TcpServer;
 
 class Server {
  public:
   explicit Server(const std::string& name, asio::io_context& ioctx);
   ~Server();
   Status Listen(const std::string& address, const std::string& port);
-  void Shutdown();
+  void Stop();
 
  protected:
   // call when acceptor get a new connection
   void OnNewConnection(std::error_code ec, asio::ip::tcp::socket socket);
   // call when connection state changed
-  void OnConnection(const ConnectionPtr& conn);
+  void OnConnection(const TcpConnectionPtr& conn);
   // call when connection read bytes
-  void OnMessage(const ConnectionPtr& conn, Buffer* buf);
+  void OnMessage(const TcpConnectionPtr& conn, Buffer* buf);
 
   // call when receive bus message coming
-  void OnBusMsg(const ConnectionPtr& conn, const MsgPtr& msg);
+  void OnBusMsg(const TcpConnectionPtr& conn, const MsgPtr& msg);
 
   /// Server name, used by multi server enviroment;
   std::string name_;

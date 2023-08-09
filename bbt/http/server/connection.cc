@@ -7,17 +7,17 @@
 
 namespace bbt {
 namespace http {
-Connection::Connection(asio::ip::tcp::socket socket, ConnectionManager& manager,
+TcpConnection::TcpConnection(asio::ip::tcp::socket socket, ConnectionManager& manager,
                        ServeMux& handler)
     : socket_(std::move(socket)),
       connection_manager_(manager),
       request_handler_(handler) {}
 
-void Connection::Start() { DoRead(); }
+void TcpConnection::Start() { DoRead(); }
 
-void Connection::Stop() { socket_.close(); }
+void TcpConnection::Stop() { socket_.close(); }
 
-void Connection::DoRead() {
+void TcpConnection::DoRead() {
   auto self(shared_from_this());
   socket_.async_read_some(
       asio::buffer(buffer_),
@@ -42,7 +42,7 @@ void Connection::DoRead() {
       });
 }
 
-void Connection::DoWrite() {
+void TcpConnection::DoWrite() {
   auto self(shared_from_this());
   asio::async_write(socket_, reply_.to_buffers(),
                     [this, self](std::error_code ec, std::size_t) {

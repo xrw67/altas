@@ -27,41 +27,49 @@ Status Server::Listen(const std::string& address, const std::string& port) {
   return st;
 }
 
-void Server::Shutdown() {
+void Server::Stop() {
   tcp_.Stop();
   connection_manager_->StopAll();
 }
 
 void Server::OnNewConnection(std::error_code ec, asio::ip::tcp::socket socket) {
   if (!ec) {
-    auto conn = std::make_shared<Connection>(std::move(socket));
-    conn->set_context(
-        new BusContext(std::bind(&Server::OnBusMsg, this, _1, _2)));
+    auto conn = std::make_shared<TcpConnection>(std::move(socket));
+    conn->set_connection_context(new BusContext());
     conn->set_connection_callback(std::bind(&Server::OnConnection, this, _1));
     conn->set_message_callback(std::bind(&Server::OnMessage, this, _1, _2));
     connection_manager_->Start(conn);
   }
 }
 
-void Server::OnConnection(const ConnectionPtr& conn) {
+void Server::OnConnection(const TcpConnectionPtr& conn) {
   switch (conn->state()) {
-    case Connection::kConnected:
+    case TcpConnection::kConnected:
       break;
-    case Connection::kDisconnected:
+    case TcpConnection::kDisconnected:
       connection_manager_->Stop(conn);
       break;
   }
 }
 
-void Server::OnMessage(const ConnectionPtr& conn, Buffer* buf) {
+void Server::OnMessage(const TcpConnectionPtr& conn, Buffer* buf) {
   BusContext* ctx = reinterpret_cast<BusContext*>(conn->context());
-  if (!ctx->Parse(conn, buf)) {
-    // 解析失败,
-    conn->Stop();
+
+  MsgPtr msg(new Msg());
+  auto ret = ctx->Parse(buf, msg.get());
+  switch (ret) {
+    case BusContext::kBad:
+      Stop();  // tcp。stop , conn.stop ??
+      break;
+    case BusContext::kGood:
+      OnBusMsg(conn, msg);
+      break;
+    case BusContext::kContinue:
+      return;  // 继续接收数据
   }
 }
 
-void Server::OnBusMsg(const ConnectionPtr& conn, const MsgPtr& msg) {
+void Server::OnBusMsg(const TcpConnectionPtr& conn, const MsgPtr& msg) {
   // 分发给具体的Client的服务来处理
 }
 

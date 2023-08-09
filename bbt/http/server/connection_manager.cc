@@ -5,12 +5,12 @@ namespace http {
     
 ConnectionManager::ConnectionManager() {}
 
-void ConnectionManager::Start(ConnectionPtr c) {
+void ConnectionManager::Start(TcpConnectionPtr c) {
   connections_.insert(c);
   c->Start();
 }
 
-void ConnectionManager::Stop(ConnectionPtr c) {
+void ConnectionManager::Stop(TcpConnectionPtr c) {
   connections_.erase(c);
   c->Stop();
 }

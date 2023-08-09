@@ -6,31 +6,31 @@
 namespace bbt {
 namespace net {
 
-Connection::Connection(asio::ip::tcp::socket socket)
+TcpConnection::TcpConnection(asio::ip::tcp::socket socket)
     : state_(kDisconnected), socket_(std::move(socket)), context_(nullptr) {}
 
-Connection::~Connection() { delete context_; }
+TcpConnection::~TcpConnection() { delete context_; }
 
-void Connection::Start() {
+void TcpConnection::Start() {
   state_ = kConnected;
   connection_callback_(shared_from_this());
   DoRead();
 }
 
-void Connection::Stop() {
+void TcpConnection::Stop() {
   socket_.shutdown(socket_.shutdown_both);
   state_ = kDisconnected;
   connection_callback_(shared_from_this());
   socket_.close();
 }
 
-void Connection::Write(const char* data, size_t len) {
+void TcpConnection::Send(const void* message, int len) {
   std::lock_guard<std::mutex> guard(mutex_);
-  output_buffer_.Append(data, len);
+  output_buffer_.Append((const char *)message, len);
   DoWrite();
 }
 
-void Connection::DoRead() {
+void TcpConnection::DoRead() {
   auto self(shared_from_this());
   socket_.async_read_some(
       asio::buffer(buffer_),
@@ -45,7 +45,7 @@ void Connection::DoRead() {
       });
 }
 
-void Connection::DoWrite() {
+void TcpConnection::DoWrite() {
   if (output_buffer_.ReadableBytes() == 0) {
     socket_.async_write_some(
         asio::buffer(output_buffer_.Peek(), output_buffer_.ReadableBytes()),

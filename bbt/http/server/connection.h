@@ -17,13 +17,13 @@ namespace http {
 class ServeMux;
 class ConnectionManager;
 
-class Connection : public std::enable_shared_from_this<Connection> {
+class TcpConnection : public std::enable_shared_from_this<TcpConnection> {
  public:
-  Connection(const Connection&) = delete;
-  Connection& operator=(const Connection&) = delete;
+  TcpConnection(const TcpConnection&) = delete;
+  TcpConnection& operator=(const TcpConnection&) = delete;
 
   /// Construct a connection with the given socket.
-  explicit Connection(asio::ip::tcp::socket socket, ConnectionManager& manager,
+  explicit TcpConnection(asio::ip::tcp::socket socket, ConnectionManager& manager,
                       ServeMux& handler);
 
   /// Start the first asynchronous operation for the connection.
@@ -60,7 +60,7 @@ class Connection : public std::enable_shared_from_this<Connection> {
   Response reply_;
 };
 
-typedef std::shared_ptr<Connection> ConnectionPtr;
+typedef std::shared_ptr<TcpConnection> TcpConnectionPtr;
 
 }  // namespace http
 }  // namespace bbt

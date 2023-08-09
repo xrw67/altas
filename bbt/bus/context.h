@@ -10,37 +10,23 @@ namespace bbt {
 namespace bus {
 
 using bbt::net::Buffer;
-using bbt::net::ConnectionPtr;
 
-class BusContext : public bbt::net::Connection::Context {
+class Msg;
+
+// 作为TcpConnect的上下文对象 ，每个上下文必须有一个，避免多线程冲突
+class BusContext : public bbt::net::TcpConnection::Context {
  public:
-  /// Construct a connection with the given socket.
-  explicit BusContext(const BusMsgCallback& cb);
+  BusContext();
 
-  void Write(const MsgPtr& msg);
+  enum Result { kContinue, kBad, kGood };
 
-  bool Parse(const ConnectionPtr& conn, Buffer* buf);
+  Result Parse(Buffer* buf, Msg* msg);
 
  private:
-  /// Perform an asynchronous read operation.
+  enum ParseState { kHeader, kBody };
 
-  /// Perform an asynchronous write operation.
-
-  // /// 每个连接一个自己的消息队列
-  // /// - TODO: 新来的消息入队列，
-  // /// - TODO: 处理完的消息出队列发送给客户端，
-  // /// - TODO: 连接关闭后返回所有的消息服务已经不可用，
-  // /// - TODO: 每个服务有一个超时时间
-  // MsgQueue msgs_;
-
-  BusMsgCallback bus_msg_callback_;
-
-  enum State { kHeader, kBody };
-
-  State state_;
-
-  MsgHeader msg_header_;
-  std::string msg_body_;
+  ParseState state_;
+  MessageHeader header_;
 };
 
 }  // namespace bus

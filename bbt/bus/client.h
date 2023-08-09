@@ -2,7 +2,6 @@
 #define BBT_BUS_CLIENT_H_
 
 #include <string>
-#include <map>
 #include <atomic>
 
 #include "asio.hpp"
@@ -12,48 +11,51 @@
 
 #include "method.h"
 #include "msg.h"
+#include "connection.h"
+#include "method_mux.h"
 
 namespace bbt {
 namespace bus {
 
 using bbt::net::Buffer;
 using bbt::net::TcpClient;
-using bbt::net::Connection;
-using bbt::net::ConnectionPtr;
+using bbt::net::TcpConnection;
+using bbt::net::TcpConnectionPtr;
 
-class Client {
+class BusClient {
  public:
-  Client(const std::string& name, asio::io_context& io);
-  ~Client();
+  BusClient(const std::string& name, TcpClient& tcp);
+  ~BusClient();
 
+  // tcp操作
   Status Connect(const std::string& address, const std::string& port);
-  void Close();
+  void Stop();
 
-  Status RegisterMethod(const std::string& name, MethodFunc func);
-
+  // conn操作
+  Status AddMethod(const std::string& name, MethodFunc func);
   Status Call(const std::string& method, const In& in, Out* out);
   Status ACall(const std::string& method, const In& in, Result* result);
 
  private:
-  MsgId NextMsgId() noexcept;
+  //
+  // TCP的回调
+  //
 
   // call when connection state changed
-  void OnConnection(const ConnectionPtr& conn);
+  void OnConnection(const TcpConnectionPtr& conn);
   // call when connection read bytes
-  void OnMessage(const ConnectionPtr& conn, Buffer* buf);
-  // call when receive bus message coming
-  void OnBusMsg(const ConnectionPtr& conn, const MsgPtr& msg);
+  void OnMessage(const TcpConnectionPtr& conn, Buffer* buf);
 
-  std::string name_;
-  TcpClient tcp_;
-  ConnectionPtr conn_;
+  //
+  // BusConnection的回调
+  //
 
-  std::map<std::string, MethodFunc> methods_;
+  // 发送msg到远程机器上
+  void WriteBusMessage(const MsgPtr& msg);
 
-  std::atomic<MsgId> next_id_;
-
-  /// 等待结果的列表
-  std::map<MsgId, Result*> waitings_;
+  TcpClient& tcp_;
+  BusConnection conn_;
+  MethodMux mux_;
 };
 
 }  // namespace bus

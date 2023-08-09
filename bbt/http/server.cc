@@ -44,7 +44,7 @@ void Server::DoAccept() {
         }
 
         if (!ec) {
-          connection_manager_.Start(std::make_shared<Connection>(
+          connection_manager_.Start(std::make_shared<TcpConnection>(
               std::move(socket), connection_manager_, request_handler_));
         }
 

@@ -6,6 +6,7 @@
 #include "bbt/bus/method.h"
 #include "bbt/bus/msg.h"
 #include "bbt/bus/context.h"
+#include "bbt/bus/msg_packer.h"
 
 namespace bbt {
 namespace bus {
@@ -13,119 +14,94 @@ namespace bus {
 using bbt::net::_1;
 using bbt::net::_2;
 
-//
-// Client
-//
+BusClient::BusClient(const std::string& name, TcpClient& tcp)
+    : tcp_(tcp), conn_(name, tcp.io_context()) {
+  conn_.set_send_msg_func(std::bind(&BusClient::WriteBusMessage, this, _1));
 
-Client::Client(const std::string& name, asio::io_context& io)
-    : name_(name), tcp_(io) {}
-
-Client::~Client() { Close(); }
-
-Status Client::Connect(const std::string& address, const std::string& port) {
-  tcp_.Connect(address, port);
-
-  conn_ = std::make_shared<Connection>(std::move(tcp_.socket_));
-  conn_->set_context(
-      new BusContext(std::bind(&Client::OnBusMsg, this, _1, _2)));
-  conn_->set_connection_callback(std::bind(&Client::OnConnection, this, _1));
-  conn_->set_message_callback(std::bind(&Client::OnMessage, this, _1, _2));
-
-  conn_->Start();
-  return OkStatus();
+  tcp_.set_connection_context(new BusContext());
+  tcp_.set_connection_callback(std::bind(&BusClient::OnConnection, this, _1));
+  tcp_.set_message_callback(std::bind(&BusClient::OnMessage, this, _1, _2));
 }
 
-void Client::Close() { conn_->Stop(); }
+BusClient::~BusClient() { Stop(); }
 
-Status Client::RegisterMethod(const std::string& name, MethodFunc func) {
-  if (methods_.find(name) != methods_.end()) return AlreadyExistsError(name);
-
-  // TODO： 支持一次性上传多个函数
-  // CALL RegisterMethod RPC
-  In in;
-  in.set("MethodName", name);
-
-  auto st = Call("SvcMgr.RegisterMethod", in, NULL);
-  if (!st) return st;
-
-  // ADD LocalServiceList
-  // TODO: mutex
-  methods_[name] = func;
-  return st;
+Status BusClient::Connect(const std::string& address, const std::string& port) {
+  return tcp_.Connect(address, port);
 }
 
-Status Client::Call(const std::string& method, const In& in, Out* out) {
-  Result result;
-  auto st = ACall(method, in, &result);
-  if (!st) return st;
-
-  st = result.Wait();
-  if (!st) return st;
-
-  if (out) *out = result.out();
-  return st;
+void BusClient::Stop() {
+  // conn_.SayGoodbyToSever();
+  tcp_.Stop();
 }
 
-Status Client::ACall(const std::string& method, const In& in, Result* result) {
-  if (!result) return InvalidArgumentError("no result param");
+Status BusClient::AddMethod(const std::string& name, MethodFunc func) {
+   if (mux_.methods_.find(name) != mux_.methods_.end()) return AlreadyExistsError(name);
 
-  // Pack Message
-  MsgPtr msg(new Msg());
-  msg->set_id(NextMsgId());
-  msg->set_caller(name_);
-  msg->set_request(true);
-  msg->set_method(method);
-  for (auto i : in.params()) {
-    msg->set_param(i.first, i.second);
+  auto st = conn_.AddMethod(name, func);
+  if (st) {
+    // ADD LocalServiceList
+    // TODO: mutex
+    mux_.methods_[name] = func;
   }
-  // Send to server
-  BusContext* ctx = reinterpret_cast<BusContext*>(conn_->context());
-  ctx->Write(msg);
-
-  // result->set_in(msg);
-  // result->ResetWait();
-  // AddWaitintList(result);
-
-  return OkStatus();
+  return st;
 }
 
-MsgId Client::NextMsgId() noexcept { return next_id_.fetch_add(1); }
+Status BusClient::Call(const std::string& method, const In& in, Out* out) {
+  return conn_.Call(method, in, out);
+}
 
-void Client::OnConnection(const ConnectionPtr& conn) {
+Status BusClient::ACall(const std::string& method, const In& in,
+                        Result* result) {
+  return conn_.ACall(method, in, result);
+}
+
+void BusClient::OnConnection(const TcpConnectionPtr& conn) {
   switch (conn->state()) {
-    case Connection::kConnected:
+    case TcpConnection::kConnected:
+      // conn_.SayHelloToServer(); 上报我的姓名
       break;
-    case Connection::kDisconnected:
-      conn->Stop(); // TODO 死循环？
+    case TcpConnection::kDisconnected:
+      Stop();
       break;
   }
 }
 
-void Client::OnMessage(const ConnectionPtr& conn, Buffer* buf) {
+void BusClient::OnMessage(const TcpConnectionPtr& conn, Buffer* buf) {
   BusContext* ctx = reinterpret_cast<BusContext*>(conn->context());
-  if (!ctx->Parse(conn, buf)) {
-    // 解析失败,
-    conn->Stop();
+
+  MsgPtr msg(new Msg());
+  auto ret = ctx->Parse(buf, msg.get());
+  switch (ret) {
+    case BusContext::kBad:
+      // conn_->ReportBadToServer()
+      Stop();
+      break;
+    case BusContext::kGood:
+      conn_.OnMsg(msg);
+      break;
+    case BusContext::kContinue:
+      return;  // continue;
   }
 }
 
-void Client::OnBusMsg(const ConnectionPtr& conn, const MsgPtr& msg) {
-  // 服务端发过来的rpc请求，需要响应它
-  // if (msg.is_request()) {
-  //   // 其他客户端的访问请求
-  //   Msg resp(msg.id(), msg.caller());
-  //   HandleMethodRequest(msg, &resp);
-  //   conn_.Send(resp);
-  // } else {
-  //   // 我的请求应答来了
-  //   auto it = waitings_.find(msg.id());
-  //   if (it != waitings_.end()) {
-  //     auto result = it->second;
+void BusClient::WriteBusMessage(const MsgPtr& msg) {
+  bbt::net::Buffer buffer;
 
-  //     result->set_out(msg);
-  //     result->WeakUp();
-  //   }
-  // }
+  JsonPacker jp;
+
+  std::string body;  // TODO 性能优化
+  jp.Pack(*msg, &body);
+
+  MessageHeader hdr = {
+      .magic = kMsgMagic,
+      .length = (uint32_t)body.length() + 1,
+  };
+
+  Buffer tmp(sizeof(hdr) + body.length() + 1);
+  tmp.Append((const char*)&hdr, sizeof(hdr));
+  tmp.Append(body.data(), body.length() + 1);
+
+  tcp_.Send(tmp.Peek(), tmp.ReadableBytes());
 }
 
 }  // namespace bus

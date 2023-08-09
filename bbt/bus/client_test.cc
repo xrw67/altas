@@ -18,19 +18,19 @@ class MsgReceiver {
  private:
     void DoNewConnection(asio::ip::tcp::socket socket)
   asio::io_context& io_context_;
-  bbt::bus::Connection peer_;
+  bbt::bus::TcpConnection peer_;
 };
 
-TEST(Client, should_register_method) {
+TEST(BusClient, should_register_method) {
   MsgReceiver receiver("127.0.0.1", "50001");
 
-  bbt::bus::Client client;
+  bbt::bus::BusClient client;
   client.Connect("127.0.0.1", "50001");
 
   bbt::Bus::In in;
   in.Set("key1", "str1");
   in.Set("key2", "1001");
-  client.RegisterMethod("MyEcho.Echo", in, NULL));
+  client.AddMethod("MyEcho.Echo", in, NULL));
 
   ASSERT_EQ(receiver.msgs.size(), 1);
   const Msg& msg = receiver.msgs[0];

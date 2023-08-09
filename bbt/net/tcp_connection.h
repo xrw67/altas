@@ -11,28 +11,28 @@ namespace bbt {
 namespace net {
 
 
-class Connection : public std::enable_shared_from_this<Connection> {
+class TcpConnection : public std::enable_shared_from_this<TcpConnection> {
  public:
   struct Context {
    protected:
     virtual ~Context() {}
-    Connection* connection() { return conn_; }
+    TcpConnection* connection() { return conn_; }
 
    private:
-    friend class Connection;
-    void set_connection(Connection* conn) { conn_ = conn; }
+    friend class TcpConnection;
+    void set_connection(TcpConnection* conn) { conn_ = conn; }
 
-    Connection* conn_;
+    TcpConnection* conn_;
   };
 
   enum State { kDisconnected, kConnected };
 
-  Connection(asio::ip::tcp::socket socket);
+  TcpConnection(asio::ip::tcp::socket socket);
 
-  Connection(const Connection&) = delete;
-  Connection& operator=(const Connection&) = delete;
+  TcpConnection(const TcpConnection&) = delete;
+  TcpConnection& operator=(const TcpConnection&) = delete;
 
-  ~Connection();
+  ~TcpConnection();
 
   /// Start the first asynchronous operation for the connection.
   void Start();
@@ -40,7 +40,7 @@ class Connection : public std::enable_shared_from_this<Connection> {
   /// Stop all asynchronous operations associated with the connection.
   void Stop();
 
-  void Write(const char* data, size_t len);
+  void Send(const void* message, int len);
 
   void DoRead();
   void DoWrite();
@@ -50,7 +50,7 @@ class Connection : public std::enable_shared_from_this<Connection> {
 
   /// @brief ctx的owner将变成Connection
   /// @param ctx
-  void set_context(Context* ctx) {
+  void set_connection_context(Context* ctx) {
     ctx->set_connection(this);
     delete context_;
     context_ = ctx;

@@ -35,7 +35,7 @@ void Request::set_header(const std::string& name,
 }
 
 void Request::to_buffers(asio::streambuf* buf) const noexcept {
-  // Form the request. We specify the "Connection: close" header so that the
+  // Form the request. We specify the "TcpConnection: close" header so that the
   // server will close the socket after transmitting the response. This will
   // allow us to treat all data up until the EOF as the content.
 
@@ -52,7 +52,7 @@ void Request::to_buffers(asio::streambuf* buf) const noexcept {
   if (!content.empty()) {
     request_stream << "Content-Length: " << content.length() << "\r\n";
   }
-  request_stream << "Connection: close\r\n\r\n";
+  request_stream << "TcpConnection: close\r\n\r\n";
   if (!content.empty()) {
     request_stream << content;
   }

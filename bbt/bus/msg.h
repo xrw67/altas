@@ -14,15 +14,14 @@ static const uint32_t kMsgMagic = 0x20141021;
 
 typedef uint32_t MsgId;
 
-struct MsgHeader {
+struct MessageHeader {
   uint32_t magic;
   uint32_t length;
 };
 
 class Msg;
 typedef std::shared_ptr<Msg> MsgPtr;
-typedef std::function<void(const bbt::net::ConnectionPtr& conn, const MsgPtr&)>
-    BusMsgCallback;
+typedef std::function<void(const MsgPtr&)> BusMsgCallback;
 
 class Msg {
  public:

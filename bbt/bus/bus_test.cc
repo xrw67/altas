@@ -4,6 +4,7 @@
 
 #include "bbt/bus/client.h"
 #include "bbt/bus/server.h"
+#include "bbt/net/tcp_client.h"
 
 namespace {
 
@@ -17,18 +18,20 @@ TEST(Service, DISABLED_EchoService) {
   ASSERT_TRUE(st) << st.ToString();
 
   // client1 发布服务
-  bbt::bus::Client c1("my_client1", io_context);
-  st = c1.Connect("127.0.0.1", "59998");
+  bbt::net::TcpClient net1(io_context);
+  bbt::bus::BusClient c1("my_client1", net1);
+  st = net1.Connect("127.0.0.1", "59998");
   ASSERT_TRUE(st) << st.ToString();
 
-  c1.RegisterMethod("echo", [](const bbt::bus::In& in, bbt::bus::Out* out) {
+  c1.AddMethod("echo", [](const bbt::bus::In& in, bbt::bus::Out* out) {
     std::string name = in.get("name");
     out->set("greeting", "Hello, " + name);
   });
 
   // client2 调用服务
-  bbt::bus::Client c2("my_client2", io_context);
-  st = c2.Connect("127.0.0.1", "59998");
+   bbt::net::TcpClient net2(io_context);
+  bbt::bus::BusClient c2("my_client2", net2);
+  st = net2.Connect("127.0.0.1", "59998");
   ASSERT_TRUE(st) << st.ToString();
 
   // 同步
@@ -47,7 +50,7 @@ TEST(Service, DISABLED_EchoService) {
   ASSERT_EQ(result.get("greeting"), "Hello, BBT");
 
   // teardown
-  server.Shutdown();
+  server.Stop();
   // c1.Shutdown();
   // c2.Shutdown();
   io_context.stop();

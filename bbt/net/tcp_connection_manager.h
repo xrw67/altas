@@ -19,17 +19,17 @@ class ConnectionManager {
   ConnectionManager();
 
   /// Add the specified connection to the manager and start it.
-  void Start(ConnectionPtr c);
+  void Start(TcpConnectionPtr c);
 
   /// Stop the specified connection.
-  void Stop(ConnectionPtr c);
+  void Stop(TcpConnectionPtr c);
 
   /// Stop all connections.
   void StopAll();
 
  private:
   /// The managed connections.
-  std::set<ConnectionPtr> connections_;
+  std::set<TcpConnectionPtr> connections_;
 };
 
 }  // namespace net
