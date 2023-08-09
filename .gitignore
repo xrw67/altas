@@ -1,3 +1,11 @@
+/.cache
+/build
+/.vscode/settings.json
+.DS_Store
+
+/docs/.$*.drawio.bkp
+/docs/.$*.drawio.dtmp
+
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
@@ -10,10 +18,4 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 
-
-/build
-.DS_Store
-
-/.vscode/settings.json
-docs/.$*.drawio.bkp
-docs/.$*.drawio.dtmp
+/bbt.code-workspace

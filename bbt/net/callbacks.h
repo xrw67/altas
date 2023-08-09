@@ -16,10 +16,6 @@ using std::placeholders::_1;
 using std::placeholders::_2;
 using std::placeholders::_3;
 
-class TcpConnection;
-typedef std::shared_ptr<TcpConnection> TcpConnectionPtr;
-typedef std::function<void(const TcpConnectionPtr&)> ConnectionCallback;
-typedef std::function<void(const TcpConnectionPtr&, Buffer*)> MessageCallback;
 
 }  // namespace net
 }  // namespace bbt

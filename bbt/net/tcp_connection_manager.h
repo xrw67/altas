@@ -4,32 +4,37 @@
 #include <set>
 
 #include "bbt/net/callbacks.h"
+#include "tcp_connection.h"
 
 namespace bbt {
 namespace net {
 
-/// Manages open connections so that they may be cleanly stopped when the server
-/// needs to shut down.
-class ConnectionManager {
+class MyTcpConnectionManager {
  public:
-  ConnectionManager(const ConnectionManager&) = delete;
-  ConnectionManager& operator=(const ConnectionManager&) = delete;
+  typedef std::set<MyTcpConnectionPtr> Type;
+  typedef Type::iterator TypeIter;
+
+  MyTcpConnectionManager(const MyTcpConnectionManager&) = delete;
+  MyTcpConnectionManager& operator=(const MyTcpConnectionManager&) = delete;
 
   /// Construct a connection manager.
-  ConnectionManager();
+  MyTcpConnectionManager();
 
   /// Add the specified connection to the manager and start it.
-  void Start(TcpConnectionPtr c);
+  void Start(const MyTcpConnectionPtr& c);
 
   /// Stop the specified connection.
-  void Stop(TcpConnectionPtr c);
+  void Stop(const MyTcpConnectionPtr& c);
 
   /// Stop all connections.
   void StopAll();
 
+  TypeIter begin() const { return connections_.begin(); }
+  TypeIter end() const { return connections_.end(); }
+
  private:
   /// The managed connections.
-  std::set<TcpConnectionPtr> connections_;
+  std::set<MyTcpConnectionPtr> connections_;  // TODO: mutex
 };
 
 }  // namespace net

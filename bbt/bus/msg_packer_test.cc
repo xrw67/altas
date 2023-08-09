@@ -8,8 +8,8 @@ namespace {
 using bbt::bus::Msg;
 
 static const char* json_data =
-    "{\"id\":123,\"is_req\":true,\"method\":\"foo\",\"param\":[{\"t\":\"key1\","
-    "\"v\":\"str1\"},{\"t\":\"key2\",\"v\":\"1001\"}]}";
+    "{\"caller\":\"\",\"id\":123,\"is_req\":true,\"method\":\"foo\",\"param\":["
+    "{\"t\":\"key1\",\"v\":\"str1\"},{\"t\":\"key2\",\"v\":\"1001\"}]}";
 
 TEST(MsgPacker, should_pack_by_json) {
   Msg msg;

@@ -49,6 +49,10 @@ class Buffer {
     return string_view((const char*)Peek(), ReadableBytes());
   }
 
+  std::string ToString() const noexcept {
+    return std::string((const char*)Peek(), ReadableBytes());
+  }
+
   void Retrive(size_t len) noexcept {
     if (len < ReadableBytes())
       reader_ += len;

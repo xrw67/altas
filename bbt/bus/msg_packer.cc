@@ -17,7 +17,7 @@ void JsonPacker::Pack(const Msg& msg, std::string* result) {
   root["id"] = msg.id();
   root["method"] = msg.method();
   root["is_req"] = msg.is_request();
-
+  root["caller"] = msg.caller();
   bbt::json param;
   for (auto i : msg) {
     bbt::json p;
@@ -36,6 +36,7 @@ Status JsonPacker::Unpack(const std::string& data, Msg* msg) {
     msg->set_id(root["id"]);
     msg->set_method(root["method"]);
     msg->set_request(root["is_req"]);
+    msg->set_caller(root["caller"]);
     auto& param = root["param"];
     for (auto i : param) {
       msg->set_param(i["t"], i["v"]);

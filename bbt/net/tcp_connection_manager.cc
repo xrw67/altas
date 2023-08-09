@@ -4,19 +4,19 @@
 namespace bbt {
 namespace net {
 
-ConnectionManager::ConnectionManager() {}
+MyTcpConnectionManager::MyTcpConnectionManager() {}
 
-void ConnectionManager::Start(TcpConnectionPtr c) {
+void MyTcpConnectionManager::Start(const MyTcpConnectionPtr& c) {
   connections_.insert(c);
   c->Start();
 }
 
-void ConnectionManager::Stop(TcpConnectionPtr c) {
+void MyTcpConnectionManager::Stop(const MyTcpConnectionPtr& c) {
   connections_.erase(c);
   c->Stop();
 }
 
-void ConnectionManager::StopAll() {
+void MyTcpConnectionManager::StopAll() {
   for (auto c : connections_) c->Stop();
   connections_.clear();
 }

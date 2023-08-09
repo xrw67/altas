@@ -7,24 +7,25 @@
 
 #include "bbt/base/status.h"
 #include "bbt/net/callbacks.h"
+#include "tcp_connection.h"
+#include "tcp_connection_manager.h"
 
 namespace bbt {
 namespace net {
 
-typedef std::function<void(std::error_code ec, asio::ip::tcp::socket socket)>
-    NewConnectionCallback;
-
-class TcpServer {
+class MyTcpServer {
  public:
-  TcpServer(asio::io_context& ioctx);
+  MyTcpServer(asio::io_context& io);
 
   Status Listen(const std::string& address, const std::string& port);
   void Stop();
 
-  void set_new_connection_callback(const NewConnectionCallback& cb) {
-    new_connection_callback_ = cb;
-  }
+  void Boardcast(const void* data, size_t len) noexcept;
 
+  void set_conn_callback(const ConnCallback& cb) { conn_callback_ = cb; }
+  void set_read_callback(const ReadCallback& cb) { read_callback_ = cb; }
+
+ private:
   /// Perform an asynchronous accept operation.
   void DoAccept();
 
@@ -34,8 +35,12 @@ class TcpServer {
   /// Acceptor used to listen for incoming connections.
   asio::ip::tcp::acceptor acceptor_;
 
-  NewConnectionCallback new_connection_callback_;
+  MyTcpConnectionManager connection_manager_;
+
+  ConnCallback conn_callback_;
+  ReadCallback read_callback_;
 };
+
 }  // namespace net
 }  // namespace bbt
 #endif  // BBT_NET_TCP_SERVER_H_

@@ -4,40 +4,114 @@
 
 #include "bbt/bus/method.h"
 #include "bbt/bus/client.h"
-#include "bbt/bus/server/connection.h"
+#include "bbt/bus/msg_packer.h"
 
+#include "bbt/net/testing/mocks.h"
+
+namespace bbt {
+namespace bus {
 namespace {
+using bbt::net::BaseConnection;
+using bbt::net::testing::MockConnectionPair;
 
-class MsgReceiver {
- public:
-  std::vector<Msg> msgs;
+struct MockConnection : public BaseConnection {
+  std::vector<bbt::bus::MsgPtr> output_msgs;  // 发送出去的msg
+  bbt::Status last_status;
 
-  MsgReceiver(asio::io_context& io_context) 
-    : io_context_(io_context), () {}
+  void Send(const void* data, size_t len) {
+    // 传输层收到了数据，发到远程服务器上。。。
+    JsonPacker jp;
+    MsgPtr req(new Msg);
+    last_status = jp.Unpack(std::string((const char*)data + sizeof(MsgHeader)),
+                            req.get());
+    if (last_status) {
+      output_msgs.push_back(req);
 
- private:
-    void DoNewConnection(asio::ip::tcp::socket socket)
-  asio::io_context& io_context_;
-  bbt::bus::TcpConnection peer_;
+      // 。。。模拟远程服务器的Reply
+      Msg resp;
+      resp.set_id(req->id());
+      resp.set_request(false);
+      resp.set_caller(req->caller());
+      resp.set_method(req->method());
+      resp.set_param("return", "ok");
+
+      std::string tmp;
+      jp.Pack(resp, &tmp);
+      Buffer buf;
+
+      MsgHeader hdr = {kMsgMagic, (uint32_t)tmp.length()};
+      buf.Append((const char*)&hdr, sizeof(hdr));
+      buf.Append(tmp.c_str(), tmp.length());
+      read_callback_(shared_from_this(), &buf);
+    }
+  }
 };
 
 TEST(BusClient, should_register_method) {
-  MsgReceiver receiver("127.0.0.1", "50001");
+  auto mock_conn = std::make_shared<MockConnection>();
 
-  bbt::bus::BusClient client;
-  client.Connect("127.0.0.1", "50001");
+  bbt::bus::BusClient client("name1", mock_conn);
 
-  bbt::Bus::In in;
-  in.Set("key1", "str1");
-  in.Set("key2", "1001");
-  client.AddMethod("MyEcho.Echo", in, NULL));
+  bbt::bus::In in;
+  in.set("key1", "str1");
+  in.set("key2", "1001");
 
-  ASSERT_EQ(receiver.msgs.size(), 1);
-  const Msg& msg = receiver.msgs[0];
+  bbt::bus::Result result;
+  client.AddMethod("MyEcho.Echo", [](const In&, Out*) {});
 
-  ASSERT_EQ(msg.method(), "MyEcho.Echo")
-  ASSERT_EQ(msg.Get("key1"), "str1");
-  ASSERT_EQ(msg.Get("key2"), "1001");
+  ASSERT_TRUE(mock_conn->last_status);
+  ASSERT_EQ(mock_conn->output_msgs.size(), 1);
+  const auto& msg = mock_conn->output_msgs[0];
+
+  ASSERT_EQ(msg->method(), "SvcMgr.AddMethod");
+  ASSERT_EQ(msg->param("MethodName"), "MyEcho.Echo");
+
+  client.Stop();
+}
+
+TEST(BusClient, should_call_and_reply) {
+  auto mock_conn = std::make_shared<MockConnection>();
+  Msg resp;
+
+  bbt::bus::BusClient client("name1", mock_conn);
+
+  bbt::bus::In in;
+  in.set("key1", "str1");
+  in.set("key2", "1001");
+
+  bbt::bus::Out out;
+  auto st = client.Call("MyEcho.Echo", in, &out);
+  ASSERT_TRUE(st) << st.ToString();
+  ASSERT_EQ(out.get("return"), "ok");
+
+  client.Stop();
+}
+
+
+TEST(BusClient, should_reply_when_call_by_other_client) {
+  auto conn1 = std::make_shared<MockConnectionPair>();
+  auto conn2 = std::make_shared<MockConnectionPair>();
+
+  conn1->connect(conn2);
+  conn2->connect(conn1);
+
+  bbt::bus::BusClient client1("name1", conn1);
+  bbt::bus::BusClient client2("name1", conn2);
+
+  client1.AddMethod("func1", [](const In& in, Out* out) {
+    out->set("name", in.get("name"));
+    out->set("key2", "666");
+  });
+
+  bbt::bus::In in;
+  in.set("name", "xrw");
+
+  bbt::bus::Out out;
+  ASSERT_TRUE(client2.Call("func1", in, &out));
+  ASSERT_EQ(out.get("name"), "xrw");
+  ASSERT_EQ(out.get("key2"), "666");
 }
 
 }  // namespace
+}  // namespace bus
+}  // namespace bbt

@@ -3,10 +3,11 @@
 namespace bbt {
 namespace net {
 
-TcpServer::TcpServer(asio::io_context& ioctx)
-    : io_context_(ioctx), acceptor_(ioctx) {}
+MyTcpServer::MyTcpServer(asio::io_context& io)
+    : io_context_(io), acceptor_(io) {}
 
-Status TcpServer::Listen(const std::string& address, const std::string& port) {
+Status MyTcpServer::Listen(const std::string& address,
+                           const std::string& port) {
   asio::ip::tcp::resolver resolver(io_context_);
   asio::ip::tcp::endpoint endpoint = *resolver.resolve(address, port).begin();
 
@@ -19,9 +20,17 @@ Status TcpServer::Listen(const std::string& address, const std::string& port) {
   return bbt::OkStatus();
 }
 
-void TcpServer::Stop() { acceptor_.close(); }
+void MyTcpServer::Stop() { acceptor_.close(); }
 
-void TcpServer::DoAccept() {
+void MyTcpServer::Boardcast(const void* data, size_t len) noexcept {
+  for (auto& i : connection_manager_) {
+    if (i->state() == BaseConnection::kConnected) {
+      i->Send(data, len);
+    }
+  }
+}
+
+void MyTcpServer::DoAccept() {
   acceptor_.async_accept(
       [this](std::error_code ec, asio::ip::tcp::socket socket) {
         // Check whether the server was stopped by a signal before this
@@ -30,7 +39,10 @@ void TcpServer::DoAccept() {
           return;
         }
 
-        new_connection_callback_(ec, std::move(socket));
+        auto conn = std::make_shared<MyTcpConnection>(std::move(socket));
+        conn->set_conn_callback(conn_callback_);
+        conn->set_read_callback(read_callback_);
+        connection_manager_.Start(conn);
         DoAccept();  // Wait Next
       });
 }

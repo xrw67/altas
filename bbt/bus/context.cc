@@ -14,7 +14,7 @@ BusContext::Result BusContext::Parse(Buffer* buf, Msg* msg) {
       return kContinue;
     }
 
-    memcpy(&header_, buf->BeginWrite(), sizeof(header_));
+    memcpy(&header_, buf->Peek(), sizeof(header_));
     buf->Retrive(sizeof(header_));
     state_ = kBody;
 
@@ -36,7 +36,7 @@ BusContext::Result BusContext::Parse(Buffer* buf, Msg* msg) {
     JsonPacker p;
 
     auto st = p.Unpack(body, msg);
-    if (st) {
+    if (!st) {
       return kBad;
     }
   }

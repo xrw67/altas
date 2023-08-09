@@ -24,10 +24,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(THIRD_PARTY_DIR ${PROJECT_SOURCE_DIR}/third_party)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -Wall")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -std=c++11 -Wall")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -Wall")
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS} -fPIC -Wall -O0 -g --coverage")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -fPIC -std=c++11 -Wall  -O0 -g --coverage")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -fPIC -Wall  -O0 -g --coverage")
 
 add_definitions(-DBBT_OPTION_HARDENED=0)
 

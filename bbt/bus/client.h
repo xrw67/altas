@@ -3,32 +3,30 @@
 
 #include <string>
 #include <atomic>
+#include <mutex>
+#include <functional>
 
 #include "asio.hpp"
 
 #include "bbt/base/status.h"
-#include "bbt/net/tcp_client.h"
+#include "bbt/net/base_connection.h"
 
 #include "method.h"
 #include "msg.h"
-#include "connection.h"
-#include "method_mux.h"
 
 namespace bbt {
 namespace bus {
 
+using bbt::net::BaseConnectionPtr;
+using bbt::net::BaseContext;
 using bbt::net::Buffer;
-using bbt::net::TcpClient;
-using bbt::net::TcpConnection;
-using bbt::net::TcpConnectionPtr;
 
 class BusClient {
  public:
-  BusClient(const std::string& name, TcpClient& tcp);
+  BusClient(const std::string& name, const BaseConnectionPtr& transport);
   ~BusClient();
 
-  // tcp操作
-  Status Connect(const std::string& address, const std::string& port);
+  // 主动执行关闭，会传递到Transport的Close
   void Stop();
 
   // conn操作
@@ -42,20 +40,31 @@ class BusClient {
   //
 
   // call when connection state changed
-  void OnConnection(const TcpConnectionPtr& conn);
-  // call when connection read bytes
-  void OnMessage(const TcpConnectionPtr& conn, Buffer* buf);
+  void OnTransportConnection(const BaseConnectionPtr& conn);
 
-  //
-  // BusConnection的回调
-  //
+  // Call when transpot read bytes
+  void OnTransportReadCallback(const BaseConnectionPtr& conn, Buffer* buf);
+
+  // call when receive bus message coming
+  void OnMsg(const MsgPtr& msg);
+
+  void OnMethodRequest(const Msg&req, Msg *resp);
 
   // 发送msg到远程机器上
-  void WriteBusMessage(const MsgPtr& msg);
+  Status WriteBusMessage(const Msg& msg);
 
-  TcpClient& tcp_;
-  BusConnection conn_;
-  MethodMux mux_;
+  MsgId NextMsgId() noexcept { return next_id_.fetch_add(1); }
+
+  std::string name_;
+  BaseConnectionPtr transport_;
+
+  std::atomic<MsgId> next_id_;
+
+  /// 等待结果的列表
+  std::mutex mutex_;
+  std::map<MsgId, Result*> waitings_;  // TODO: result的析构函数要weakup再析构
+
+  std::map<std::string, MethodFunc> methods_;
 };
 
 }  // namespace bus
