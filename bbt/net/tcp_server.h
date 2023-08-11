@@ -3,19 +3,17 @@
 
 #include <string>
 
-#include "asio.hpp"
-
-#include "bbt/base/status.h"
 #include "bbt/net/callbacks.h"
-#include "tcp_connection.h"
-#include "tcp_connection_manager.h"
 
 namespace bbt {
 namespace net {
 
-class MyTcpServer {
+class TcpConnectionManager;
+
+class TcpServer {
  public:
-  MyTcpServer(asio::io_context& io);
+  explicit TcpServer(asio::io_context& io);
+  ~TcpServer();
 
   Status Listen(const std::string& address, const std::string& port);
   void Stop();
@@ -35,7 +33,7 @@ class MyTcpServer {
   /// Acceptor used to listen for incoming connections.
   asio::ip::tcp::acceptor acceptor_;
 
-  MyTcpConnectionManager connection_manager_;
+  TcpConnectionManager* connection_manager_;
 
   ConnCallback conn_callback_;
   ReadCallback read_callback_;

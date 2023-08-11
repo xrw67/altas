@@ -4,13 +4,13 @@
 #include <vector>
 
 #include "bbt/net/buffer.h"
-#include "bbt/net/base_connection.h"
+#include "bbt/net/connection.h"
 
 namespace bbt {
 namespace net {
 namespace testing {
 
-struct MockConnectionPair : public BaseConnection {
+struct MockConnectionPair : public Connection {
   std::weak_ptr<MockConnectionPair> peer_conn;
 
   void connect(const std::shared_ptr<MockConnectionPair>& other) {

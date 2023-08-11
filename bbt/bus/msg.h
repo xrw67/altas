@@ -6,12 +6,12 @@
 #include <map>
 
 #include "bbt/net/callbacks.h"
-#include "bbt/net/base_connection.h"
+#include "bbt/net/connection.h"
 
 namespace bbt {
 namespace bus {
 
-using bbt::net::BaseConnectionPtr;
+using bbt::net::ConnectionPtr;
 
 static const uint32_t kMsgMagic = 0x20141021;
 
@@ -31,8 +31,8 @@ class Msg {
   typedef std::map<std::string, std::string> Type;
   typedef Type::const_iterator TypeConstIter;
 
-  BaseConnectionPtr src;
-  BaseConnectionPtr dst;
+  ConnectionPtr src;
+  ConnectionPtr dst;
 
   Msg() : id_(0), is_request_(true) {}
 

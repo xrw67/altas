@@ -22,8 +22,10 @@ namespace net {
 
 class Buffer {
  public:
-  static const size_t kCheapPrepend;
-  static const size_t kInitialSize;
+  enum {
+    kCheapPrepend = 8,
+    kInitialSize = 1024,
+  };
 
   explicit Buffer(size_t initial_size = kInitialSize)
       : buffer_(kCheapPrepend + initial_size),

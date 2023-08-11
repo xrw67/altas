@@ -3,9 +3,9 @@
 namespace bbt {
 namespace bus {
 
-using bbt::net::BaseConnectionPtr;
+using bbt::net::ConnectionPtr;
 
-Status MsgProxy::AddMethod(const BaseConnectionPtr& owner,
+Status MsgProxy::AddMethod(const ConnectionPtr& owner,
                            const std::string& method) {
   std::lock_guard<std::mutex> guard(mutex_);
   if (methods_.find(method) != methods_.end())
@@ -34,7 +34,7 @@ void MsgProxy::RemoveMethod(const std::string& method) {
   }
 }
 
-void MsgProxy::RemoveAllMethodsFromConnection(const BaseConnectionPtr& conn) {
+void MsgProxy::RemoveAllMethodsFromConnection(const ConnectionPtr& conn) {
   std::lock_guard<std::mutex> guard(mutex_);
   auto it = conn_methods_.find(conn);
   if (it == conn_methods_.end()) return;
@@ -46,7 +46,7 @@ void MsgProxy::RemoveAllMethodsFromConnection(const BaseConnectionPtr& conn) {
 
 Status MsgProxy::ProxyRequestMsg(Msg* req) {
   req->dst.reset();
-  
+
   std::lock_guard<std::mutex> guard(mutex_);
   auto it = methods_.find(req->method());
   if (it == methods_.end()) return NotFoundError(req->method());

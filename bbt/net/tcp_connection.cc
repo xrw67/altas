@@ -5,23 +5,23 @@
 namespace bbt {
 namespace net {
 
-MyTcpConnection::MyTcpConnection(asio::ip::tcp::socket socket)
+TcpConnection::TcpConnection(asio::ip::tcp::socket socket)
     : socket_(std::move(socket)) {}
 
-void MyTcpConnection::Start() {
+void TcpConnection::Start() {
   state_ = kConnected;
   conn_callback_(shared_from_this());
   ReadFromSocket();
 }
 
-void MyTcpConnection::Stop() {
+void TcpConnection::Stop() {
   socket_.shutdown(socket_.shutdown_both);
   state_ = kDisconnected;
   conn_callback_(shared_from_this());
   socket_.close();
 }
 
-void MyTcpConnection::Send(const void* data, size_t len) {
+void TcpConnection::Send(const void* data, size_t len) {
   std::lock_guard<std::mutex> guard(mutex_);
   output_buffer_.Append((const char*)data, len);
 
@@ -29,7 +29,7 @@ void MyTcpConnection::Send(const void* data, size_t len) {
   asio::post(ex, [this]() { WriteToSocket(); });
 }
 
-std::string MyTcpConnection::GetLocalAddress() const noexcept {
+std::string TcpConnection::GetLocalAddress() const noexcept {
   try {
     auto ep = socket_.local_endpoint();
     return bbt::format("{}:{}", ep.address().to_string(), ep.port());
@@ -39,7 +39,7 @@ std::string MyTcpConnection::GetLocalAddress() const noexcept {
   }
 }
 
-std::string MyTcpConnection::GetRemoteAddress() const noexcept {
+std::string TcpConnection::GetRemoteAddress() const noexcept {
   try {
     auto ep = socket_.remote_endpoint();
     return bbt::format("{}:{}", ep.address().to_string(), ep.port());
@@ -49,7 +49,7 @@ std::string MyTcpConnection::GetRemoteAddress() const noexcept {
   }
 }
 
-void MyTcpConnection::ReadFromSocket() {
+void TcpConnection::ReadFromSocket() {
   auto self = shared_from_this();
   socket_.async_read_some(
       asio::buffer(buffer_),
@@ -65,7 +65,7 @@ void MyTcpConnection::ReadFromSocket() {
 }
 
 // 必须单线程执行
-void MyTcpConnection::WriteToSocket() {
+void TcpConnection::WriteToSocket() {
   if (output_buffer_.ReadableBytes() != 0) {
     socket_.async_write_some(
         asio::buffer(output_buffer_.Peek(), output_buffer_.ReadableBytes()),

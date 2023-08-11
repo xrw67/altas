@@ -9,7 +9,7 @@
 #include "asio.hpp"
 
 #include "bbt/base/status.h"
-#include "bbt/net/base_connection.h"
+#include "bbt/net/connection.h"
 
 #include "method.h"
 #include "msg.h"
@@ -17,13 +17,13 @@
 namespace bbt {
 namespace bus {
 
-using bbt::net::BaseConnectionPtr;
-using bbt::net::BaseContext;
+using bbt::net::ConnectionPtr;
+using bbt::net::Context;
 using bbt::net::Buffer;
 
 class BusClient {
  public:
-  BusClient(const std::string& name, const BaseConnectionPtr& transport);
+  BusClient(const std::string& name, const ConnectionPtr& transport);
   ~BusClient();
 
   // 主动执行关闭，会传递到Transport的Close
@@ -40,10 +40,10 @@ class BusClient {
   //
 
   // call when connection state changed
-  void OnTransportConnection(const BaseConnectionPtr& conn);
+  void OnTransportConnection(const ConnectionPtr& conn);
 
   // Call when transpot read bytes
-  void OnTransportReadCallback(const BaseConnectionPtr& conn, Buffer* buf);
+  void OnTransportReadCallback(const ConnectionPtr& conn, Buffer* buf);
 
   // call when receive bus message coming
   void OnMsg(const MsgPtr& msg);
@@ -56,7 +56,7 @@ class BusClient {
   MsgId NextMsgId() noexcept { return next_id_.fetch_add(1); }
 
   std::string name_;
-  BaseConnectionPtr transport_;
+  ConnectionPtr transport_;
 
   std::atomic<MsgId> next_id_;
 

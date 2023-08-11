@@ -9,14 +9,14 @@ namespace bus {
 
 namespace {
 using bbt::bus::BusClient;
-using bbt::net::BaseConnection;
-using bbt::net::MyTcpServer;
+using bbt::net::Connection;
+using bbt::net::TcpServer;
 using bbt::net::testing::MockConnectionPair;
 
 TEST(BusServer, use_tcp_server_as_transport_protocol) {
   asio::io_context io_context;
 
-  MyTcpServer tcp_svr(io_context);
+  TcpServer tcp_svr(io_context);
   ASSERT_TRUE(tcp_svr.Listen("0.0.0.0", "55555"));
 
   BusServer bus_svr1("svr1");
@@ -30,13 +30,13 @@ TEST(BusServer, use_tcp_server_as_transport_protocol) {
   tcp_svr.Stop();
 }
 
-struct MockTransportServer : public BaseConnection {
+struct MockTransportServer : public Connection {
   // 模块两个客户端
   MockConnectionPair conn1;
   MockConnectionPair conn2;
 
 
-  void HandleRead(const BaseConnectionPtr&conn, Buffer *buf) {
+  void HandleRead(const ConnectionPtr&conn, Buffer *buf) {
     
   }
 

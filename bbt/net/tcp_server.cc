@@ -1,13 +1,20 @@
 #include "bbt/net/tcp_server.h"
-
+#include "bbt/net/tcp_connection.h"
+#include "bbt/net/tcp_connection_manager.h"
 namespace bbt {
 namespace net {
 
-MyTcpServer::MyTcpServer(asio::io_context& io)
-    : io_context_(io), acceptor_(io) {}
+TcpServer::TcpServer(asio::io_context& io)
+    : io_context_(io),
+      acceptor_(io),
+      connection_manager_(new TcpConnectionManager()) {}
 
-Status MyTcpServer::Listen(const std::string& address,
-                           const std::string& port) {
+TcpServer::~TcpServer() {
+  Stop();
+  delete connection_manager_;
+}
+
+Status TcpServer::Listen(const std::string& address, const std::string& port) {
   asio::ip::tcp::resolver resolver(io_context_);
   asio::ip::tcp::endpoint endpoint = *resolver.resolve(address, port).begin();
 
@@ -20,17 +27,13 @@ Status MyTcpServer::Listen(const std::string& address,
   return bbt::OkStatus();
 }
 
-void MyTcpServer::Stop() { acceptor_.close(); }
+void TcpServer::Stop() { acceptor_.close(); }
 
-void MyTcpServer::Boardcast(const void* data, size_t len) noexcept {
-  for (auto& i : connection_manager_) {
-    if (i->state() == BaseConnection::kConnected) {
-      i->Send(data, len);
-    }
-  }
+void TcpServer::Boardcast(const void* data, size_t len) noexcept {
+  connection_manager_->Boardcast(data, len);
 }
 
-void MyTcpServer::DoAccept() {
+void TcpServer::DoAccept() {
   acceptor_.async_accept(
       [this](std::error_code ec, asio::ip::tcp::socket socket) {
         // Check whether the server was stopped by a signal before this
@@ -39,10 +42,10 @@ void MyTcpServer::DoAccept() {
           return;
         }
 
-        auto conn = std::make_shared<MyTcpConnection>(std::move(socket));
+        auto conn = std::make_shared<TcpConnection>(std::move(socket));
         conn->set_conn_callback(conn_callback_);
         conn->set_read_callback(read_callback_);
-        connection_manager_.Start(conn);
+        connection_manager_->Start(conn);
         DoAccept();  // Wait Next
       });
 }

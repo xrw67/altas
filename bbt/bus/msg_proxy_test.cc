@@ -6,7 +6,7 @@ namespace {
 using bbt::bus::Msg;
 using bbt::bus::MsgProxy;
 
-struct MockBaseConnection : public bbt::net::BaseConnection {
+struct MockBaseConnection : public bbt::net::Connection {
   void Send(const void* data, size_t len) {}
 };
 

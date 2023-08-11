@@ -12,7 +12,7 @@ namespace bbt {
 
 namespace bus {
 
-using bbt::net::BaseConnectionPtr;
+using bbt::net::ConnectionPtr;
 using bbt::net::Buffer;
 
 class BusServer {
@@ -23,13 +23,13 @@ class BusServer {
   void Stop();
 
   // call when connection state changed
-  void HandleConnection(const BaseConnectionPtr& conn);
+  void HandleConnection(const ConnectionPtr& conn);
   // call when connection read bytes
-  void HandleRead(const BaseConnectionPtr& conn, Buffer* buf);
+  void HandleRead(const ConnectionPtr& conn, Buffer* buf);
 
  protected:
   // call when receive bus message coming
-  void HandleBusMsg(const BaseConnectionPtr& conn, const MsgPtr& msg);
+  void HandleBusMsg(const ConnectionPtr& conn, const MsgPtr& msg);
 
   /// BusServer name, used by multi server enviroment;
   std::string name_;

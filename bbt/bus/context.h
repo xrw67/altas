@@ -2,7 +2,7 @@
 #define BBT_BUS_CONTEXT_H_
 
 #include "asio.hpp"
-#include "bbt/net/base_connection.h"
+#include "bbt/net/connection.h"
 #include "bbt/net/tcp_connection.h"
 
 #include "msg.h"
@@ -14,7 +14,7 @@ using bbt::net::Buffer;
 
 class Msg;
 
-class BusContext : public bbt::net::BaseContext {
+class BusContext : public bbt::net::Context {
  public:
   BusContext();
 

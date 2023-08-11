@@ -6,18 +6,18 @@
 #include "bbt/bus/server.h"
 #include "bbt/net/tcp_client.h"
 #include "bbt/net/tcp_server.h"
-
+#include "bbt/net/tcp_connection.h"
 namespace {
 
 using bbt::bus::BusServer;
-using bbt::net::MyTcpServer;
+using bbt::net::TcpServer;
 
 TEST(Service, DISABLED_EchoService) {
   asio::io_context io_context(1);
   std::thread t([&]() { io_context.run(); });
 
   // BusServer
-  MyTcpServer tcp_svr(io_context);
+  TcpServer tcp_svr(io_context);
   BusServer server("mybus");
 
   tcp_svr.set_conn_callback(

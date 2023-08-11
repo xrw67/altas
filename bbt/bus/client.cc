@@ -13,13 +13,13 @@ namespace bus {
 
 using bbt::net::_1;
 using bbt::net::_2;
-using bbt::net::BaseConnection;
+using bbt::net::Connection;
 
 //
 // BusClient
 //
 
-BusClient::BusClient(const std::string& name, const BaseConnectionPtr& transport)
+BusClient::BusClient(const std::string& name, const ConnectionPtr& transport)
     : name_(name), transport_(transport), next_id_(1) {
   transport_->set_context(new BusContext());
   transport_->set_conn_callback(
@@ -100,18 +100,18 @@ Status BusClient::ACall(const std::string& method, const In& in,
   return OkStatus();
 }
 
-void BusClient::OnTransportConnection(const BaseConnectionPtr& conn) {
+void BusClient::OnTransportConnection(const ConnectionPtr& conn) {
   switch (conn->state()) {
-    case BaseConnection::kConnected:
+    case Connection::kConnected:
       // bus_conn_.SayHelloToServer(); 上报我的姓名
       break;
-    case BaseConnection::kDisconnected:
+    case Connection::kDisconnected:
       // Transport断开了，善后，
       break;
   }
 }
 
-void BusClient::OnTransportReadCallback(const BaseConnectionPtr& conn, Buffer* buf) {
+void BusClient::OnTransportReadCallback(const ConnectionPtr& conn, Buffer* buf) {
   BusContext* ctx = reinterpret_cast<BusContext*>(conn->context());
 
   MsgPtr msg(new Msg());

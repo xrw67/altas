@@ -4,18 +4,35 @@
 #include <memory>
 #include <functional>
 
-// TODO: remove it
-#include "bbt/net/buffer.h"
+#include "asio.hpp"
+
+#include "bbt/base/status.h"
 
 namespace bbt {
 namespace net {
-
-class Buffer;
 
 using std::placeholders::_1;
 using std::placeholders::_2;
 using std::placeholders::_3;
 
+class Buffer;
+
+/**
+ * @brief Connection's context
+ *
+ */
+class Context {
+ public:
+  virtual ~Context() {}
+};
+
+class Connection;
+typedef std::shared_ptr<Connection> ConnectionPtr;
+typedef std::function<void(const ConnectionPtr&)> ConnCallback;
+typedef std::function<void(const ConnectionPtr&, Buffer*)> ReadCallback;
+
+class TcpConnection;
+typedef std::shared_ptr<TcpConnection> TcpConnectionPtr;
 
 }  // namespace net
 }  // namespace bbt

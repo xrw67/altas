@@ -4,37 +4,32 @@
 #include <set>
 
 #include "bbt/net/callbacks.h"
-#include "tcp_connection.h"
 
 namespace bbt {
 namespace net {
 
-class MyTcpConnectionManager {
+class TcpConnectionManager {
  public:
-  typedef std::set<MyTcpConnectionPtr> Type;
-  typedef Type::iterator TypeIter;
-
-  MyTcpConnectionManager(const MyTcpConnectionManager&) = delete;
-  MyTcpConnectionManager& operator=(const MyTcpConnectionManager&) = delete;
+  TcpConnectionManager(const TcpConnectionManager&) = delete;
+  TcpConnectionManager& operator=(const TcpConnectionManager&) = delete;
 
   /// Construct a connection manager.
-  MyTcpConnectionManager();
+  TcpConnectionManager();
 
   /// Add the specified connection to the manager and start it.
-  void Start(const MyTcpConnectionPtr& c);
+  void Start(const TcpConnectionPtr& c);
 
   /// Stop the specified connection.
-  void Stop(const MyTcpConnectionPtr& c);
+  void Stop(const TcpConnectionPtr& c);
 
   /// Stop all connections.
   void StopAll();
 
-  TypeIter begin() const { return connections_.begin(); }
-  TypeIter end() const { return connections_.end(); }
+  void Boardcast(const void* data, size_t len) noexcept;
 
  private:
   /// The managed connections.
-  std::set<MyTcpConnectionPtr> connections_;  // TODO: mutex
+  std::set<TcpConnectionPtr> connections_;  // TODO: mutex
 };
 
 }  // namespace net

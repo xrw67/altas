@@ -4,18 +4,16 @@
 #include <mutex>
 #include <array>
 
-#include "asio.hpp"
 #include "bbt/net/callbacks.h"
 #include "bbt/net/buffer.h"
-
-#include "base_connection.h"
+#include "bbt/net/connection.h"
 
 namespace bbt {
 namespace net {
 
-class MyTcpConnection : public BaseConnection {
+class TcpConnection : public Connection {
  public:
-  MyTcpConnection(asio::ip::tcp::socket socket);
+  TcpConnection(asio::ip::tcp::socket socket);
 
   /// Start the first asynchronous operation for the connection.
   void Start();
@@ -33,13 +31,15 @@ class MyTcpConnection : public BaseConnection {
   void WriteToSocket();
 
   asio::ip::tcp::socket socket_;
-  Buffer input_buffer_, output_buffer_;
 
+  // Input
   std::array<char, 8192> buffer_;
-  std::mutex mutex_;
-};
+  Buffer input_buffer_;
 
-typedef std::shared_ptr<MyTcpConnection> MyTcpConnectionPtr;
+  // Output
+  std::mutex mutex_;
+  Buffer output_buffer_;
+};
 
 }  // namespace net
 }  // namespace bbt

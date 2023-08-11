@@ -8,7 +8,7 @@ namespace bus {
 
 using bbt::net::_1;
 using bbt::net::_2;
-using bbt::net::BaseConnection;
+using bbt::net::Connection;
 
 //
 // BusServer
@@ -21,18 +21,18 @@ void BusServer::Stop() {
   // TODO: say baybay to all client
 }
 
-void BusServer::HandleConnection(const BaseConnectionPtr& conn) {
+void BusServer::HandleConnection(const ConnectionPtr& conn) {
   switch (conn->state()) {
-    case BaseConnection::kConnected:
+    case Connection::kConnected:
       conn->set_context(new BusContext());
       break;
-    case BaseConnection::kDisconnected:
+    case Connection::kDisconnected:
 
       break;
   }
 }
 
-void BusServer::HandleRead(const BaseConnectionPtr& conn, Buffer* buf) {
+void BusServer::HandleRead(const ConnectionPtr& conn, Buffer* buf) {
   BusContext* ctx =
       reinterpret_cast<BusContext*>(conn->context());
 
@@ -50,7 +50,7 @@ void BusServer::HandleRead(const BaseConnectionPtr& conn, Buffer* buf) {
   }
 }
 
-void BusServer::HandleBusMsg(const BaseConnectionPtr&, const MsgPtr& msg) {
+void BusServer::HandleBusMsg(const ConnectionPtr&, const MsgPtr& msg) {
   // 分发给具体的Client的服务来处理
 }
 
