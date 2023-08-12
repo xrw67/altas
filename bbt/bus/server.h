@@ -2,18 +2,22 @@
 #define BBT_BUS_SERVER_H_
 
 #include <set>
+#include <memory>
+#include <unordered_map>
 
 #include "asio.hpp"
 #include "bbt/base/status.h"
 #include "bbt/net/tcp_server.h"
 #include "bbt/bus/msg.h"
+#include "bbt/bus/method.h"
 
 namespace bbt {
-
 namespace bus {
 
 using bbt::net::Buffer;
 using bbt::net::ConnectionPtr;
+
+class ServiceManager;
 
 class BusServer {
  public:
@@ -29,10 +33,14 @@ class BusServer {
 
  protected:
   // call when receive bus message coming
-  void HandleBusMsg(const ConnectionPtr& conn, const MsgPtr& msg);
+  void HandleMessage(const MsgPtr& msg);
+  void HandleRequestMessage(const MsgPtr& msg);
+  void HandleResponseMessage(const MsgPtr& msg);
 
-  /// BusServer name, used by multi server enviroment;
-  std::string name_;
+
+
+  std::unique_ptr<ServiceManager> service_manager_;
+  std::unordered_map<std::string, ConnectionPtr> connections_;
 };
 
 }  // namespace bus

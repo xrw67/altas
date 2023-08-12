@@ -6,8 +6,8 @@
 
 namespace bbt {
 namespace bus {
-
 namespace {
+
 using bbt::bus::BusClient;
 using bbt::net::Connection;
 using bbt::net::TcpServer;
@@ -30,26 +30,38 @@ TEST(BusServer, use_tcp_server_as_transport_protocol) {
   tcp_svr.Stop();
 }
 
-struct MockTransportServer : public Connection {
-  // 模块两个客户端
-  MockConnectionPair conn1;
-  MockConnectionPair conn2;
-
-  void HandleRead(const ConnectionPtr& conn, Buffer* buf) {}
-};
-
 TEST(BusServer, should_register_method_by_client) {
-  BusServer bus_svr1("svr1");
+  // SetUp: 1 server + 2 client
+  //
+  // BusClient|Connection <------ connect() -----> Connection|BusServer
+  //
 
-  // 2 clients
+  auto svr_conn1 = std::make_shared<MockConnectionPair>();
+  auto svr_conn2 = std::make_shared<MockConnectionPair>();
+  auto cli_conn1 = std::make_shared<MockConnectionPair>();
+  auto cli_conn2 = std::make_shared<MockConnectionPair>();
 
-  auto conn1 = std::make_shared<MockConnectionPair>();
-  auto conn2 = std::make_shared<MockConnectionPair>();
+  cli_conn1->connect(svr_conn1);
+  svr_conn1->connect(cli_conn1);
+  cli_conn2->connect(svr_conn2);
+  svr_conn2->connect(cli_conn2);
+  
+  BusServer server("server1");
 
-  conn1->connect(conn2);
-  conn2->connect(conn1);
-  bbt::bus::BusClient client1("name1", conn1);
-  bbt::bus::BusClient client2("name1", conn2);
+  svr_conn1->set_read_callback(
+      [&server](const ConnectionPtr& conn, Buffer* buf) {
+        server.HandleRead(conn, buf);
+      });
+  svr_conn2->set_read_callback(
+      [&server](const ConnectionPtr& conn, Buffer* buf) {
+        server.HandleRead(conn, buf);
+      });
+
+  server.HandleConnection(svr_conn1);
+  server.HandleConnection(svr_conn2);
+
+  BusClient client1("client1", cli_conn1);
+  BusClient client2("client2", cli_conn2);
 
   client1.AddMethod("func1", [](const In& in, Out* out) {
     out->set("name", in.get("name"));

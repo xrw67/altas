@@ -67,9 +67,10 @@ class Buffer {
     writer_ = kCheapPrepend;
   }
 
-  void Append(const char* data, size_t len) noexcept {
+  void Append(const void* data, size_t len) noexcept {
+    auto p = reinterpret_cast<const char*>(data);
     EnsureWritableBytes(len);
-    std::copy(data, data + len, BeginWrite());
+    std::copy(p, p + len, BeginWrite());
     HasWritten(len);
   }
   void Append(string_view s) noexcept {

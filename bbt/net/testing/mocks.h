@@ -1,7 +1,7 @@
 #ifndef BBT_NET_TESTING_MOCKS_H_
 #define BBT_NET_TESTING_MOCKS_H_
 
-#include <vector>
+#include <memory>
 
 #include "bbt/net/buffer.h"
 #include "bbt/net/connection.h"
@@ -15,9 +15,10 @@ struct MockConnectionPair : public Connection {
 
   void connect(const std::shared_ptr<MockConnectionPair>& other) {
     peer_conn = other;
+    state_ = kConnected;
   }
 
-  void Send(const void* data, size_t len) {
+  virtual void Send(const void* data, size_t len) {
     // 直接发给对端
     auto l = peer_conn.lock();
     if (l) l->HandleRead(data, len);
@@ -30,6 +31,8 @@ struct MockConnectionPair : public Connection {
     read_callback_(shared_from_this(), &buf);
   }
 };
+
+typedef std::shared_ptr<MockConnectionPair> MockConnectionPairPtr;
 
 }  // namespace testing
 }  // namespace net

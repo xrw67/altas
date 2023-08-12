@@ -47,28 +47,6 @@ struct MockConnection : public Connection {
   }
 };
 
-TEST(BusClient, should_register_method) {
-  auto mock_conn = std::make_shared<MockConnection>();
-
-  bbt::bus::BusClient client("name1", mock_conn);
-
-  bbt::bus::In in;
-  in.set("key1", "str1");
-  in.set("key2", "1001");
-
-  bbt::bus::Result result;
-  client.AddMethod("MyEcho.Echo", [](const In&, Out*) {});
-
-  ASSERT_TRUE(mock_conn->last_status);
-  ASSERT_EQ(mock_conn->output_msgs.size(), 1);
-  const auto& msg = mock_conn->output_msgs[0];
-
-  ASSERT_EQ(msg->method(), "SvcMgr.AddMethod");
-  ASSERT_EQ(msg->param("MethodName"), "MyEcho.Echo");
-
-  client.Stop();
-}
-
 TEST(BusClient, should_call_and_reply) {
   auto mock_conn = std::make_shared<MockConnection>();
   Msg resp;

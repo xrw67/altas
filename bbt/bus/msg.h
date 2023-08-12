@@ -32,7 +32,6 @@ class Msg {
   typedef Type::const_iterator TypeConstIter;
 
   ConnectionPtr src;
-  ConnectionPtr dst;
 
   Msg() : id_(0), is_request_(true) {}
 
@@ -42,11 +41,21 @@ class Msg {
   std::string caller() const noexcept { return caller_; }
   void set_caller(const std::string& caller) { caller_ = caller; }
 
+  std::string method_provider() const noexcept { return method_provider_; }
+
   MsgId id() const { return id_; }
   void set_id(MsgId id) { id_ = id; }
 
   std::string method() const { return method_; }
-  void set_method(const std::string& method) { method_ = method; }
+  void set_method(const std::string& method) {
+    auto pos = method.find_first_of('/');
+    if (pos != method.npos) {
+      method_provider_ = method.substr(0, pos);
+      method_ = method.substr(pos + 1);
+    } else {
+      method_ = method;
+    }
+  }
 
   bool has_param(const std::string& key) const;
   void set_param(const std::string& key, const std::string& value);
@@ -60,8 +69,11 @@ class Msg {
   bool is_request_;
   std::string caller_;
   std::string method_;
+  std::string method_provider_;
   Type values_;
 };
+
+void SendMessageToConnection(const ConnectionPtr& conn, const MsgPtr& msg);
 
 }  // namespace bus
 }  // namespace bbt

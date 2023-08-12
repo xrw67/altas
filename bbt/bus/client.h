@@ -2,17 +2,14 @@
 #define BBT_BUS_CLIENT_H_
 
 #include <string>
-#include <atomic>
-#include <mutex>
-#include <functional>
+#include <memory.h>
 
 #include "asio.hpp"
 
 #include "bbt/base/status.h"
 #include "bbt/net/connection.h"
-
-#include "method.h"
-#include "msg.h"
+#include "bbt/bus/msg.h"
+#include "bbt/bus/method.h"
 
 namespace bbt {
 namespace bus {
@@ -20,6 +17,8 @@ namespace bus {
 using bbt::net::Buffer;
 using bbt::net::ConnectionPtr;
 using bbt::net::Context;
+
+class BusSession;
 
 class BusClient {
  public:
@@ -45,26 +44,8 @@ class BusClient {
   // Call when transpot read bytes
   void OnTransportReadCallback(const ConnectionPtr& conn, Buffer* buf);
 
-  // call when receive bus message coming
-  void OnMsg(const MsgPtr& msg);
-
-  void OnMethodRequest(const Msg& req, Msg* resp);
-
-  // 发送msg到远程机器上
-  Status WriteBusMessage(const Msg& msg);
-
-  MsgId NextMsgId() noexcept { return next_id_.fetch_add(1); }
-
-  std::string name_;
+  std::unique_ptr<BusSession> session_;
   ConnectionPtr transport_;
-
-  std::atomic<MsgId> next_id_;
-
-  /// 等待结果的列表
-  std::mutex mutex_;
-  std::map<MsgId, Result*> waitings_;  // TODO: result的析构函数要weakup再析构
-
-  std::map<std::string, MethodFunc> methods_;
 };
 
 }  // namespace bus

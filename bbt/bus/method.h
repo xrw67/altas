@@ -36,8 +36,21 @@ typedef In Out;
 
 class Result {
  public:
-  Status Wait() { return OkStatus(); }
-  void WeakUp() {}
+  Result() : ok_(false) {}
+
+  void Wait() {
+    std::unique_lock<std::mutex> lock(mutex_);
+    if (ok_) return;
+    cond_.wait(lock, [this] { return ok_; });
+  }
+
+  void WeakUp() {
+    {
+      std::unique_lock<std::mutex> lock(mutex_);
+      ok_ = true;
+    }
+    cond_.notify_all();
+  }
 
   Out& out() { return out_; }
   std::string get(const std::string& key) const { return out_.get(key); };
@@ -49,6 +62,7 @@ class Result {
   std::mutex mutex_;
   std::condition_variable cond_;
 
+  bool ok_;
   Out out_;
 };
 

@@ -63,8 +63,7 @@ TEST(Service, DISABLED_EchoService) {
   // 异步
   bbt::bus::Result result;
   c2.ACall("echo", in, &result);
-  st = result.Wait();
-  ASSERT_TRUE(st);
+  result.Wait();
   ASSERT_EQ(result.get("greeting"), "Hello, BBT");
 
   // teardown

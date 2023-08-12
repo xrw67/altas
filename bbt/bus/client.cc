@@ -7,6 +7,7 @@
 #include "bbt/bus/msg.h"
 #include "bbt/bus/context.h"
 #include "bbt/bus/msg_packer.h"
+#include "bbt/bus/session.h"
 
 namespace bbt {
 namespace bus {
@@ -15,17 +16,15 @@ using bbt::net::_1;
 using bbt::net::_2;
 using bbt::net::Connection;
 
-//
-// BusClient
-//
-
 BusClient::BusClient(const std::string& name, const ConnectionPtr& transport)
-    : name_(name), transport_(transport), next_id_(1) {
+    : session_(new BusSession(name)), transport_(transport) {
   transport_->set_context(new BusContext());
   transport_->set_connection_callback(
       std::bind(&BusClient::OnTransportConnection, this, _1));
   transport_->set_read_callback(
       std::bind(&BusClient::OnTransportReadCallback, this, _1, _2));
+
+  session_->set_msg_writer(std::bind(&SendMessageToConnection, transport_, _1));
 }
 
 BusClient::~BusClient() { Stop(); }
@@ -36,67 +35,16 @@ void BusClient::Stop() {
 }
 
 Status BusClient::AddMethod(const std::string& name, MethodFunc func) {
-  if (methods_.find(name) != methods_.end()) return AlreadyExistsError(name);
-
-  // TODO： 支持一次性上传多个函数
-  // CALL AddMethod RPC
-  In in;
-  in.set("MethodName", name);
-
-  auto st = Call("SvcMgr.AddMethod", in, NULL);
-  if (!st) return st;
-
-  // ADD LocalServiceList
-  // TODO: mutex
-  methods_[name] = func;
-
-  return st;
+  return session_->AddMethod(name, func);
 }
 
 Status BusClient::Call(const std::string& method, const In& in, Out* out) {
-  Result result;
-  auto st = ACall(method, in, &result);
-  if (!st) return st;
-
-  st = result.Wait();
-  if (!st) return st;
-
-  if (out) *out = result.out();
-  return st;
+  return session_->Call(method, in, out);
 }
 
 Status BusClient::ACall(const std::string& method, const In& in,
                         Result* result) {
-  if (!result) return InvalidArgumentError("no result param");
-
-  // Pack Msg
-  MsgPtr msg(new Msg());
-  msg->set_id(NextMsgId());
-  msg->set_caller(name_);
-  msg->set_request(true);
-  msg->set_method(method);
-  for (auto i : in.params()) {
-    msg->set_param(i.first, i.second);
-  }
-
-  //
-  //  先加入队列，否则可能还没来得及加入队列，就返回了。
-  //
-  {
-    std::lock_guard<std::mutex> guard(mutex_);
-    waitings_[msg->id()] = result;
-  }
-
-  auto st = WriteBusMessage(*msg);
-  if (!st) {
-    waitings_.erase(msg->id());
-    return st;
-  }
-
-  // result->set_in(msg);
-  // result->ResetWait();
-
-  return OkStatus();
+  return session_->ACall(method, in, result);
 }
 
 void BusClient::OnTransportConnection(const ConnectionPtr& conn) {
@@ -122,85 +70,10 @@ void BusClient::OnTransportReadCallback(const ConnectionPtr& conn,
       Stop();
       break;
     case BusContext::kGood:
-      OnMsg(msg);
+      session_->HandleMessage(msg);
       break;
     case BusContext::kContinue:
       return;  // continue;
-  }
-}
-
-void BusClient::OnMsg(const MsgPtr& msg) {
-  // 服务端发过来的rpc请求，需要响应它
-  if (msg->is_request()) {
-    // 其他客户端的访问请求
-    Msg resp;
-    resp.set_id(msg->id());
-    resp.set_caller(msg->caller());
-    resp.set_request(false);
-
-    OnMethodRequest(*msg, &resp);
-    WriteBusMessage(resp);
-
-    //   send_msg_func_(resp);
-  } else {
-    //    我的请求应答来了
-    Result* result = nullptr;
-
-    {
-      std::lock_guard<std::mutex> guard(mutex_);
-      auto it = waitings_.find(msg->id());
-      if (it != waitings_.end()) {
-        result = it->second;
-        waitings_.erase(it);
-      }
-    }
-
-    if (result) {
-      for (auto& i : *msg) {
-        result->out().set(i.first, i.second);
-      }
-
-      result->WeakUp();
-    }
-  }
-}
-
-Status BusClient::WriteBusMessage(const Msg& msg) {
-  bbt::net::Buffer buffer;
-
-  JsonPacker jp;
-
-  std::string body;  // TODO 性能优化
-  jp.Pack(msg, &body);
-
-  MsgHeader hdr = {
-      .magic = kMsgMagic,
-      .length = (uint32_t)body.length() + 1,
-  };
-
-  Buffer tmp(sizeof(hdr) + body.length() + 1);
-  tmp.Append((const char*)&hdr, sizeof(hdr));
-  tmp.Append(body.data(), body.length() + 1);
-
-  transport_->Send(tmp.Peek(), tmp.ReadableBytes());
-  return OkStatus();
-}
-
-void BusClient::OnMethodRequest(const Msg& req, Msg* resp) {
-  auto it = methods_.find(req.method());
-  if (it != methods_.end()) {
-    In in;
-    for (auto i : req) {
-      in.set(i.first, i.second);
-    }
-    Out out;
-    it->second(in, &out);
-
-    for (auto i : out.params()) {
-      resp->set_param(i.first, i.second);
-    }
-  } else {
-    resp->set_param("return", "not found");
   }
 }
 
