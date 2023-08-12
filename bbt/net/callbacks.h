@@ -28,7 +28,7 @@ class Context {
 
 class Connection;
 typedef std::shared_ptr<Connection> ConnectionPtr;
-typedef std::function<void(const ConnectionPtr&)> ConnCallback;
+typedef std::function<void(const ConnectionPtr&)> ConnectionCallback;
 typedef std::function<void(const ConnectionPtr&, Buffer*)> ReadCallback;
 
 class TcpConnection;

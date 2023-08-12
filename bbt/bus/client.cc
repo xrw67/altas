@@ -22,7 +22,7 @@ using bbt::net::Connection;
 BusClient::BusClient(const std::string& name, const ConnectionPtr& transport)
     : name_(name), transport_(transport), next_id_(1) {
   transport_->set_context(new BusContext());
-  transport_->set_conn_callback(
+  transport_->set_connection_callback(
       std::bind(&BusClient::OnTransportConnection, this, _1));
   transport_->set_read_callback(
       std::bind(&BusClient::OnTransportReadCallback, this, _1, _2));
@@ -36,8 +36,7 @@ void BusClient::Stop() {
 }
 
 Status BusClient::AddMethod(const std::string& name, MethodFunc func) {
-  if (methods_.find(name) != methods_.end())
-    return AlreadyExistsError(name);
+  if (methods_.find(name) != methods_.end()) return AlreadyExistsError(name);
 
   // TODO： 支持一次性上传多个函数
   // CALL AddMethod RPC
@@ -111,7 +110,8 @@ void BusClient::OnTransportConnection(const ConnectionPtr& conn) {
   }
 }
 
-void BusClient::OnTransportReadCallback(const ConnectionPtr& conn, Buffer* buf) {
+void BusClient::OnTransportReadCallback(const ConnectionPtr& conn,
+                                        Buffer* buf) {
   BusContext* ctx = reinterpret_cast<BusContext*>(conn->context());
 
   MsgPtr msg(new Msg());

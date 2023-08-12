@@ -2,7 +2,7 @@
 
 namespace bbt {
 namespace http {
-    
+
 ConnectionManager::ConnectionManager() {}
 
 void ConnectionManager::Start(TcpConnectionPtr c) {

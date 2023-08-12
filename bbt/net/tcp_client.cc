@@ -16,7 +16,7 @@ Status TcpClient::Connect(const std::string& address, const std::string& port) {
     asio::connect(socket, endpoints);
 
     conn_ = std::make_shared<TcpConnection>(std::move(socket));
-    conn_->set_conn_callback(conn_callback_);
+    conn_->set_connection_callback(connection_callback_);
     conn_->set_read_callback(read_callback_);
     conn_->Start();
   } catch (std::exception& e) {

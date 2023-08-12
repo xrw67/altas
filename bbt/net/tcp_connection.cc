@@ -10,14 +10,14 @@ TcpConnection::TcpConnection(asio::ip::tcp::socket socket)
 
 void TcpConnection::Start() {
   state_ = kConnected;
-  conn_callback_(shared_from_this());
+  connection_callback_(shared_from_this());
   ReadFromSocket();
 }
 
 void TcpConnection::Stop() {
   socket_.shutdown(socket_.shutdown_both);
   state_ = kDisconnected;
-  conn_callback_(shared_from_this());
+  connection_callback_(shared_from_this());
   socket_.close();
 }
 
@@ -53,7 +53,7 @@ void TcpConnection::ReadFromSocket() {
   auto self = shared_from_this();
   socket_.async_read_some(
       asio::buffer(buffer_),
-      [this,self](std::error_code ec, std::size_t bytes_transferred) {
+      [this, self](std::error_code ec, std::size_t bytes_transferred) {
         if (!ec) {
           input_buffer_.Append(buffer_.data(), bytes_transferred);
           read_callback_(self, &input_buffer_);

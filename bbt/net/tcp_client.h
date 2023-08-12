@@ -19,13 +19,15 @@ class TcpClient {
   void Send(const void* data, int len);
   TcpConnectionPtr connection() { return conn_; }
 
-  void set_conn_callback(const ConnCallback& cb) { conn_callback_ = cb; }
+  void set_connection_callback(const ConnectionCallback& cb) {
+    connection_callback_ = cb;
+  }
   void set_read_callback(const ReadCallback& cb) { read_callback_ = cb; }
 
   asio::io_context& io_context_;
   TcpConnectionPtr conn_;
 
-  ConnCallback conn_callback_;
+  ConnectionCallback connection_callback_;
   ReadCallback read_callback_;
 };
 

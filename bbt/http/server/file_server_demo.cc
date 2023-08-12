@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
 
   auto st = server.Listen("0.0.0.0", argv[1]);
   if (!st) {
-    bbt::println("{}",st);
+    bbt::println("{}", st);
     return -1;
   }
   server.Serve();

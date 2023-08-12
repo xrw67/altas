@@ -17,9 +17,9 @@
 namespace bbt {
 namespace bus {
 
+using bbt::net::Buffer;
 using bbt::net::ConnectionPtr;
 using bbt::net::Context;
-using bbt::net::Buffer;
 
 class BusClient {
  public:
@@ -48,7 +48,7 @@ class BusClient {
   // call when receive bus message coming
   void OnMsg(const MsgPtr& msg);
 
-  void OnMethodRequest(const Msg&req, Msg *resp);
+  void OnMethodRequest(const Msg& req, Msg* resp);
 
   // 发送msg到远程机器上
   Status WriteBusMessage(const Msg& msg);

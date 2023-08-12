@@ -21,8 +21,8 @@ TEST(BusServer, use_tcp_server_as_transport_protocol) {
 
   BusServer bus_svr1("svr1");
 
-  tcp_svr.set_conn_callback(std::bind(&BusServer::HandleConnection, &bus_svr1,
-                                      std::placeholders::_1));
+  tcp_svr.set_connection_callback(std::bind(&BusServer::HandleConnection,
+                                            &bus_svr1, std::placeholders::_1));
   tcp_svr.set_read_callback(std::bind(&BusServer::HandleRead, &bus_svr1,
                                       std::placeholders::_1,
                                       std::placeholders::_2));
@@ -35,11 +35,7 @@ struct MockTransportServer : public Connection {
   MockConnectionPair conn1;
   MockConnectionPair conn2;
 
-
-  void HandleRead(const ConnectionPtr&conn, Buffer *buf) {
-    
-  }
-
+  void HandleRead(const ConnectionPtr& conn, Buffer* buf) {}
 };
 
 TEST(BusServer, should_register_method_by_client) {

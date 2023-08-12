@@ -76,9 +76,6 @@
 #define BBT_INTERNAL_HAVE_MIN_CLANG_VERSION(x, y) 0
 #endif
 
-
-
-
 // -----------------------------------------------------------------------------
 // Platform Feature Checks
 // -----------------------------------------------------------------------------
@@ -99,8 +96,6 @@
 //
 // Note that since Android defines both __ANDROID__ and __linux__, one
 // may probe for either Linux or Android by simply testing for __linux__.
-
-
 
 #ifdef WIN32
 

@@ -27,7 +27,6 @@ TEST(MockTest, Example) {
   MockDB mock;
   DBClient client(&mock);
 
-
   EXPECT_CALL(mock, Query("SELECT * FROM t1;")).Times(AtLeast(1));
 
   client.Do();

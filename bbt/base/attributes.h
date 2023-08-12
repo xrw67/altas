@@ -59,7 +59,7 @@
 #define BBT_PRINTF_ATTRIBUTE(string_index, first_to_check)
 #define BBT_SCANF_ATTRIBUTE(string_index, first_to_check)
 #endif
- 
+
 // BBT_ATTRIBUTE_ALWAYS_INLINE
 // BBT_ATTRIBUTE_NOINLINE
 //

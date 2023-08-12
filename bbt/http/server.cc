@@ -8,8 +8,7 @@ Server::Server() : io_context_(1), acceptor_(io_context_) {}
 
 Server::~Server() {}
 
-void Server::Handle(const std::string& path,
-                    const ServeMux::Func& func) {
+void Server::Handle(const std::string& path, const ServeMux::Func& func) {
   request_handler_.set_handler(path, func);
 }
 

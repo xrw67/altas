@@ -37,11 +37,11 @@
                                     __VA_ARGS__);                            \
   } while (0)
 
-#define BBT_RAW_CHECK(condition, message)                             \
-  do {                                                                \
-    if (BBT_PREDICT_FALSE(!(condition))) {                            \
+#define BBT_RAW_CHECK(condition, message)                                 \
+  do {                                                                    \
+    if (BBT_PREDICT_FALSE(!(condition))) {                                \
       BBT_RAW_LOG(FATAL, "Check {:s} failed: {:s}", #condition, message); \
-    }                                                                 \
+    }                                                                     \
   } while (0)
 
 #define BBT_LOGGING_INTERNAL_DEBUG ::bbt::LogSeverity::kDebug

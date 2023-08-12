@@ -15,7 +15,7 @@ int main(int argc, char* argv[]) {
 
   TcpServer svr(io_context);
 
-  svr.set_conn_callback([](const ConnectionPtr& conn) {
+  svr.set_connection_callback([](const ConnectionPtr& conn) {
     switch (conn->state()) {
       case Connection::kConnected:
         bbt::println("conn: connected");

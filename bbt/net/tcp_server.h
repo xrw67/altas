@@ -20,7 +20,9 @@ class TcpServer {
 
   void Boardcast(const void* data, size_t len) noexcept;
 
-  void set_conn_callback(const ConnCallback& cb) { conn_callback_ = cb; }
+  void set_connection_callback(const ConnectionCallback& cb) {
+    connection_callback_ = cb;
+  }
   void set_read_callback(const ReadCallback& cb) { read_callback_ = cb; }
 
  private:
@@ -35,7 +37,7 @@ class TcpServer {
 
   TcpConnectionManager* connection_manager_;
 
-  ConnCallback conn_callback_;
+  ConnectionCallback connection_callback_;
   ReadCallback read_callback_;
 };
 

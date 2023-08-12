@@ -33,8 +33,7 @@ void BusServer::HandleConnection(const ConnectionPtr& conn) {
 }
 
 void BusServer::HandleRead(const ConnectionPtr& conn, Buffer* buf) {
-  BusContext* ctx =
-      reinterpret_cast<BusContext*>(conn->context());
+  BusContext* ctx = reinterpret_cast<BusContext*>(conn->context());
 
   MsgPtr msg(new Msg());
   auto ret = ctx->Parse(buf, msg.get());

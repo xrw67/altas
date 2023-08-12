@@ -87,7 +87,6 @@ TEST(BusClient, should_call_and_reply) {
   client.Stop();
 }
 
-
 TEST(BusClient, should_reply_when_call_by_other_client) {
   auto conn1 = std::make_shared<MockConnectionPair>();
   auto conn2 = std::make_shared<MockConnectionPair>();

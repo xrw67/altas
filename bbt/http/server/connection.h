@@ -23,8 +23,8 @@ class TcpConnection : public std::enable_shared_from_this<TcpConnection> {
   TcpConnection& operator=(const TcpConnection&) = delete;
 
   /// Construct a connection with the given socket.
-  explicit TcpConnection(asio::ip::tcp::socket socket, ConnectionManager& manager,
-                      ServeMux& handler);
+  explicit TcpConnection(asio::ip::tcp::socket socket,
+                         ConnectionManager& manager, ServeMux& handler);
 
   /// Start the first asynchronous operation for the connection.
   void Start();
@@ -56,7 +56,7 @@ class TcpConnection : public std::enable_shared_from_this<TcpConnection> {
   /// The parser for the incoming request.
   RequestParser request_parser_;
 
-/// The reply to be sent back to the client.
+  /// The reply to be sent back to the client.
   Response reply_;
 };
 

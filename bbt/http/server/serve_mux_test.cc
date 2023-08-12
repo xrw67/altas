@@ -7,8 +7,8 @@
 namespace {
 
 using bbt::http::Request;
-using bbt::http::ServeMux;
 using bbt::http::Response;
+using bbt::http::ServeMux;
 
 void func1(const Request& req, Response* resp) { resp->content = "func1"; }
 void func2(const Request& req, Response* resp) { resp->content = "func2"; }

@@ -20,7 +20,7 @@ TEST(Service, DISABLED_EchoService) {
   TcpServer tcp_svr(io_context);
   BusServer server("mybus");
 
-  tcp_svr.set_conn_callback(
+  tcp_svr.set_connection_callback(
       std::bind(&BusServer::HandleConnection, &server, std::placeholders::_1));
   tcp_svr.set_read_callback(std::bind(&BusServer::HandleRead, &server,
                                       std::placeholders::_1,

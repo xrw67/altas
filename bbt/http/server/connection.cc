@@ -7,8 +7,8 @@
 
 namespace bbt {
 namespace http {
-TcpConnection::TcpConnection(asio::ip::tcp::socket socket, ConnectionManager& manager,
-                       ServeMux& handler)
+TcpConnection::TcpConnection(asio::ip::tcp::socket socket,
+                             ConnectionManager& manager, ServeMux& handler)
     : socket_(std::move(socket)),
       connection_manager_(manager),
       request_handler_(handler) {}

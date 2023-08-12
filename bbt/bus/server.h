@@ -12,8 +12,8 @@ namespace bbt {
 
 namespace bus {
 
-using bbt::net::ConnectionPtr;
 using bbt::net::Buffer;
+using bbt::net::ConnectionPtr;
 
 class BusServer {
  public:

@@ -43,7 +43,7 @@ void TcpServer::DoAccept() {
         }
 
         auto conn = std::make_shared<TcpConnection>(std::move(socket));
-        conn->set_conn_callback(conn_callback_);
+        conn->set_connection_callback(connection_callback_);
         conn->set_read_callback(read_callback_);
         connection_manager_->Start(conn);
         DoAccept();  // Wait Next
