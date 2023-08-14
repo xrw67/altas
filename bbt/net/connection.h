@@ -19,7 +19,9 @@ class Connection : public std::enable_shared_from_this<Connection> {
   void set_connection_callback(const ConnectionCallback& cb) {
     connection_callback_ = cb;
   }
-  void set_read_callback(const ReadCallback& cb) { read_callback_ = cb; }
+  void set_receive_callback(const ReceiveCallback& cb) {
+    receive_callback_ = cb;
+  }
 
   virtual void Start() {
     state_ = kConnected;
@@ -39,7 +41,7 @@ class Connection : public std::enable_shared_from_this<Connection> {
   State state_;
   Context* context_;
   ConnectionCallback connection_callback_;
-  ReadCallback read_callback_;
+  ReceiveCallback receive_callback_;
 };
 
 }  // namespace net

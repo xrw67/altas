@@ -2,9 +2,10 @@
 #include "bbt/net/tcp/connection.h"
 
 #include "bbt/base/str_util.h"
-
+#include "bbt/base/log.h"
 #include "bbt/bus/context.h"
-#include "bbt/bus/service_manager.h"
+#include "bbt/bus/service.h"
+#include "bbt/bus/router.h"
 
 namespace bbt {
 namespace bus {
@@ -14,7 +15,11 @@ using bbt::net::_2;
 using bbt::net::Connection;
 
 BusServer::BusServer(const std::string& name)
-    : service_manager_(new ServiceManager(name)) {}
+    : local_service_(new BusService(name)), router_(new BusRouter()) {
+  local_service_->AddMethod(
+      "RegisterService",
+      std::bind(&BusServer::HandleRegisterMethod, this, _1, _2));
+}
 
 BusServer::~BusServer() {}
 
@@ -27,13 +32,17 @@ void BusServer::HandleConnection(const ConnectionPtr& conn) {
     case Connection::kConnected:
       conn->set_context(new BusContext());
       break;
-    case Connection::kDisconnected:
-
+    case Connection::kDisconnected: {
+      BusContext* ctx = reinterpret_cast<BusContext*>(conn->context());
+      if (ctx) {
+        router_->Remove(ctx->name());
+      }
       break;
+    }
   }
 }
 
-void BusServer::HandleRead(const ConnectionPtr& conn, Buffer* buf) {
+void BusServer::OnReceive(const ConnectionPtr& conn, Buffer* buf) {
   BusContext* ctx = reinterpret_cast<BusContext*>(conn->context());
 
   MsgPtr msg(new Msg());
@@ -63,25 +72,13 @@ void BusServer::HandleRequestMessage(const MsgPtr& req) {
   // 分发给具体的Client的服务来处理
   const auto& provider = req->method_provider();
   if (provider.empty() || provider == "SvcMgr") {
-    In in;
-    for (auto i : *req) {
-      in.set(i.first, i.second);
-    }
-    Out out;
-    service_manager_->Serve(req->method(), in, &out);
-
     MsgPtr resp(new Msg());
-    resp->set_id(req->id());
-    resp->set_caller(req->caller());
-    resp->set_request(false);
-    for (auto i : out.params()) {
-      resp->set_param(i.first, i.second);
-    }
+    local_service_->ServeMsg(*req, resp.get());
     SendMessageToConnection(req->src, resp);
   } else {
-    auto it = connections_.find(req->caller());
-    if (it != connections_.end()) {
-      SendMessageToConnection(it->second, req);
+    auto c = router_->Find(provider);
+    if (c) {
+      SendMessageToConnection(c, req);
     } else {
       // 客户端不存在，记录日志
       // ReplyMethodProviderNotFound(msg);
@@ -90,12 +87,18 @@ void BusServer::HandleRequestMessage(const MsgPtr& req) {
 }
 
 void BusServer::HandleResponseMessage(const MsgPtr& msg) {
-  auto it = connections_.find(msg->caller());
-  if (it != connections_.end()) {
-    SendMessageToConnection(it->second, msg);
+  auto c = router_->Find(msg->caller());
+  if (c) {
+    SendMessageToConnection(c, msg);
   } else {
     // 客户端丢失，记录日志
   }
+}
+
+void BusServer::HandleRegisterMethod(const In& in, Out* out) {
+  auto name = in.get("ServiceName");
+  router_->Add(name, in.conn);
+  BBT_LOG(DEBUG, "handle {}, name is {}", "RegisterMethod", name);
 }
 
 }  // namespace bus

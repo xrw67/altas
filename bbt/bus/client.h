@@ -18,7 +18,8 @@ using bbt::net::Buffer;
 using bbt::net::ConnectionPtr;
 using bbt::net::Context;
 
-class BusSession;
+class BusInvoker;
+class BusService;
 
 class BusClient {
  public:
@@ -44,7 +45,13 @@ class BusClient {
   // Call when transpot read bytes
   void OnTransportReadCallback(const ConnectionPtr& conn, Buffer* buf);
 
-  std::unique_ptr<BusSession> session_;
+  void HandleMessage(const MsgPtr& msg);
+  void HandleRequestMessage(const MsgPtr& msg);
+
+  void ReportMyServiceToServer();
+
+  std::unique_ptr<BusService> service_;
+  std::unique_ptr<BusInvoker> invoker_;
   ConnectionPtr transport_;
 };
 

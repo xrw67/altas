@@ -21,14 +21,14 @@ struct MockConnectionPair : public Connection {
   virtual void Send(const void* data, size_t len) {
     // 直接发给对端
     auto l = peer_conn.lock();
-    if (l) l->HandleRead(data, len);
+    if (l) l->OnReceive(data, len);
   }
 
-  void HandleRead(const void* data, size_t len) {
+  void OnReceive(const void* data, size_t len) {
     // 收到对端的数据，抛给上层
     Buffer buf;
     buf.Append((const char*)data, len);
-    read_callback_(shared_from_this(), &buf);
+    receive_callback_(shared_from_this(), &buf);
   }
 };
 

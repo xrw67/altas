@@ -22,13 +22,15 @@ class TcpClient {
   void set_connection_callback(const ConnectionCallback& cb) {
     connection_callback_ = cb;
   }
-  void set_read_callback(const ReadCallback& cb) { read_callback_ = cb; }
+  void set_receive_callback(const ReceiveCallback& cb) {
+    receive_callback_ = cb;
+  }
 
   asio::io_context& io_context_;
   TcpConnectionPtr conn_;
 
   ConnectionCallback connection_callback_;
-  ReadCallback read_callback_;
+  ReceiveCallback receive_callback_;
 };
 
 }  // namespace net

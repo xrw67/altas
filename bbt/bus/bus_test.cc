@@ -22,9 +22,9 @@ TEST(Service, DISABLED_EchoService) {
 
   tcp_svr.set_connection_callback(
       std::bind(&BusServer::HandleConnection, &server, std::placeholders::_1));
-  tcp_svr.set_read_callback(std::bind(&BusServer::HandleRead, &server,
-                                      std::placeholders::_1,
-                                      std::placeholders::_2));
+  tcp_svr.set_receive_callback(std::bind(&BusServer::OnReceive, &server,
+                                         std::placeholders::_1,
+                                         std::placeholders::_2));
 
   auto st = tcp_svr.Listen("127.0.0.1", "59998");
   ASSERT_TRUE(st) << st.ToString();

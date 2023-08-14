@@ -7,7 +7,8 @@
 #include "bbt/bus/msg.h"
 #include "bbt/bus/context.h"
 #include "bbt/bus/msg_packer.h"
-#include "bbt/bus/session.h"
+#include "bbt/bus/invoker.h"
+#include "bbt/bus/service.h"
 
 namespace bbt {
 namespace bus {
@@ -17,40 +18,47 @@ using bbt::net::_2;
 using bbt::net::Connection;
 
 BusClient::BusClient(const std::string& name, const ConnectionPtr& transport)
-    : session_(new BusSession(name)), transport_(transport) {
+    : service_(new BusService(name)),
+      invoker_(new BusInvoker(name)),
+      transport_(transport) {
   transport_->set_context(new BusContext());
   transport_->set_connection_callback(
       std::bind(&BusClient::OnTransportConnection, this, _1));
-  transport_->set_read_callback(
+  transport_->set_receive_callback(
       std::bind(&BusClient::OnTransportReadCallback, this, _1, _2));
 
-  session_->set_msg_writer(std::bind(&SendMessageToConnection, transport_, _1));
+  invoker_->set_msg_writer(std::bind(&SendMessageToConnection, transport_, _1));
 }
 
 BusClient::~BusClient() { Stop(); }
 
 void BusClient::Stop() {
-  // bus_conn_.SayGoodbyToSever();
+  // invoker_.SayGoodbyToSever();
   transport_->Stop();
 }
 
 Status BusClient::AddMethod(const std::string& name, MethodFunc func) {
-  return session_->AddMethod(name, func);
+  if (!service_->AddMethod(name, func)) return AlreadyExistsError(name);
+
+  In in;
+  in.set("MethodName", name);
+
+  return invoker_->Call("SvcMgr/AddMethod", in, NULL);
 }
 
 Status BusClient::Call(const std::string& method, const In& in, Out* out) {
-  return session_->Call(method, in, out);
+  return invoker_->Call(method, in, out);
 }
 
 Status BusClient::ACall(const std::string& method, const In& in,
                         Result* result) {
-  return session_->ACall(method, in, result);
+  return invoker_->ACall(method, in, result);
 }
 
 void BusClient::OnTransportConnection(const ConnectionPtr& conn) {
   switch (conn->state()) {
     case Connection::kConnected:
-      // bus_conn_.SayHelloToServer(); 上报我的姓名
+      ReportMyServiceToServer();// ???
       break;
     case Connection::kDisconnected:
       // Transport断开了，善后，
@@ -66,15 +74,37 @@ void BusClient::OnTransportReadCallback(const ConnectionPtr& conn,
   auto ret = ctx->Parse(buf, msg.get());
   switch (ret) {
     case BusContext::kBad:
-      // bus_conn_->ReportBadToServer()
+      // invoker_->ReportBadToServer()
       Stop();
       break;
     case BusContext::kGood:
-      session_->HandleMessage(msg);
+      HandleMessage(msg);
       break;
     case BusContext::kContinue:
       return;  // continue;
   }
+}
+
+void BusClient::HandleMessage(const MsgPtr& msg) {
+  // 服务端发过来的rpc请求，需要响应它
+  if (msg->is_request()) {
+    HandleRequestMessage(msg);
+  } else {
+    invoker_->HandleResponseMessage(msg);
+  }
+}
+
+void BusClient::HandleRequestMessage(const MsgPtr& msg) {
+  // 其他客户端的访问请求
+  MsgPtr resp(new Msg());
+  service_->ServeMsg(*msg, resp.get());
+  SendMessageToConnection(transport_, resp);
+}
+
+void BusClient::ReportMyServiceToServer() {
+  In in;
+  in.set("ServiceName", service_->name());
+  invoker_->Call("RegisterService", in, NULL);
 }
 
 }  // namespace bus

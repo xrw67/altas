@@ -9,6 +9,7 @@
 #include <condition_variable>
 
 #include "bbt/base/status.h"
+#include "bbt/net/connection.h"
 
 namespace bbt {
 namespace bus {
@@ -16,6 +17,8 @@ namespace bus {
 class In {
  public:
   typedef std::map<std::string, std::string> Type;
+
+  bbt::net::ConnectionPtr conn;
 
   std::string get(const std::string& key) const {
     auto it = values_.find(key);

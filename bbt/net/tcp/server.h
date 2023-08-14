@@ -23,7 +23,9 @@ class TcpServer {
   void set_connection_callback(const ConnectionCallback& cb) {
     connection_callback_ = cb;
   }
-  void set_read_callback(const ReadCallback& cb) { read_callback_ = cb; }
+  void set_receive_callback(const ReceiveCallback& cb) {
+    receive_callback_ = cb;
+  }
 
  private:
   /// Perform an asynchronous accept operation.
@@ -38,7 +40,7 @@ class TcpServer {
   TcpConnectionManager* connection_manager_;
 
   ConnectionCallback connection_callback_;
-  ReadCallback read_callback_;
+  ReceiveCallback receive_callback_;
 };
 
 }  // namespace net

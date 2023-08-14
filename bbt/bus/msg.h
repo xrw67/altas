@@ -42,11 +42,12 @@ class Msg {
   void set_caller(const std::string& caller) { caller_ = caller; }
 
   std::string method_provider() const noexcept { return method_provider_; }
-
+  void set_method_provider(const std::string& mp) { method_provider_ = mp; }
   MsgId id() const { return id_; }
   void set_id(MsgId id) { id_ = id; }
 
   std::string method() const { return method_; }
+
   void set_method(const std::string& method) {
     auto pos = method.find_first_of('/');
     if (pos != method.npos) {

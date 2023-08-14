@@ -23,9 +23,9 @@ TEST(BusServer, use_tcp_server_as_transport_protocol) {
 
   tcp_svr.set_connection_callback(std::bind(&BusServer::HandleConnection,
                                             &bus_svr1, std::placeholders::_1));
-  tcp_svr.set_read_callback(std::bind(&BusServer::HandleRead, &bus_svr1,
-                                      std::placeholders::_1,
-                                      std::placeholders::_2));
+  tcp_svr.set_receive_callback(std::bind(&BusServer::OnReceive, &bus_svr1,
+                                         std::placeholders::_1,
+                                         std::placeholders::_2));
 
   tcp_svr.Stop();
 }
@@ -45,16 +45,16 @@ TEST(BusServer, should_register_method_by_client) {
   svr_conn1->connect(cli_conn1);
   cli_conn2->connect(svr_conn2);
   svr_conn2->connect(cli_conn2);
-  
+
   BusServer server("server1");
 
-  svr_conn1->set_read_callback(
+  svr_conn1->set_receive_callback(
       [&server](const ConnectionPtr& conn, Buffer* buf) {
-        server.HandleRead(conn, buf);
+        server.OnReceive(conn, buf);
       });
-  svr_conn2->set_read_callback(
+  svr_conn2->set_receive_callback(
       [&server](const ConnectionPtr& conn, Buffer* buf) {
-        server.HandleRead(conn, buf);
+        server.OnReceive(conn, buf);
       });
 
   server.HandleConnection(svr_conn1);
@@ -68,11 +68,14 @@ TEST(BusServer, should_register_method_by_client) {
     out->set("key2", "666");
   });
 
+  cli_conn1->Start();
+  cli_conn2->Start();
+
   bbt::bus::In in;
   in.set("name", "xrw");
 
   bbt::bus::Out out;
-  ASSERT_TRUE(client2.Call("func1", in, &out));
+  ASSERT_TRUE(client2.Call("client1/func1", in, &out));
   ASSERT_EQ(out.get("name"), "xrw");
   ASSERT_EQ(out.get("key2"), "666");
 }

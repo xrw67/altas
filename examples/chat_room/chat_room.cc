@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
     }
   });
 
-  svr.set_read_callback([&svr](const ConnectionPtr& conn, Buffer* buf) {
+  svr.set_receive_callback([&svr](const ConnectionPtr& conn, Buffer* buf) {
     auto myconn = static_cast<TcpConnection*>(conn.get());
     auto username = myconn->GetRemoteAddress();
     auto s = buf->ToString();

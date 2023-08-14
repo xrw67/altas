@@ -56,7 +56,7 @@ void TcpConnection::ReadFromSocket() {
       [this, self](std::error_code ec, std::size_t bytes_transferred) {
         if (!ec) {
           input_buffer_.Append(buffer_.data(), bytes_transferred);
-          read_callback_(self, &input_buffer_);
+          receive_callback_(self, &input_buffer_);
           ReadFromSocket();
         } else if (ec != asio::error::operation_aborted) {
           Stop();

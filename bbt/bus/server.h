@@ -17,7 +17,8 @@ namespace bus {
 using bbt::net::Buffer;
 using bbt::net::ConnectionPtr;
 
-class ServiceManager;
+class BusService;
+class BusRouter;
 
 class BusServer {
  public:
@@ -29,7 +30,7 @@ class BusServer {
   // call when connection state changed
   void HandleConnection(const ConnectionPtr& conn);
   // call when connection read bytes
-  void HandleRead(const ConnectionPtr& conn, Buffer* buf);
+  void OnReceive(const ConnectionPtr& conn, Buffer* buf);
 
  protected:
   // call when receive bus message coming
@@ -37,10 +38,11 @@ class BusServer {
   void HandleRequestMessage(const MsgPtr& msg);
   void HandleResponseMessage(const MsgPtr& msg);
 
+  // Service
+  void HandleRegisterMethod(const In& in, Out* out);
 
-
-  std::unique_ptr<ServiceManager> service_manager_;
-  std::unordered_map<std::string, ConnectionPtr> connections_;
+  std::unique_ptr<BusService> local_service_;  // 服务器本身提供的服务
+  std::unique_ptr<BusRouter> router_;
 };
 
 }  // namespace bus

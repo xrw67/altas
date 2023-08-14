@@ -42,7 +42,7 @@ struct MockConnection : public Connection {
       MsgHeader hdr = {kMsgMagic, (uint32_t)tmp.length()};
       buf.Append((const char*)&hdr, sizeof(hdr));
       buf.Append(tmp.c_str(), tmp.length());
-      read_callback_(shared_from_this(), &buf);
+      receive_callback_(shared_from_this(), &buf);
     }
   }
 };

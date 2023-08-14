@@ -17,7 +17,7 @@ Status TcpClient::Connect(const std::string& address, const std::string& port) {
 
     conn_ = std::make_shared<TcpConnection>(std::move(socket));
     conn_->set_connection_callback(connection_callback_);
-    conn_->set_read_callback(read_callback_);
+    conn_->set_receive_callback(receive_callback_);
     conn_->Start();
   } catch (std::exception& e) {
     return InvalidArgumentError(e.what());
