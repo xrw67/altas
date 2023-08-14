@@ -2,7 +2,7 @@
 
 #include <exception>
 
-#include "bbt/net/tcp_connection.h"
+#include "bbt/net/tcp/connection.h"
 #include "bbt/bus/method.h"
 #include "bbt/bus/msg.h"
 #include "bbt/bus/context.h"

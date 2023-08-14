@@ -3,7 +3,7 @@
 
 #include "asio.hpp"
 #include "bbt/net/connection.h"
-#include "bbt/net/tcp_connection.h"
+#include "bbt/net/tcp/connection.h"
 
 #include "msg.h"
 

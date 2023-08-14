@@ -1,5 +1,5 @@
 #include "bbt/bus/server.h"
-#include "bbt/net/tcp_connection.h"
+#include "bbt/net/tcp/connection.h"
 
 #include "bbt/base/str_util.h"
 

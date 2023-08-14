@@ -1,8 +1,8 @@
 #include "gmock/gmock.h"
 
 #include "bbt/net/buffer.h"
-#include "bbt/net/tcp_client.h"
-#include "bbt/net/tcp_server.h"
+#include "bbt/net/tcp/client.h"
+#include "bbt/net/tcp/server.h"
 #include "bbt/net/connection.h"
 
 namespace bbt {

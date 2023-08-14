@@ -1,4 +1,4 @@
-#include "bbt/net/tcp_connection.h"
+#include "bbt/net/tcp/connection.h"
 
 #include "bbt/base/fmt.h"
 

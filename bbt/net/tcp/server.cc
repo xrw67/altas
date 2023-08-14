@@ -1,6 +1,6 @@
-#include "bbt/net/tcp_server.h"
-#include "bbt/net/tcp_connection.h"
-#include "bbt/net/tcp_connection_manager.h"
+#include "bbt/net/tcp/server.h"
+#include "bbt/net/tcp/connection.h"
+#include "bbt/net/tcp/connection_manager.h"
 namespace bbt {
 namespace net {
 

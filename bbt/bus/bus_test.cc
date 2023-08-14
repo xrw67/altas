@@ -4,9 +4,9 @@
 
 #include "bbt/bus/client.h"
 #include "bbt/bus/server.h"
-#include "bbt/net/tcp_client.h"
-#include "bbt/net/tcp_server.h"
-#include "bbt/net/tcp_connection.h"
+#include "bbt/net/tcp/client.h"
+#include "bbt/net/tcp/server.h"
+#include "bbt/net/tcp/connection.h"
 namespace {
 
 using bbt::bus::BusServer;

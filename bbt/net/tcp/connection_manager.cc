@@ -1,5 +1,5 @@
-#include "bbt/net/tcp_connection_manager.h"
-#include "bbt/net/tcp_connection.h"
+#include "bbt/net/tcp/connection_manager.h"
+#include "bbt/net/tcp/connection.h"
 
 namespace bbt {
 namespace net {

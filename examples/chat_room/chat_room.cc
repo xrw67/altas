@@ -1,8 +1,8 @@
 #include <iostream>
 
 #include "bbt/base/fmt.h"
-#include "bbt/net/tcp_server.h"
-#include "bbt/net/tcp_connection.h"
+#include "bbt/net/tcp/server.h"
+#include "bbt/net/tcp/connection.h"
 
 using bbt::net::Connection;
 using bbt::net::ConnectionPtr;

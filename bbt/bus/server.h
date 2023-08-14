@@ -7,7 +7,7 @@
 
 #include "asio.hpp"
 #include "bbt/base/status.h"
-#include "bbt/net/tcp_server.h"
+#include "bbt/net/tcp/server.h"
 #include "bbt/bus/msg.h"
 #include "bbt/bus/method.h"
 
