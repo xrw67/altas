@@ -7,7 +7,7 @@ namespace net {
 TcpServer::TcpServer(asio::io_context& io)
     : io_context_(io),
       acceptor_(io),
-      connection_manager_(new TcpConnectionManager()) {}
+      connection_manager_(new TcpConnManager()) {}
 
 TcpServer::~TcpServer() {
   Stop();
@@ -42,8 +42,8 @@ void TcpServer::DoAccept() {
           return;
         }
 
-        auto conn = std::make_shared<TcpConnection>(std::move(socket));
-        conn->set_connection_callback(connection_callback_);
+        auto conn = std::make_shared<TcpConn>(std::move(socket));
+        conn->set_conn_callback(conn_callback_);
         conn->set_receive_callback(receive_callback_);
         connection_manager_->Start(conn);
         DoAccept();  // Wait Next

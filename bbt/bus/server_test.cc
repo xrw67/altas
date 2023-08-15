@@ -9,7 +9,7 @@ namespace bus {
 namespace {
 
 using bbt::bus::BusClient;
-using bbt::net::Connection;
+using bbt::net::Conn;
 using bbt::net::TcpServer;
 using bbt::net::testing::MockConnectionPair;
 
@@ -21,8 +21,8 @@ TEST(BusServer, use_tcp_server_as_transport_protocol) {
 
   BusServer bus_svr1("svr1");
 
-  tcp_svr.set_connection_callback(std::bind(&BusServer::HandleConnection,
-                                            &bus_svr1, std::placeholders::_1));
+  tcp_svr.set_conn_callback(std::bind(&BusServer::HandleConnection, &bus_svr1,
+                                      std::placeholders::_1));
   tcp_svr.set_receive_callback(std::bind(&BusServer::OnReceive, &bus_svr1,
                                          std::placeholders::_1,
                                          std::placeholders::_2));
@@ -33,7 +33,7 @@ TEST(BusServer, use_tcp_server_as_transport_protocol) {
 TEST(BusServer, should_register_method_by_client) {
   // SetUp: 1 server + 2 client
   //
-  // BusClient|Connection <------ connect() -----> Connection|BusServer
+  // BusClient|Conn <------ connect() -----> Conn|BusServer
   //
 
   auto svr_conn1 = std::make_shared<MockConnectionPair>();
@@ -48,14 +48,12 @@ TEST(BusServer, should_register_method_by_client) {
 
   BusServer server("server1");
 
-  svr_conn1->set_receive_callback(
-      [&server](const ConnectionPtr& conn, Buffer* buf) {
-        server.OnReceive(conn, buf);
-      });
-  svr_conn2->set_receive_callback(
-      [&server](const ConnectionPtr& conn, Buffer* buf) {
-        server.OnReceive(conn, buf);
-      });
+  svr_conn1->set_receive_callback([&server](const ConnPtr& conn, Buffer* buf) {
+    server.OnReceive(conn, buf);
+  });
+  svr_conn2->set_receive_callback([&server](const ConnPtr& conn, Buffer* buf) {
+    server.OnReceive(conn, buf);
+  });
 
   server.HandleConnection(svr_conn1);
   server.HandleConnection(svr_conn2);
@@ -63,13 +61,13 @@ TEST(BusServer, should_register_method_by_client) {
   BusClient client1("client1", cli_conn1);
   BusClient client2("client2", cli_conn2);
 
+  client1.Start();
+  client2.Start();
+
   client1.AddMethod("func1", [](const In& in, Out* out) {
     out->set("name", in.get("name"));
     out->set("key2", "666");
   });
-
-  cli_conn1->Start();
-  cli_conn2->Start();
 
   bbt::bus::In in;
   in.set("name", "xrw");

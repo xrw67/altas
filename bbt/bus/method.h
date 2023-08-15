@@ -18,7 +18,7 @@ class In {
  public:
   typedef std::map<std::string, std::string> Type;
 
-  bbt::net::ConnectionPtr conn;
+  bbt::net::ConnPtr conn;
 
   std::string get(const std::string& key) const {
     auto it = values_.find(key);

@@ -17,8 +17,8 @@ TEST(TcpServer, echo_server_example) {
 
   // server
   TcpServer svr(io_context);
-  svr.set_connection_callback([](const ConnectionPtr& conn) {});
-  svr.set_receive_callback([&](const ConnectionPtr& conn, Buffer* buf) {
+  svr.set_conn_callback([](const ConnPtr& conn) {});
+  svr.set_receive_callback([&](const ConnPtr& conn, Buffer* buf) {
     svr_received = buf->ToString();
     conn->Send("World", 5);
   });
@@ -26,8 +26,8 @@ TEST(TcpServer, echo_server_example) {
 
   // client
   TcpClient cli(io_context);
-  cli.set_connection_callback([](const ConnectionPtr& conn) {});
-  cli.set_receive_callback([&](const ConnectionPtr& conn, Buffer* buf) {
+  cli.set_conn_callback([](const ConnPtr& conn) {});
+  cli.set_receive_callback([&](const ConnPtr& conn, Buffer* buf) {
     cli_received = buf->ToString();
   });
 

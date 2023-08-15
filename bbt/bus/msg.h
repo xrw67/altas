@@ -11,7 +11,7 @@
 namespace bbt {
 namespace bus {
 
-using bbt::net::ConnectionPtr;
+using bbt::net::ConnPtr;
 
 static const uint32_t kMsgMagic = 0x20141021;
 
@@ -26,12 +26,34 @@ class Msg;
 typedef std::shared_ptr<Msg> MsgPtr;
 typedef std::function<void(const MsgPtr&)> BusMsgCallback;
 
-class Msg {
- public:
+struct Params {
   typedef std::map<std::string, std::string> Type;
   typedef Type::const_iterator TypeConstIter;
 
-  ConnectionPtr src;
+  bool has(const std::string& key) const {
+    if (key.empty()) return false;
+    return values_.find(key) != values_.end();
+  }
+
+  void set(const std::string& key, const std::string& value) {
+    if (!key.empty()) values_[key] = value;
+  }
+
+  std::string get(const std::string& key) const {
+    if (key.empty()) return "";
+    auto it = values_.find(key);
+    return (it != values_.end()) ? it->second : "";
+  }
+
+  TypeConstIter begin() const noexcept { return values_.begin(); }
+  TypeConstIter end() const noexcept { return values_.end(); }
+
+  Type values_;
+};
+
+class Msg {
+ public:
+  ConnPtr src;
 
   Msg() : id_(0), is_request_(true) {}
 
@@ -58,12 +80,12 @@ class Msg {
     }
   }
 
-  bool has_param(const std::string& key) const;
-  void set_param(const std::string& key, const std::string& value);
-  std::string param(const std::string& key) const;
+  void set_param(const std::string& key, const std::string& value) {
+    params_.set(key, value);
+  }
+  std::string param(const std::string& key) const { return params_.get(key); }
 
-  TypeConstIter begin() const noexcept { return values_.begin(); }
-  TypeConstIter end() const noexcept { return values_.end(); }
+  const Params& params() const noexcept { return params_; }
 
  private:
   MsgId id_;
@@ -71,10 +93,10 @@ class Msg {
   std::string caller_;
   std::string method_;
   std::string method_provider_;
-  Type values_;
+  Params params_;
 };
 
-void SendMessageToConnection(const ConnectionPtr& conn, const MsgPtr& msg);
+void SendMessageToConnection(const ConnPtr& conn, const MsgPtr& msg);
 
 }  // namespace bus
 }  // namespace bbt

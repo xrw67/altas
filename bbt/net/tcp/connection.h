@@ -11,9 +11,9 @@
 namespace bbt {
 namespace net {
 
-class TcpConnection : public Connection {
+class TcpConn : public Conn {
  public:
-  TcpConnection(asio::ip::tcp::socket socket);
+  TcpConn(asio::ip::tcp::socket socket);
 
   /// Start the first asynchronous operation for the connection.
   void Start();

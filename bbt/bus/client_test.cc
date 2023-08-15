@@ -11,10 +11,10 @@
 namespace bbt {
 namespace bus {
 namespace {
-using bbt::net::Connection;
+using bbt::net::Conn;
 using bbt::net::testing::MockConnectionPair;
 
-struct MockConnection : public Connection {
+struct MockConnection : public Conn {
   std::vector<bbt::bus::MsgPtr> output_msgs;  // 发送出去的msg
   bbt::Status last_status;
 

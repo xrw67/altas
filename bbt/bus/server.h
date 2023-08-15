@@ -15,7 +15,7 @@ namespace bbt {
 namespace bus {
 
 using bbt::net::Buffer;
-using bbt::net::ConnectionPtr;
+using bbt::net::ConnPtr;
 
 class BusService;
 class BusRouter;
@@ -28,9 +28,9 @@ class BusServer {
   void Stop();
 
   // call when connection state changed
-  void HandleConnection(const ConnectionPtr& conn);
+  void HandleConnection(const ConnPtr& conn);
   // call when connection read bytes
-  void OnReceive(const ConnectionPtr& conn, Buffer* buf);
+  void OnReceive(const ConnPtr& conn, Buffer* buf);
 
  protected:
   // call when receive bus message coming

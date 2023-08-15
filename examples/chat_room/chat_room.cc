@@ -4,10 +4,10 @@
 #include "bbt/net/tcp/server.h"
 #include "bbt/net/tcp/connection.h"
 
-using bbt::net::Connection;
-using bbt::net::ConnectionPtr;
+using bbt::net::Conn;
+using bbt::net::ConnPtr;
 using bbt::net::Buffer;
-using bbt::net::TcpConnection;
+using bbt::net::TcpConn;
 using bbt::net::TcpServer;
 
 int main(int argc, char* argv[]) {
@@ -15,18 +15,18 @@ int main(int argc, char* argv[]) {
 
   TcpServer svr(io_context);
 
-  svr.set_connection_callback([](const ConnectionPtr& conn) {
+  svr.set_conn_callback([](const ConnPtr& conn) {
     switch (conn->state()) {
-      case Connection::kConnected:
+      case Conn::kConnected:
         bbt::println("conn: connected");
         break;
-      case Connection::kDisconnected:
+      case Conn::kDisconnected:
         bbt::println("conn: disconnected");
     }
   });
 
-  svr.set_receive_callback([&svr](const ConnectionPtr& conn, Buffer* buf) {
-    auto myconn = static_cast<TcpConnection*>(conn.get());
+  svr.set_receive_callback([&svr](const ConnPtr& conn, Buffer* buf) {
+    auto myconn = static_cast<TcpConn*>(conn.get());
     auto username = myconn->GetRemoteAddress();
     auto s = buf->ToString();
     bbt::println("recv from {}: {}", username, s);

@@ -14,7 +14,7 @@ TEST(BusInvokerTest, should_call_service) {
     resp->set_caller(req->caller());
     resp->set_request(false);
 
-    for (auto i : *req) {
+    for (auto i : req->params()) {
       resp->set_param(i.first, i.second);
     }
     resp->set_param("return", "OK");

@@ -8,19 +8,19 @@
 namespace bbt {
 namespace net {
 
-class TcpConnectionManager {
+class TcpConnManager {
  public:
-  TcpConnectionManager(const TcpConnectionManager&) = delete;
-  TcpConnectionManager& operator=(const TcpConnectionManager&) = delete;
+  TcpConnManager(const TcpConnManager&) = delete;
+  TcpConnManager& operator=(const TcpConnManager&) = delete;
 
   /// Construct a connection manager.
-  TcpConnectionManager();
+  TcpConnManager();
 
   /// Add the specified connection to the manager and start it.
-  void Start(const TcpConnectionPtr& c);
+  void Start(const TcpConnPtr& c);
 
   /// Stop the specified connection.
-  void Stop(const TcpConnectionPtr& c);
+  void Stop(const TcpConnPtr& c);
 
   /// Stop all connections.
   void StopAll();
@@ -29,7 +29,7 @@ class TcpConnectionManager {
 
  private:
   /// The managed connections.
-  std::set<TcpConnectionPtr> connections_;  // TODO: mutex
+  std::set<TcpConnPtr> connections_;  // TODO: mutex
 };
 
 }  // namespace net

@@ -18,7 +18,7 @@ void BusService::ServeMsg(const Msg& req, Msg* resp) {
   if (it != methods_.end()) {
     In in;
     in.conn = req.src;
-    for (auto i : req) {
+    for (auto i : req.params()) {
       in.set(i.first, i.second);
     }
     Out out;

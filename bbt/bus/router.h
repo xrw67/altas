@@ -12,13 +12,13 @@ namespace bus {
 
 class BusRouter {
  public:
-  void Add(const std::string& name, const bbt::net::ConnectionPtr& conn);
+  void Add(const std::string& name, const bbt::net::ConnPtr& conn);
   void Remove(const std::string& name);
-  bbt::net::ConnectionPtr Find(const std::string& name);
+  bbt::net::ConnPtr Find(const std::string& name);
 
  private:
   std::mutex mutex_;
-  std::unordered_map<std::string, bbt::net::ConnectionPtr> connections_;
+  std::unordered_map<std::string, bbt::net::ConnPtr> connections_;
 };
 }  // namespace bus
 }  // namespace bbt

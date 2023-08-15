@@ -15,14 +15,14 @@ namespace bus {
 
 using bbt::net::_1;
 using bbt::net::_2;
-using bbt::net::Connection;
+using bbt::net::Conn;
 
-BusClient::BusClient(const std::string& name, const ConnectionPtr& transport)
+BusClient::BusClient(const std::string& name, const ConnPtr& transport)
     : service_(new BusService(name)),
       invoker_(new BusInvoker(name)),
       transport_(transport) {
   transport_->set_context(new BusContext());
-  transport_->set_connection_callback(
+  transport_->set_conn_callback(
       std::bind(&BusClient::OnTransportConnection, this, _1));
   transport_->set_receive_callback(
       std::bind(&BusClient::OnTransportReadCallback, this, _1, _2));
@@ -31,6 +31,10 @@ BusClient::BusClient(const std::string& name, const ConnectionPtr& transport)
 }
 
 BusClient::~BusClient() { Stop(); }
+
+void BusClient::Start() {
+  ReportMyServiceToServer();  // ???
+}
 
 void BusClient::Stop() {
   // invoker_.SayGoodbyToSever();
@@ -55,19 +59,17 @@ Status BusClient::ACall(const std::string& method, const In& in,
   return invoker_->ACall(method, in, result);
 }
 
-void BusClient::OnTransportConnection(const ConnectionPtr& conn) {
+void BusClient::OnTransportConnection(const ConnPtr& conn) {
   switch (conn->state()) {
-    case Connection::kConnected:
-      ReportMyServiceToServer();// ???
+    case Conn::kConnected:
       break;
-    case Connection::kDisconnected:
+    case Conn::kDisconnected:
       // Transport断开了，善后，
       break;
   }
 }
 
-void BusClient::OnTransportReadCallback(const ConnectionPtr& conn,
-                                        Buffer* buf) {
+void BusClient::OnTransportReadCallback(const ConnPtr& conn, Buffer* buf) {
   BusContext* ctx = reinterpret_cast<BusContext*>(conn->context());
 
   MsgPtr msg(new Msg());

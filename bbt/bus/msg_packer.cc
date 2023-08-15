@@ -20,7 +20,7 @@ void JsonPacker::Pack(const Msg& msg, std::string* result) {
   root["caller"] = msg.caller();
   root["method_provider"] = msg.method_provider();
   bbt::json param;
-  for (auto i : msg) {
+  for (auto i : msg.params()) {
     bbt::json p;
     p["t"] = i.first;
     p["v"] = i.second;

@@ -57,7 +57,7 @@ void BusInvoker::HandleResponseMessage(const MsgPtr& msg) {
   }
 
   if (result) {
-    for (auto& i : *msg) {
+    for (auto& i : msg->params()) {
       result->out().set(i.first, i.second);
     }
 

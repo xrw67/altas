@@ -12,7 +12,7 @@ namespace bus {
 
 using bbt::net::_1;
 using bbt::net::_2;
-using bbt::net::Connection;
+using bbt::net::Conn;
 
 BusServer::BusServer(const std::string& name)
     : local_service_(new BusService(name)), router_(new BusRouter()) {
@@ -27,12 +27,12 @@ void BusServer::Stop() {
   // TODO: say baybay to all client
 }
 
-void BusServer::HandleConnection(const ConnectionPtr& conn) {
+void BusServer::HandleConnection(const ConnPtr& conn) {
   switch (conn->state()) {
-    case Connection::kConnected:
+    case Conn::kConnected:
       conn->set_context(new BusContext());
       break;
-    case Connection::kDisconnected: {
+    case Conn::kDisconnected: {
       BusContext* ctx = reinterpret_cast<BusContext*>(conn->context());
       if (ctx) {
         router_->Remove(ctx->name());
@@ -42,7 +42,7 @@ void BusServer::HandleConnection(const ConnectionPtr& conn) {
   }
 }
 
-void BusServer::OnReceive(const ConnectionPtr& conn, Buffer* buf) {
+void BusServer::OnReceive(const ConnPtr& conn, Buffer* buf) {
   BusContext* ctx = reinterpret_cast<BusContext*>(conn->context());
 
   MsgPtr msg(new Msg());

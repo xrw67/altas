@@ -10,7 +10,7 @@ namespace bbt {
 namespace net {
 namespace testing {
 
-struct MockConnectionPair : public Connection {
+struct MockConnectionPair : public Conn {
   std::weak_ptr<MockConnectionPair> peer_conn;
 
   void connect(const std::shared_ptr<MockConnectionPair>& other) {

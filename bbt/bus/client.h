@@ -15,7 +15,7 @@ namespace bbt {
 namespace bus {
 
 using bbt::net::Buffer;
-using bbt::net::ConnectionPtr;
+using bbt::net::ConnPtr;
 using bbt::net::Context;
 
 class BusInvoker;
@@ -23,9 +23,11 @@ class BusService;
 
 class BusClient {
  public:
-  BusClient(const std::string& name, const ConnectionPtr& transport);
+  BusClient(const std::string& name, const ConnPtr& transport);
   ~BusClient();
 
+  void Start();
+  
   // 主动执行关闭，会传递到Transport的Close
   void Stop();
 
@@ -40,10 +42,10 @@ class BusClient {
   //
 
   // call when connection state changed
-  void OnTransportConnection(const ConnectionPtr& conn);
+  void OnTransportConnection(const ConnPtr& conn);
 
   // Call when transpot read bytes
-  void OnTransportReadCallback(const ConnectionPtr& conn, Buffer* buf);
+  void OnTransportReadCallback(const ConnPtr& conn, Buffer* buf);
 
   void HandleMessage(const MsgPtr& msg);
   void HandleRequestMessage(const MsgPtr& msg);
@@ -52,7 +54,7 @@ class BusClient {
 
   std::unique_ptr<BusService> service_;
   std::unique_ptr<BusInvoker> invoker_;
-  ConnectionPtr transport_;
+  ConnPtr transport_;
 };
 
 }  // namespace bus

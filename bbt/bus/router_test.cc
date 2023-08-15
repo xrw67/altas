@@ -5,10 +5,10 @@
 
 namespace {
 
-using bbt::net::Connection;
-using bbt::net::ConnectionPtr;
+using bbt::net::Conn;
+using bbt::net::ConnPtr;
 
-struct MockConnection : public Connection {
+struct MockConnection : public Conn {
   void Send(const void* data, size_t len) {}
 };
 

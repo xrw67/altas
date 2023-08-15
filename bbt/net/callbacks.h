@@ -18,7 +18,7 @@ using std::placeholders::_3;
 class Buffer;
 
 /**
- * @brief Connection's context
+ * @brief Conn's context
  *
  */
 class Context {
@@ -26,13 +26,13 @@ class Context {
   virtual ~Context() {}
 };
 
-class Connection;
-typedef std::shared_ptr<Connection> ConnectionPtr;
-typedef std::function<void(const ConnectionPtr&)> ConnectionCallback;
-typedef std::function<void(const ConnectionPtr&, Buffer*)> ReceiveCallback;
+class Conn;
+typedef std::shared_ptr<Conn> ConnPtr;
+typedef std::function<void(const ConnPtr&)> ConnCallback;
+typedef std::function<void(const ConnPtr&, Buffer*)> ReceiveCallback;
 
-class TcpConnection;
-typedef std::shared_ptr<TcpConnection> TcpConnectionPtr;
+class TcpConn;
+typedef std::shared_ptr<TcpConn> TcpConnPtr;
 
 }  // namespace net
 }  // namespace bbt

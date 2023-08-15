@@ -8,7 +8,7 @@
 namespace bbt {
 namespace net {
 
-class TcpConnectionManager;
+class TcpConnManager;
 
 class TcpServer {
  public:
@@ -20,8 +20,8 @@ class TcpServer {
 
   void Boardcast(const void* data, size_t len) noexcept;
 
-  void set_connection_callback(const ConnectionCallback& cb) {
-    connection_callback_ = cb;
+  void set_conn_callback(const ConnCallback& cb) {
+    conn_callback_ = cb;
   }
   void set_receive_callback(const ReceiveCallback& cb) {
     receive_callback_ = cb;
@@ -37,9 +37,9 @@ class TcpServer {
   /// Acceptor used to listen for incoming connections.
   asio::ip::tcp::acceptor acceptor_;
 
-  TcpConnectionManager* connection_manager_;
+  TcpConnManager* connection_manager_;
 
-  ConnectionCallback connection_callback_;
+  ConnCallback conn_callback_;
   ReceiveCallback receive_callback_;
 };
 

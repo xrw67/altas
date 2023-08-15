@@ -4,24 +4,24 @@
 namespace bbt {
 namespace net {
 
-TcpConnectionManager::TcpConnectionManager() {}
+TcpConnManager::TcpConnManager() {}
 
-void TcpConnectionManager::Start(const TcpConnectionPtr& c) {
+void TcpConnManager::Start(const TcpConnPtr& c) {
   connections_.insert(c);
   c->Start();
 }
 
-void TcpConnectionManager::Stop(const TcpConnectionPtr& c) {
+void TcpConnManager::Stop(const TcpConnPtr& c) {
   connections_.erase(c);
   c->Stop();
 }
 
-void TcpConnectionManager::StopAll() {
+void TcpConnManager::StopAll() {
   for (auto& c : connections_) c->Stop();
   connections_.clear();
 }
 
-void TcpConnectionManager::Boardcast(const void* data, size_t len) noexcept {
+void TcpConnManager::Boardcast(const void* data, size_t len) noexcept {
   for (auto& c : connections_) c->Send(data, len);
 }
 

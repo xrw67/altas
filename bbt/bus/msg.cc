@@ -9,22 +9,8 @@ namespace bus {
 
 using bbt::net::Buffer;
 
-bool Msg::has_param(const std::string& key) const {
-  return !key.empty() && values_.find(key) != values_.end();
-}
 
-void Msg::set_param(const std::string& key, const std::string& value) {
-  if (key.empty()) return;
-  values_[key] = value;
-}
-
-std::string Msg::param(const std::string& key) const {
-  if (key.empty()) return "";
-  auto it = values_.find(key);
-  return (it != values_.end()) ? it->second : "";
-}
-
-void SendMessageToConnection(const ConnectionPtr& conn, const MsgPtr& msg) {
+void SendMessageToConnection(const ConnPtr& conn, const MsgPtr& msg) {
   bbt::net::Buffer buffer;
 
   JsonPacker jp;

@@ -19,7 +19,7 @@ TEST(Msg, create) {
   ASSERT_FALSE(msg.is_request());
   ASSERT_EQ(msg.param("key1"), "str1");
   ASSERT_EQ(msg.param("key2"), "1002");
-  ASSERT_FALSE(msg.has_param("key3"));
+  ASSERT_FALSE(msg.params().has("key3"));
   ASSERT_EQ(msg.param("key3"), "");
 }
 
