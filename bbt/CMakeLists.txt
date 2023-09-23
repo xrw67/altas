@@ -1,3 +1,4 @@
+add_subdirectory(net2)
 add_subdirectory(base)
 add_subdirectory(appkit)
 add_subdirectory(net)

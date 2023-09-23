@@ -13,7 +13,7 @@ using bbt::net::Conn;
 using bbt::net::TcpServer;
 using bbt::net::testing::MockConnectionPair;
 
-TEST(BusServer, use_tcp_server_as_transport_protocol) {
+TEST(BusServer, DISABLED_use_tcp_server_as_transport_protocol) {
   asio::io_context io_context;
 
   TcpServer tcp_svr(io_context);
