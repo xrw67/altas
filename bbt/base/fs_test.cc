@@ -7,8 +7,11 @@
 
 #include "gmock/gmock.h"
 #include "bbt/base/str_util.h"
+#include "bbt/base/sys.h"
 
 namespace bbt {
+
+using ::testing::ElementsAre;
 
 TEST(Fs, PathJoin) {
   ASSERT_EQ(bbt::PathJoin("/a", "b"), "/a/b");
@@ -22,6 +25,24 @@ TEST(Fs, PathJoin) {
   ASSERT_EQ(bbt::PathJoin("/a///", "///b//", "///c", "//d/e//"), "/a/b/c/d/e");
   ASSERT_EQ(bbt::PathJoin("/a///", "///b//", "///c", "//d/e//", "fff"),
             "/a/b/c/d/e/fff");
+}
+
+TEST(Fs, PathSplit) {
+  ASSERT_TRUE(PathSplit("").empty());
+
+  ASSERT_THAT(PathSplit("/"), ElementsAre("/"));
+  ASSERT_THAT(PathSplit("/path"), ElementsAre("/", "path"));
+  ASSERT_THAT(PathSplit("/path/"), ElementsAre("/", "path"));
+  ASSERT_THAT(PathSplit("/path/to"), ElementsAre("/", "path", "to"));
+  ASSERT_THAT(PathSplit("///path///to////"), ElementsAre("/", "path", "to"));
+
+  ASSERT_THAT(PathSplit("path"), ElementsAre("path"));
+  ASSERT_THAT(PathSplit("path/to"), ElementsAre("path", "to"));
+}
+
+TEST(Fs, RealPath) {
+  ASSERT_EQ(GetCurrentDir(), RealPath("."));
+  ASSERT_EQ("", RealPath("/path/to/file"));
 }
 
 TEST(Fs, Readlink) {
@@ -70,4 +91,43 @@ TEST(Fs, DirAndBasename) {
     ASSERT_EQ(bbt::to_string(bbt::Basename(path)), "file");
   }
 }
+
+TEST(Fs, RemoveBadPath) {
+  ASSERT_EQ("OK", Remove("").ToString());
+  ASSERT_EQ("OK", RemoveAll("").ToString());
+
+  ASSERT_EQ("OK", Remove("/path/to/noexist").ToString());
+  ASSERT_EQ("OK", RemoveAll("/path/to/noexist").ToString());
+}
+
+TEST(Fs, MkdirAndRemove) {
+  std::string dir = GetTempPath("bbt_fs_test_Px3X");
+  std::string subdir = PathJoin(dir, "1", "2", "3", "4");
+
+  ASSERT_EQ("OK", RemoveAll(dir).ToString());
+  ASSERT_EQ("OK", MkdirAll(subdir.c_str()).ToString());
+  ASSERT_EQ("OK", MkdirAll(subdir.c_str()).ToString()) << "mkdir again";
+  ASSERT_TRUE(IsFileExist(subdir));
+  ASSERT_EQ("OK", RemoveAll(dir).ToString());
+  ASSERT_FALSE(IsFileExist(dir));
+}
+
+TEST(Fs, Link) {
+  std::string dir = GetTempPath("bbt_fs_test_Pa3X");
+  std::string src = PathJoin(dir, "1");
+  std::string dst1 = PathJoin(dir, "2");
+  std::string dst2 = PathJoin(dir, "3");
+
+  ASSERT_EQ("OK", RemoveAll(dir).ToString());
+  ASSERT_EQ("OK", MkdirAll(dir).ToString());
+
+  ASSERT_EQ("OK", WriteFile(src, "1").ToString());
+  ASSERT_EQ("OK", Hardlink(src, dst1).ToString());
+  ASSERT_EQ("OK", Symlink(src, dst2).ToString());
+  ASSERT_EQ("1", ReadFile(dst1));
+  ASSERT_EQ("1", ReadFile(dst2));
+
+  ASSERT_EQ("OK", RemoveAll(dir).ToString());
+}
+
 }  // namespace bbt

@@ -9,6 +9,8 @@
 #include <sstream>  // std::stringstream
 #include <string>
 
+#include <stdlib.h>
+
 #ifdef WIN32
 #include <direct.h>
 #define getcwd _getcwd
@@ -21,6 +23,7 @@
 #include <fcntl.h>
 #endif
 
+#include "bbt/base/fmt.h"
 #include "bbt/base/str_util.h"
 
 namespace bbt {
@@ -75,6 +78,28 @@ std::string PathJoin(string_view a, string_view b, string_view c, string_view d,
   result.append(kPathSeparator);
   StrAppend(result, StrTrim(e, kPathSeparator));
   return result;
+}
+
+std::vector<std::string> PathSplit(string_view path) {
+  if (path.empty()) return {};
+
+  std::vector<std::string> result;
+  if (path[0] == '/') result.push_back("/");
+
+  auto vec = StrSplit(path, kPathSeparator[0]);
+  for (auto& i : vec) {
+    if (i.empty()) continue;
+    result.push_back(i);
+  }
+  return result;
+}
+
+std::string RealPath(string_view path) {
+  char buffer[PATH_MAX];
+  if (::realpath(path.data(), buffer) != NULL) {
+    return buffer;
+  }
+  return "";
 }
 
 std::string GetTempPath(const std::string& name) {
@@ -202,6 +227,58 @@ std::vector<std::string> GetDirectoryChildren(const std::string& path) {
 #endif
 
   return children;
+}
+
+Status Remove(const std::string& path) {
+  int rc = ::remove(path.c_str());
+  if (rc < 0 && errno != ENOENT) {
+    return ErrnoToStatus(errno, format("failed to delete: {}", path));
+  }
+  return OkStatus();
+}
+
+Status RemoveAll(const std::string& path) {
+  auto subpaths = GetDirectoryChildren(path);
+  for (auto& i : subpaths) {
+    auto st = RemoveAll(PathJoin(path, i));
+    if (!st.ok()) return st;
+  }
+  return Remove(path);
+}
+
+Status Mkdir(const std::string& path, mode_t mode) {
+  int rc = ::mkdir(path.c_str(), mode);
+  if (rc < 0 && rc != EEXIST) {
+    ErrnoToStatus(errno, format("failed to mkdir: {}", path));
+  }
+  return OkStatus();
+}
+
+Status MkdirAll(const std::string& path, mode_t mode) {
+  std::string buf = path;
+
+  for (int i = buf.find_first_of(kPathSeparator); i != std::string::npos;
+       i = buf.find_first_of(kPathSeparator, i + 1)) {
+    buf[i] = '\0';
+    auto st = Mkdir(buf);
+    buf[i] = kPathSeparator[0];
+    if (!st.ok()) return st;
+  }
+
+  return Mkdir(buf);
+}
+
+Status Hardlink(const std::string& src, const std::string& dst) {
+  return (link(src.c_str(), dst.c_str()) < 0)
+             ? ErrnoToStatus(errno, format("failed to link {} to {}", src, dst))
+             : OkStatus();
+}
+
+Status Symlink(const std::string& src, const std::string& dst) {
+  return (symlink(src.c_str(), dst.c_str()) < 0)
+             ? ErrnoToStatus(errno,
+                             format("failed to symlink {} to ", src, dst))
+             : OkStatus();
 }
 
 }  // namespace bbt
