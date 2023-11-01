@@ -16,6 +16,7 @@ add_executable(bbt_base_test
     string_view_test.cc
     fmt_test.cc
     json_test.cc
+    sys_test.cc
     timestamp_test.cc
     )
 target_link_libraries(bbt_base_test bbt_base gmock gmock_main)

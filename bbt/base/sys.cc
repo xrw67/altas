@@ -2,15 +2,16 @@
 
 #ifdef WIN32
 #include <direct.h>
-#endif  // WIN32
+#else
+#include <time.h>
+#include <sys/types.h>
+#endif
 
 #ifdef __linux__
-#include <time.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/prctl.h>
 #include <sys/syscall.h>
-#include <sys/types.h>
 #endif  // __linux__
 
 #include "bbt/base/fs.h"
@@ -68,6 +69,14 @@ std::string GetCurrentDir() {
   char pathbuf[PATH_MAX] = {0};
   getcwd(pathbuf, sizeof(pathbuf));
   return pathbuf;
+}
+
+int64_t GetNanoClock() {
+  struct timespec ts;
+  if (::clock_gettime(CLOCK_MONOTONIC, &ts) == 0) {
+    return ts.tv_sec * 1000000000 + ts.tv_nsec;
+  }
+  throw std::runtime_error("CLOCK_MONOTONIC failed");
 }
 
 }  // namespace bbt

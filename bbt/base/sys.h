@@ -37,6 +37,9 @@ BBT_EXPORT std::string GetAppPath();
 ///
 BBT_EXPORT std::string GetCurrentDir();
 
+
+BBT_EXPORT int64_t GetNanoClock();
+
 }  // namespace bbt
 
 #endif  // BBT_BASE_SYS_H_
