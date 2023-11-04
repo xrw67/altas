@@ -249,7 +249,7 @@ Status RemoveAll(const std::string& path) {
 Status Mkdir(const std::string& path, mode_t mode) {
   int rc = ::mkdir(path.c_str(), mode);
   if (rc < 0 && rc != EEXIST) {
-    ErrnoToStatus(errno, format("failed to mkdir: {}", path));
+    return ErrnoToStatus(errno, format("failed to mkdir: {}", path));
   }
   return OkStatus();
 }
