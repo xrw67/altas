@@ -70,5 +70,7 @@ Status MkdirAll(const std::string& path, mode_t mode = 0755);
 Status Hardlink(const std::string& src, const std::string& dst);
 Status Symlink(const std::string& src, const std::string& dst);
 
+Status CopyFile(const std::string& src, const std::string& dst);
+
 }  // namespace cppboot
 #endif  // CPPBOOT_BASE_FS_H_

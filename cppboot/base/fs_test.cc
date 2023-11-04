@@ -22,7 +22,8 @@ TEST(Fs, PathJoin) {
 
   ASSERT_EQ(cppboot::PathJoin("/a///", "///b//", "/c/"), "/a/b/c");
 
-  ASSERT_EQ(cppboot::PathJoin("/a///", "///b//", "///c", "//d/e//"), "/a/b/c/d/e");
+  ASSERT_EQ(cppboot::PathJoin("/a///", "///b//", "///c", "//d/e//"),
+            "/a/b/c/d/e");
   ASSERT_EQ(cppboot::PathJoin("/a///", "///b//", "///c", "//d/e//", "fff"),
             "/a/b/c/d/e/fff");
 }
@@ -46,8 +47,8 @@ TEST(Fs, RealPath) {
 }
 
 TEST(Fs, Readlink) {
-  std::string src = GetTempPath("cppboot_test_fs_readlink_src");
-  std::string dst = GetTempPath("cppboot_test_fs_readlink_dst");
+  const auto src = GetTempPath("cppboot_test_fs_readlink_src");
+  const auto dst = GetTempPath("cppboot_test_fs_readlink_dst");
 
   ::remove(dst.c_str());
   ::remove(src.c_str());
@@ -62,7 +63,7 @@ TEST(Fs, Readlink) {
 }
 
 TEST(Fs, ReadAndWriteFile) {
-  std::string path = GetTempPath("cppboot_test_read_and_write_file");
+  const auto path = GetTempPath("cppboot_test_read_and_write_file");
 
   ::remove(path.c_str());
 
@@ -74,19 +75,19 @@ TEST(Fs, ReadAndWriteFile) {
 
 TEST(Fs, DirAndBasename) {
   {
-    std::string path = "/path/to/file";
+    const auto path = "/path/to/file";
     ASSERT_EQ(cppboot::to_string(cppboot::Dir(path)), "/path/to");
     ASSERT_EQ(cppboot::to_string(cppboot::Basename(path)), "file");
   }
 
   {
-    std::string path = "/path/to/";
+    const auto path = "/path/to/";
     ASSERT_EQ(cppboot::to_string(cppboot::Dir(path)), "/path/to");
     ASSERT_EQ(cppboot::to_string(cppboot::Basename(path)), "");
   }
 
   {
-    std::string path = "file";
+    const auto path = "file";
     ASSERT_EQ(cppboot::to_string(cppboot::Dir(path)), "");
     ASSERT_EQ(cppboot::to_string(cppboot::Basename(path)), "file");
   }
@@ -101,8 +102,8 @@ TEST(Fs, RemoveBadPath) {
 }
 
 TEST(Fs, MkdirAndRemove) {
-  std::string dir = GetTempPath("cppboot_fs_test_Px3X");
-  std::string subdir = PathJoin(dir, "1", "2", "3", "4");
+  const auto dir = GetTempPath("cppboot_fs_test_Px3X");
+  const auto subdir = PathJoin(dir, "1", "2", "3", "4");
 
   ASSERT_EQ("OK", RemoveAll(dir).ToString());
   ASSERT_EQ("OK", MkdirAll(subdir.c_str()).ToString());
@@ -113,10 +114,10 @@ TEST(Fs, MkdirAndRemove) {
 }
 
 TEST(Fs, Link) {
-  std::string dir = GetTempPath("cppboot_fs_test_Pa3X");
-  std::string src = PathJoin(dir, "1");
-  std::string dst1 = PathJoin(dir, "2");
-  std::string dst2 = PathJoin(dir, "3");
+  const auto dir = GetTempPath("cppboot_fs_test_Pa3X");
+  const auto src = PathJoin(dir, "1");
+  const auto dst1 = PathJoin(dir, "2");
+  const auto dst2 = PathJoin(dir, "3");
 
   ASSERT_EQ("OK", RemoveAll(dir).ToString());
   ASSERT_EQ("OK", MkdirAll(dir).ToString());
@@ -128,6 +129,27 @@ TEST(Fs, Link) {
   ASSERT_EQ("1", ReadFile(dst2));
 
   ASSERT_EQ("OK", RemoveAll(dir).ToString());
+}
+
+TEST(Fs, CopyFile) {
+  const auto src = GetTempPath("cppboot_fs_test_copyfile_src");
+  const auto dst = GetTempPath("cppboot_fs_test_copyfile_dst");
+  const auto text = std::string("1\r\n \n");
+
+  RemoveAll(src);
+  RemoveAll(dst);
+
+  ASSERT_FALSE(IsFileExist(src));
+  ASSERT_FALSE(IsFileExist(dst));
+
+  WriteFile(src, text);
+  ASSERT_FALSE(CopyFile(dst, src));
+  ASSERT_TRUE(CopyFile(src, dst));
+  ASSERT_EQ(text, ReadFile(src));
+  ASSERT_EQ(text, ReadFile(dst));
+
+  ASSERT_EQ("OK", RemoveAll(src).ToString());
+  ASSERT_EQ("OK", RemoveAll(dst).ToString());
 }
 
 }  // namespace cppboot

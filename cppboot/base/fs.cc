@@ -281,4 +281,40 @@ Status Symlink(const std::string& src, const std::string& dst) {
              : OkStatus();
 }
 
+Status CopyFile(const std::string& src, const std::string& dst) {
+  size_t nread, nwrite;
+  char buffer[32 * 1024];
+
+  FILE* fsrc = fopen(src.c_str(), "r");
+  if (!fsrc) return ErrnoToStatus(errno, format("failed to open src {}", src));
+
+  FILE* fdst = fopen(dst.c_str(), "w");
+  if (!fdst) {
+    fclose(fsrc);
+    return ErrnoToStatus(errno, format("failed to create dst {}", src));
+  }
+
+  Status st;
+
+  for (;;) {
+    nread = fread(buffer, 1, sizeof(buffer), fsrc);
+    if (nread == 0) {
+      int err = ferror(fsrc);
+      if (err != 0) st = ErrnoToStatus(err, format("failed to read src file"));
+      break;
+    }
+
+    nwrite = fwrite(buffer, 1, nread, fdst);
+    if (nwrite != nread) {
+      st = ErrnoToStatus(ferror(fdst),
+                         format("failed to write dst file with {}", nread));
+      break;
+    }
+  }
+
+  fclose(fsrc);
+  fclose(fdst);
+  return st;
+}
+
 }  // namespace cppboot
