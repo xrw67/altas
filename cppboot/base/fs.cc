@@ -248,7 +248,7 @@ Status RemoveAll(const std::string& path) {
 
 Status Mkdir(const std::string& path, mode_t mode) {
   int rc = ::mkdir(path.c_str(), mode);
-  if (rc < 0 && rc != EEXIST) {
+  if (rc < 0 && errno != EEXIST) {
     return ErrnoToStatus(errno, format("failed to mkdir: {}", path));
   }
   return OkStatus();
@@ -257,7 +257,7 @@ Status Mkdir(const std::string& path, mode_t mode) {
 Status MkdirAll(const std::string& path, mode_t mode) {
   std::string buf = path;
 
-  for (auto i = buf.find_first_of(kPathSeparator); i != std::string::npos;
+  for (auto i = buf.find_first_of(kPathSeparator, 1); i != std::string::npos;
        i = buf.find_first_of(kPathSeparator, i + 1)) {
     buf[i] = '\0';
     auto st = Mkdir(buf);
