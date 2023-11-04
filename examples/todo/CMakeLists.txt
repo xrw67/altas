@@ -2,14 +2,14 @@ add_executable(todo_server
     core.cc
     server.cc
 )
-target_link_libraries(todo_server bbt_base bbt_appkit bbt_http bbt_html)
+target_link_libraries(todo_server cppboot_base cppboot_appkit cppboot_http cppboot_html)
 
 add_executable(todo
     core.cc
     todo.cc
 )
 
-target_link_libraries(todo bbt_base bbt_appkit)
+target_link_libraries(todo cppboot_base cppboot_appkit)
 
 
 
@@ -18,5 +18,5 @@ add_executable(todo_test
     core_test.cc
 )
 
-target_link_libraries(todo_test bbt_base gmock gmock_main)
+target_link_libraries(todo_test cppboot_base gmock gmock_main)
 add_test(NAME example_todo COMMAND todo_test)

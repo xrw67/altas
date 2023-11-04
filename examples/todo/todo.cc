@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "core.h"
 
-#include "bbt/base/fmt.h"
+#include "cppboot/base/fmt.h"
 
 void do_add(const char* text);
 void do_list(void);
@@ -43,10 +43,10 @@ void do_add(const char* text) {
     int id = 0;
     auto st = data.Add(text, &id);
     if (st) {
-      bbt::println("Add Done:");
-      bbt::println("{}\t{}", id, text);
+      cppboot::println("Add Done:");
+      cppboot::println("{}\t{}", id, text);
     }
-    bbt::println("{}", st);
+    cppboot::println("{}", st);
   }
 }
 
@@ -57,7 +57,7 @@ void do_list(void) {
     data.set_repository(repo);
     auto items = data.items();
     for (auto item : items) {
-      bbt::println("{}\t{}", item->id, item->text);
+      cppboot::println("{}\t{}", item->id, item->text);
     }
   }
 }
@@ -69,9 +69,9 @@ void do_show(int id) {
     data.set_repository(repo);
     auto item = data.Show(id);
     if (item) {
-      bbt::println("{}\t{}", item->id, item->text);
+      cppboot::println("{}\t{}", item->id, item->text);
     } else {
-      bbt::println("Not found");
+      cppboot::println("Not found");
     }
   }
 }
@@ -82,7 +82,7 @@ void do_delete(int id) {
     todo::Data data;
     data.set_repository(repo);
     auto st = data.Delete(id);
-    bbt::println("{}", st);
+    cppboot::println("{}", st);
   }
 }
 
@@ -93,9 +93,9 @@ void do_modify(int id, const char* new_text) {
     data.set_repository(repo);
     auto st = data.Update(id, new_text);
     if (st) {
-      bbt::println("Update Done:");
-      bbt::println("{}\t{}", id, new_text);
+      cppboot::println("Update Done:");
+      cppboot::println("{}\t{}", id, new_text);
     }
-    bbt::println("{}", st);
+    cppboot::println("{}", st);
   }
 }

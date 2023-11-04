@@ -3,6 +3,6 @@ add_executable(chat_room
 )
 
 target_link_libraries(chat_room 
-    bbt_base 
-    bbt_net
+    cppboot_base 
+    cppboot_net
 )

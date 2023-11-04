@@ -18,7 +18,7 @@ struct TodoDataTest : public ::testing::Test {
 
 TEST_F(TodoDataTest, should_not_add_empty_item) {
   int id;
-  EXPECT_EQ(data.Add("", &id).code(), bbt::StatusCode::kInvalidArgument);
+  EXPECT_EQ(data.Add("", &id).code(), cppboot::StatusCode::kInvalidArgument);
 }
 
 TEST_F(TodoDataTest, should_add_normal_item) {
@@ -79,11 +79,11 @@ TEST_F(TodoDataTest, should_delete_item) {
   EXPECT_TRUE(data.Add("My first item", &id2));
 
   EXPECT_TRUE(data.Delete(id2));
-  EXPECT_EQ(data.Delete(id2).code(), bbt::StatusCode::kNotFound);
+  EXPECT_EQ(data.Delete(id2).code(), cppboot::StatusCode::kNotFound);
   EXPECT_EQ(data.items().size(), 1);
 
   EXPECT_TRUE(data.Delete(id1));
-  EXPECT_EQ(data.Delete(id1).code(), bbt::StatusCode::kNotFound);
+  EXPECT_EQ(data.Delete(id1).code(), cppboot::StatusCode::kNotFound);
   EXPECT_EQ(data.items().size(), 0);
 }
 
@@ -91,11 +91,11 @@ TEST_F(TodoDataTest, should_update_item) {
   int id = 0;
   EXPECT_TRUE(data.Add("My first item", &id));
 
-  EXPECT_EQ(data.Update(id, "").code(), bbt::StatusCode::kInvalidArgument);
+  EXPECT_EQ(data.Update(id, "").code(), cppboot::StatusCode::kInvalidArgument);
   EXPECT_TRUE(data.Update(id, "My second item"));
   EXPECT_TRUE(data.Update(id, "My third item"));
   EXPECT_EQ(data.Update(999, "My four item").code(),
-            bbt::StatusCode::kNotFound);
+            cppboot::StatusCode::kNotFound);
 
   auto item = data.Show(id);
   EXPECT_EQ(item->text, "My third item");

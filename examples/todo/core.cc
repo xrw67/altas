@@ -2,8 +2,8 @@
 
 #include <fstream>
 
-#include "bbt/base/json.h"
-#include "bbt/base/fs.h"
+#include "cppboot/base/json.h"
+#include "cppboot/base/fs.h"
 
 namespace todo {
 
@@ -16,15 +16,15 @@ void Data::set_repository(Repository* repository) {
   }
 }
 
-bbt::Status Data::Add(bbt::string_view text, int* id) {
-  if (text.empty()) return bbt::InvalidArgumentError("empty item");
+cppboot::Status Data::Add(cppboot::string_view text, int* id) {
+  if (text.empty()) return cppboot::InvalidArgumentError("empty item");
 
   int new_id = GetNextID();
 
   ItemPtr item(new Item());
   item->id = new_id;
   item->text = text.str();
-  item->update_at = bbt::Timestamp::Now();
+  item->update_at = cppboot::Timestamp::Now();
   items_.push_back(item);
 
   if (repository_) {
@@ -33,32 +33,32 @@ bbt::Status Data::Add(bbt::string_view text, int* id) {
   }
 
   if (id) *id = new_id;
-  return bbt::OkStatus();
+  return cppboot::OkStatus();
 }
 
-bbt::Status Data::Delete(int id) {
+cppboot::Status Data::Delete(int id) {
   for (auto it = items_.begin(); it != items_.end(); it++) {
     auto item = *it;
     if (item->id == id) {
       items_.erase(it);
       if (repository_) repository_->SaveAllItems(items_);
-      return bbt::OkStatus();
+      return cppboot::OkStatus();
     }
   }
-  return bbt::NotFoundError("not found");
+  return cppboot::NotFoundError("not found");
 }
 
-bbt::Status Data::Update(int id, bbt::string_view text) {
-  if (text.empty()) return bbt::InvalidArgumentError("empty item");
+cppboot::Status Data::Update(int id, cppboot::string_view text) {
+  if (text.empty()) return cppboot::InvalidArgumentError("empty item");
 
   auto item = Find(id);
   if (item) {
     item->text = text.str();
     if (repository_) repository_->SaveAllItems(items_);
-    return bbt::OkStatus();
+    return cppboot::OkStatus();
   }
 
-  return bbt::NotFoundError("not found");
+  return cppboot::NotFoundError("not found");
 }
 
 const ItemPtr Data::Show(int id) const {
@@ -91,17 +91,17 @@ ItemPtr Data::Find(int id) {
 
 struct FileRepository : public Repository {
   std::string filename_;
-  FileRepository(bbt::string_view filename) : filename_(filename.str()) {}
+  FileRepository(cppboot::string_view filename) : filename_(filename.str()) {}
   ~FileRepository() {}
 
-  bbt::Status LoadAllItems(ItemList* items, int* id_max) {
+  cppboot::Status LoadAllItems(ItemList* items, int* id_max) {
     int max = 0;
     items->clear();
 
     std::ifstream f(filename_);
-    if (!f.is_open()) return bbt::InvalidArgumentError("file not found");
+    if (!f.is_open()) return cppboot::InvalidArgumentError("file not found");
 
-    bbt::json j = bbt::json::parse(f);
+    cppboot::json j = cppboot::json::parse(f);
     if (j.is_object()) {
       auto j_items = j["items"];
       if (j_items.is_array()) {
@@ -109,7 +109,7 @@ struct FileRepository : public Repository {
           ItemPtr p(new Item());
           p->id = j_item["id"];
           p->text = j_item["text"];
-          p->update_at = bbt::Timestamp::Now();
+          p->update_at = cppboot::Timestamp::Now();
           items->push_back(p);
 
           if (max < p->id) max = p->id;
@@ -118,14 +118,14 @@ struct FileRepository : public Repository {
     }
 
     if (id_max) *id_max = max;
-    return bbt::OkStatus();
+    return cppboot::OkStatus();
   }
 
-  bbt::Status SaveAllItems(const ItemList& items) {
-    bbt::json j_items;
+  cppboot::Status SaveAllItems(const ItemList& items) {
+    cppboot::json j_items;
 
     for (auto i : items) {
-      bbt::json j;
+      cppboot::json j;
 
       j["id"] = i->id;
       j["text"] = i->text;
@@ -133,17 +133,17 @@ struct FileRepository : public Repository {
       j_items.push_back(j);
     }
 
-    bbt::json root;
-    root["create"] = bbt::Timestamp::Now().ToFormattedString();
+    cppboot::json root;
+    root["create"] = cppboot::Timestamp::Now().ToFormattedString();
     root["items"] = j_items;
 
-    bbt::WriteFile(filename_, root.dump(2, ' '));
+    cppboot::WriteFile(filename_, root.dump(2, ' '));
 
-    return bbt::OkStatus();
+    return cppboot::OkStatus();
   }
 };
 
-Repository* CreateFileRepository(bbt::string_view filename) {
+Repository* CreateFileRepository(cppboot::string_view filename) {
   return new FileRepository(filename);
 }
 

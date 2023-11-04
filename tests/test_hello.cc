@@ -1,7 +1,7 @@
 #include "gmock/gmock.h"
-#include "bbt/appkit/module.h"
+#include "cppboot/appkit/module.h"
 
-using namespace bbt;
+using namespace cppboot;
 
 namespace {
 

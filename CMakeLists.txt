@@ -3,7 +3,7 @@
 #
 
 cmake_minimum_required(VERSION 3.10)
-project(bbt)
+project(cppboot)
 
 # enable c++ 11
 set(CMAKE_CXX_STANDARD 11)
@@ -14,7 +14,7 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug")
 endif()
 
-option(BBT_BUILD_EXAMPLES "Build samples" ON)
+option(CPPBOOT_BUILD_EXAMPLES "Build samples" ON)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -30,7 +30,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -Wall")
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS} -fPIC -Wall -O0 -g --coverage")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -fPIC -Wall  -O0 -g --coverage")
 
-add_definitions(-DBBT_OPTION_HARDENED=0)
+add_definitions(-DCPPBOOT_OPTION_HARDENED=0)
 
 include_directories(
     ${PROJECT_SOURCE_DIR}
@@ -42,12 +42,12 @@ include_directories(
 enable_testing()
 
 add_subdirectory(${THIRD_PARTY_DIR}/googletest-1.12.1)
-add_subdirectory(bbt)
+add_subdirectory(cppboot)
 add_subdirectory(tests)
 
 add_custom_target(lcov
     lcov -c 
-    -t bbt
+    -t cppboot
     -o ${CMAKE_BINARY_DIR}/lcov.info
     -d ${PROJECT_SOURCE_DIR} 
     -b ${PROJECT_SOURCE_DIR} 
@@ -57,15 +57,15 @@ add_custom_target(lcov
     -o ${CMAKE_BINARY_DIR}/lcov.info
     '*/third_party/*' 
     '/usr/include/*'
-    '*/bbt/base/internal/fmt/*'
-    '*/bbt/base/internal/json/*'
+    '*/cppboot/base/internal/fmt/*'
+    '*/cppboot/base/internal/json/*'
 )
 
 add_custom_target(lcov_html
     genhtml -o ${CMAKE_BINARY_DIR}/lcov_html ${CMAKE_BINARY_DIR}/lcov.info
 )
 
-if(BBT_BUILD_EXAMPLES)
+if(CPPBOOT_BUILD_EXAMPLES)
     add_subdirectory(examples)
     add_subdirectory(${THIRD_PARTY_DIR}/asio-1.28.0/src/examples)
 endif()

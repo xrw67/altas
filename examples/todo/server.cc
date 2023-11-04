@@ -1,16 +1,16 @@
 #include <string>
 
-#include "bbt/base/fmt.h"
-#include "bbt/base/status.h"
-#include "bbt/base/str_util.h"
-#include "bbt/http/server.h"
+#include "cppboot/base/fmt.h"
+#include "cppboot/base/status.h"
+#include "cppboot/base/str_util.h"
+#include "cppboot/http/server.h"
 
-#include "bbt/appkit/args.h"
+#include "cppboot/appkit/args.h"
 
 #include "core.h"
 #include "ui.h"
 
-bbt::Status do_add(const char* text);
+cppboot::Status do_add(const char* text);
 std::string do_list(void);
 void do_delete(int id);
 void do_modify(int id, const char* new_text);
@@ -29,20 +29,20 @@ void DoCommand(HtmlUi& ui, const std::string& cmdline) {
 }
 
 int main(int argc, char* argv[]) {
-  using bbt::html::Element;
-  using bbt::http::Request;
-  using bbt::http::Response;
+  using cppboot::html::Element;
+  using cppboot::http::Request;
+  using cppboot::http::Response;
 
-  bbt::Args args;
+  cppboot::Args args;
 
   args.AddLong('p', "port", 12345, "Listen port");
 
   auto st = args.Parse(argc, argv);
   if (!st) {
-    bbt::println("{}", st);
+    cppboot::println("{}", st);
   }
 
-  bbt::http::Server server;
+  cppboot::http::Server server;
   server.Handle("/todo", [](const Request& req, Response* resp) {
     HtmlUi ui;
 
@@ -62,7 +62,7 @@ int main(int argc, char* argv[]) {
   return 0;
 }
 
-bbt::Status do_add(const char* text) {
+cppboot::Status do_add(const char* text) {
   auto repo = todo::CreateFileRepository("/tmp/todo-data.json");
   if (repo) {
     todo::Data data;
@@ -70,7 +70,7 @@ bbt::Status do_add(const char* text) {
     int id = 0;
     return data.Add(text, &id);
   }
-  return bbt::InvalidArgumentError("can't open respository");
+  return cppboot::InvalidArgumentError("can't open respository");
 }
 
 std::string do_list(void) {
@@ -82,7 +82,7 @@ std::string do_list(void) {
     data.set_repository(repo);
     auto items = data.items();
     for (auto item : items) {
-      result += bbt::format("<p>{}\t{}</p>", item->id, item->text);
+      result += cppboot::format("<p>{}\t{}</p>", item->id, item->text);
     }
   }
   return result;
@@ -94,7 +94,7 @@ void do_delete(int id) {
     todo::Data data;
     data.set_repository(repo);
     auto st = data.Delete(id);
-    bbt::println("{}", st);
+    cppboot::println("{}", st);
   }
 }
 
@@ -105,9 +105,9 @@ void do_modify(int id, const char* new_text) {
     data.set_repository(repo);
     auto st = data.Update(id, new_text);
     if (st) {
-      bbt::println("Update Done:");
-      bbt::println("{}\t{}", id, new_text);
+      cppboot::println("Update Done:");
+      cppboot::println("{}\t{}", id, new_text);
     }
-    bbt::println("{}", st);
+    cppboot::println("{}", st);
   }
 }

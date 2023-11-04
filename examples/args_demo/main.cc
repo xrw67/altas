@@ -1,9 +1,9 @@
 #include <iostream>
 
-#include "bbt/appkit/args.h"
+#include "cppboot/appkit/args.h"
 
 int main(int argc, char* argv[]) {
-  bbt::Args args;
+  cppboot::Args args;
 
   args.AddBool('d', "debug", "Enable debug mode");
   args.AddBool('v', "version", "Print version information and quit");

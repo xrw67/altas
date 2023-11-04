@@ -1,10 +1,10 @@
-add_executable(bbt_tests 
+add_executable(cppboot_tests 
     test_hello.cc
     )
-target_link_libraries(bbt_tests 
+target_link_libraries(cppboot_tests 
     gmock 
     gmock_main
-    bbt_base 
-    bbt_appkit
+    cppboot_base 
+    cppboot_appkit
     )
-add_test(NAME bbt_integration_test COMMAND bbt_tests)
+add_test(NAME cppboot_integration_test COMMAND cppboot_tests)
