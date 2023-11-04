@@ -59,10 +59,14 @@ add_custom_target(lcov
     '/usr/include/*'
     '*/cppboot/base/internal/fmt/*'
     '*/cppboot/base/internal/json/*'
+    '*/examples/*'
+    '*/tests/*'
+    '*/*_test.cc'
+    '*/*.test.cc'
 )
 
 add_custom_target(lcov_html
-    genhtml -o ${CMAKE_BINARY_DIR}/lcov_html ${CMAKE_BINARY_DIR}/lcov.info
+    genhtml -o ${CMAKE_BINARY_DIR}/coverage ${CMAKE_BINARY_DIR}/lcov.info
 )
 
 if(CPPBOOT_BUILD_EXAMPLES)
