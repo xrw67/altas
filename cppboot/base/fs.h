@@ -72,5 +72,7 @@ Status Symlink(const std::string& src, const std::string& dst);
 
 Status CopyFile(const std::string& src, const std::string& dst);
 
+Status Rename(const std::string& src, const std::string& dst);
+
 }  // namespace cppboot
 #endif  // CPPBOOT_BASE_FS_H_

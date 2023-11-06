@@ -152,4 +152,23 @@ TEST(Fs, CopyFile) {
   ASSERT_EQ("OK", RemoveAll(dst).ToString());
 }
 
+TEST(Fs, Rename) {
+  const auto src = GetTempPath("cppboot_fs_test_rename_src");
+  const auto dst = GetTempPath("cppboot_fs_test_rename_dst");
+  const auto text = std::string("1\r\n \n");
+
+  ASSERT_EQ("OK", RemoveAll(dst).ToString());
+
+  WriteFile(src, "1");
+  ASSERT_EQ("OK", Rename(src, dst).ToString());
+
+  ASSERT_FALSE(IsFileExist(src));
+  ASSERT_TRUE(IsFileExist(dst));
+
+  ASSERT_EQ("1", ReadFile(dst));
+
+  ASSERT_EQ("OK", RemoveAll(src).ToString());
+  ASSERT_EQ("OK", RemoveAll(dst).ToString());
+}
+
 }  // namespace cppboot
