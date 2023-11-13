@@ -3,7 +3,7 @@
 #include "cppboot/base/fmt.h"
 #include "cppboot/base/status.h"
 #include "cppboot/base/str_util.h"
-#include "cppboot/http/server.h"
+#include "cppboot/net/http/server.h"
 
 #include "cppboot/adv/args.h"
 

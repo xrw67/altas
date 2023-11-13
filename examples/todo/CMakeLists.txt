@@ -2,7 +2,7 @@ add_executable(todo_server
     core.cc
     server.cc
 )
-target_link_libraries(todo_server cppboot_base cppboot_adv cppboot_http cppboot_html)
+target_link_libraries(todo_server cppboot_base cppboot_adv cppboot_net)
 
 add_executable(todo
     core.cc
@@ -10,7 +10,6 @@ add_executable(todo
 )
 
 target_link_libraries(todo cppboot_base cppboot_adv)
-
 
 
 add_executable(todo_test

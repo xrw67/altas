@@ -1,7 +1,4 @@
 add_subdirectory(base)
-#add_subdirectory(io)
-add_subdirectory(adv)
 add_subdirectory(net)
-add_subdirectory(http)
-add_subdirectory(html)
+add_subdirectory(adv)
 add_subdirectory(modules)
