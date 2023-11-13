@@ -20,9 +20,7 @@ class TcpServer {
 
   void Boardcast(const void* data, size_t len) noexcept;
 
-  void set_conn_callback(const ConnCallback& cb) {
-    conn_callback_ = cb;
-  }
+  void set_conn_callback(const ConnCallback& cb) { conn_callback_ = cb; }
   void set_receive_callback(const ReceiveCallback& cb) {
     receive_callback_ = cb;
   }

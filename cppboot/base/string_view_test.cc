@@ -167,9 +167,10 @@ TEST(StringViewTest, STLComparator) {
   EXPECT_TRUE(iter == map.end());
 }
 
-#define COMPARE(result, op, x, y)                                    \
+#define COMPARE(result, op, x, y)                                            \
   EXPECT_EQ(result, cppboot::string_view((x)) op cppboot::string_view((y))); \
-  EXPECT_EQ(result, cppboot::string_view((x)).compare(cppboot::string_view((y))) op 0)
+  EXPECT_EQ(result,                                                          \
+            cppboot::string_view((x)).compare(cppboot::string_view((y))) op 0)
 
 TEST(StringViewTest, ComparisonOperators) {
   COMPARE(true, ==, "", "");
@@ -794,8 +795,9 @@ TEST(StringViewTest, FrontBackSingleChar) {
 
 TEST(StringViewTest, FrontBackEmpty) {
 #if !defined(NDEBUG) || CPPBOOT_OPTION_HARDENED
-  // Abseil's cppboot::string_view implementation has debug assertions that check
-  // that front() and back() are not called on an empty cppboot::string_view.
+  // Abseil's cppboot::string_view implementation has debug assertions that
+  // check that front() and back() are not called on an empty
+  // cppboot::string_view.
   cppboot::string_view sv;
   EXPECT_DEATH_IF_SUPPORTED(sv.front(), "");
   EXPECT_DEATH_IF_SUPPORTED(sv.back(), "");
@@ -809,8 +811,8 @@ TEST(StringViewTest, FrontBackEmpty) {
 // At run time, the behavior of `std::char_traits::length()` on `nullptr` is
 // undefined by the standard and usually results in crash with libc++.
 // GCC also started rejected this in libstdc++ starting in GCC9.
-// In MSVC, creating a constexpr cppboot::string_view from nullptr also triggers an
-// "unevaluable pointer value" error. This compiler implementation conforms
+// In MSVC, creating a constexpr cppboot::string_view from nullptr also triggers
+// an "unevaluable pointer value" error. This compiler implementation conforms
 // to the standard, but `cppboot::string_view` implements a different
 // behavior for historical reasons. We work around tests that construct
 // `cppboot::string_view` from `nullptr` when using libc++.
@@ -836,7 +838,8 @@ TEST(StringViewTest, NULLInput) {
 }
 
 TEST(StringViewTest, Comparisons2) {
-  // The `compare` member has 6 overloads (v: cppboot::string_view, s: const char*):
+  // The `compare` member has 6 overloads (v: cppboot::string_view, s: const
+  // char*):
   //  (1) compare(v)
   //  (2) compare(pos1, count1, v)
   //  (3) compare(pos1, count1, v, pos2, count2)
@@ -949,8 +952,8 @@ TEST(StringViewTest, ConstexprCompiles) {
 #error GCC/clang should have constexpr cppboot::string_view.
 #endif
 
-// MSVC 2017+ should be able to construct a constexpr cppboot::string_view from a
-// cstr.
+// MSVC 2017+ should be able to construct a constexpr cppboot::string_view from
+// a cstr.
 #if defined(_MSC_VER) && _MSC_VER >= 1910
 #define CPPBOOT_HAVE_CONSTEXPR_STRING_VIEW_FROM_CSTR 1
 #endif
@@ -1096,7 +1099,8 @@ TEST(StringViewTest, Noexcept) {
 
 TEST(StringViewTest, BoundsCheck) {
 #if !defined(NDEBUG) || CPPBOOT_OPTION_HARDENED
-  // Abseil's cppboot::string_view implementation has bounds-checking in debug mode.
+  // Abseil's cppboot::string_view implementation has bounds-checking in debug
+  // mode.
   cppboot::string_view h = "hello";
   EXPECT_DEATH_IF_SUPPORTED(h[5], "");
   EXPECT_DEATH_IF_SUPPORTED(h[-1], "");

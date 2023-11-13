@@ -8,7 +8,6 @@ namespace cppboot {
 
 using cppboot::net::Buffer;
 
-
 void SendMessageToConnection(const ConnPtr& conn, const MsgPtr& msg) {
   cppboot::net::Buffer buffer;
 

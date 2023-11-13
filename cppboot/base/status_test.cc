@@ -29,13 +29,15 @@ struct ErrorTest {
 };
 
 constexpr ErrorTest kErrorTests[]{
-    {cppboot::StatusCode::kCancelled, cppboot::CancelledError, cppboot::IsCancelled},
+    {cppboot::StatusCode::kCancelled, cppboot::CancelledError,
+     cppboot::IsCancelled},
     {cppboot::StatusCode::kUnknown, cppboot::UnknownError, cppboot::IsUnknown},
     {cppboot::StatusCode::kDeadlineExceeded, cppboot::DeadlineExceededError,
      cppboot::IsDeadlineExceeded},
     {cppboot::StatusCode::kInvalidArgument, cppboot::InvalidArgumentError,
      cppboot::IsInvalidArgument},
-    {cppboot::StatusCode::kNotFound, cppboot::NotFoundError, cppboot::IsNotFound},
+    {cppboot::StatusCode::kNotFound, cppboot::NotFoundError,
+     cppboot::IsNotFound},
     {cppboot::StatusCode::kAlreadyExists, cppboot::AlreadyExistsError,
      cppboot::IsAlreadyExists},
     {cppboot::StatusCode::kPermissionDenied, cppboot::PermissionDeniedError,
@@ -45,10 +47,12 @@ constexpr ErrorTest kErrorTests[]{
     {cppboot::StatusCode::kFailedPrecondition, cppboot::FailedPreconditionError,
      cppboot::IsFailedPrecondition},
     {cppboot::StatusCode::kAborted, cppboot::AbortedError, cppboot::IsAborted},
-    {cppboot::StatusCode::kOutOfRange, cppboot::OutOfRangeError, cppboot::IsOutOfRange},
+    {cppboot::StatusCode::kOutOfRange, cppboot::OutOfRangeError,
+     cppboot::IsOutOfRange},
     {cppboot::StatusCode::kUnimplemented, cppboot::UnimplementedError,
      cppboot::IsUnimplemented},
-    {cppboot::StatusCode::kUnavailable, cppboot::UnavailableError, cppboot::IsUnavailable},
+    {cppboot::StatusCode::kUnavailable, cppboot::UnavailableError,
+     cppboot::IsUnavailable},
 };
 
 TEST(Status, CreateAndClassify) {
@@ -57,7 +61,8 @@ TEST(Status, CreateAndClassify) {
 
     // Ensure that the creator does, in fact, create status objects with the
     // expected error code and message.
-    std::string message = cppboot::format("error code {} test message", test.code);
+    std::string message =
+        cppboot::format("error code {} test message", test.code);
     cppboot::Status status = test.creator(message);
     EXPECT_EQ(test.code, status.code());
     EXPECT_EQ(message, status.message());
@@ -108,8 +113,8 @@ TEST(Status, ConstructorWithCodeMessage) {
 
 TEST(Status, ConstructorWithFormatMessage) {
   {
-    cppboot::Status status(cppboot::StatusCode::kUnknown, "%s %s %d", "Hello", "World",
-                       666);
+    cppboot::Status status(cppboot::StatusCode::kUnknown, "%s %s %d", "Hello",
+                           "World", 666);
     EXPECT_FALSE(status.ok());
     EXPECT_EQ(cppboot::StatusCode::kUnknown, status.code());
     EXPECT_EQ("Hello World 666", status.message());
@@ -120,8 +125,8 @@ TEST(Status, ConstructorWithFormatMessage) {
     const std::string fmt = "%s %s %d: " + sufix;
     const std::string result = "Hello World 666: " + sufix;
 
-    cppboot::Status status(cppboot::StatusCode::kUnknown, fmt.c_str(), "Hello", "World",
-                       666);
+    cppboot::Status status(cppboot::StatusCode::kUnknown, fmt.c_str(), "Hello",
+                           "World", 666);
     EXPECT_FALSE(status.ok());
     EXPECT_EQ(cppboot::StatusCode::kUnknown, status.code());
     EXPECT_EQ(result, status.message()) << "Large string size";
@@ -224,11 +229,13 @@ TEST(StatusErrno, ErrnoToStatusCode) {
   EXPECT_EQ(cppboot::ErrnoToStatusCode(0), cppboot::StatusCode::kOk);
 
   // Spot-check a few errno values.
-  EXPECT_EQ(cppboot::ErrnoToStatusCode(EINVAL), cppboot::StatusCode::kInvalidArgument);
+  EXPECT_EQ(cppboot::ErrnoToStatusCode(EINVAL),
+            cppboot::StatusCode::kInvalidArgument);
   EXPECT_EQ(cppboot::ErrnoToStatusCode(ENOENT), cppboot::StatusCode::kNotFound);
 
   // We'll pick a very large number so it hopefully doesn't collide to errno.
-  EXPECT_EQ(cppboot::ErrnoToStatusCode(19980927), cppboot::StatusCode::kUnknown);
+  EXPECT_EQ(cppboot::ErrnoToStatusCode(19980927),
+            cppboot::StatusCode::kUnknown);
 }
 
 TEST(StatusErrno, ErrnoToStatus) {

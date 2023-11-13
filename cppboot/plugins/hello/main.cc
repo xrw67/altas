@@ -8,11 +8,4 @@ int hello_init(const char* param) {
 
 void hello_exit(void) { CPPBOOT_LOG(INFO, "Hello exit"); }
 
-extern "C" __attribute__((visibility("default")))
-CPPBOOT_PLUGIN_HEADER cppboot_plugin_header = {
-    .name = "hello",
-    .version = "0.1.0",
-    .requires = "",
-    .init = hello_init,
-    .exit = hello_exit,
-};
+CPPBOOT_PLUGIN(hello, hello_init, hello_exit, "");

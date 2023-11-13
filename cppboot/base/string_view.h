@@ -34,7 +34,7 @@
 
 namespace cppboot {
 
-#if CPPBOOT_HAVE_BUILTIN(__builtin_memcmp) ||         \
+#if CPPBOOT_HAVE_BUILTIN(__builtin_memcmp) ||     \
     (defined(__GNUC__) && !defined(__clang__)) || \
     (defined(_MSC_VER) && _MSC_VER >= 1928)
 #define CPPBOOT_INTERNAL_STRING_VIEW_MEMCMP __builtin_memcmp
@@ -241,7 +241,8 @@ class string_view {
   }
 
   // Swaps this `string_view` with another `string_view`.
-  CPPBOOT_INTERNAL_STRING_VIEW_CXX14_CONSTEXPR void swap(string_view& s) noexcept {
+  CPPBOOT_INTERNAL_STRING_VIEW_CXX14_CONSTEXPR void swap(
+      string_view& s) noexcept {
     auto t = *this;
     *this = s;
     s = t;
@@ -500,7 +501,8 @@ class string_view {
     (defined(__GNUC__) && !defined(__clang__))
     // GCC has __builtin_strlen according to
     // https://gcc.gnu.org/onlinedocs/gcc-4.7.0/gcc/Other-Builtins.html, but
-    // CPPBOOT_HAVE_BUILTIN doesn't detect that, so we use the extra checks above.
+    // CPPBOOT_HAVE_BUILTIN doesn't detect that, so we use the extra checks
+    // above.
     // __builtin_strlen is constexpr.
     return __builtin_strlen(str);
 #else
@@ -528,8 +530,8 @@ class string_view {
 // following comparisons.
 constexpr bool operator==(string_view x, string_view y) noexcept {
   return x.size() == y.size() &&
-         (x.empty() ||
-          CPPBOOT_INTERNAL_STRING_VIEW_MEMCMP(x.data(), y.data(), x.size()) == 0);
+         (x.empty() || CPPBOOT_INTERNAL_STRING_VIEW_MEMCMP(x.data(), y.data(),
+                                                           x.size()) == 0);
 }
 
 constexpr bool operator!=(string_view x, string_view y) noexcept {

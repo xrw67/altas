@@ -102,8 +102,8 @@ Status Client::ReadResponse(Response* resp) {
     }
 
     if (status_code != 200) {
-      return cppboot::InvalidArgumentError(
-          cppboot::format("Response returned with status code {}", status_code));
+      return cppboot::InvalidArgumentError(cppboot::format(
+          "Response returned with status code {}", status_code));
     }
 
     Response reply;

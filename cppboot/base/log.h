@@ -10,38 +10,38 @@
 // 高层次的打印，可以使用各种花样
 //
 #define CPPBOOT_LOG(severity, ...)                                             \
-  do {                                                                     \
+  do {                                                                         \
     constexpr const char* cppboot_logging_internal_basename =                  \
         ::cppboot::logging_internal::Basename(__FILE__, sizeof(__FILE__) - 1); \
-    ::cppboot::logging_internal::Log(CPPBOOT_LOGGING_INTERNAL_##severity,          \
-                                 cppboot_logging_internal_basename, __LINE__,  \
-                                 __VA_ARGS__);                             \
+    ::cppboot::logging_internal::Log(CPPBOOT_LOGGING_INTERNAL_##severity,      \
+                                     cppboot_logging_internal_basename,        \
+                                     __LINE__, __VA_ARGS__);                   \
   } while (0)
 
 #define CPPBOOT_CHECK(condition, message)                                 \
-  do {                                                                \
+  do {                                                                    \
     if (CPPBOOT_PREDICT_FALSE(!(condition))) {                            \
       CPPBOOT_LOG(FATAL, "Check {:s} failed: {:s}", #condition, message); \
-    }                                                                 \
+    }                                                                     \
   } while (0)
 
 //
 // 低层次的打印，实现非常简单，通常仅仅输出到STDERR
 //
-#define CPPBOOT_RAW_LOG(severity, ...)                                           \
-  do {                                                                       \
-    constexpr const char* cppboot_logging_internal_basename =                    \
-        ::cppboot::logging_internal::Basename(__FILE__, sizeof(__FILE__) - 1);   \
-    ::cppboot::logging_internal::RawLog(CPPBOOT_LOGGING_INTERNAL_##severity,         \
-                                    cppboot_logging_internal_basename, __LINE__, \
-                                    __VA_ARGS__);                            \
+#define CPPBOOT_RAW_LOG(severity, ...)                                         \
+  do {                                                                         \
+    constexpr const char* cppboot_logging_internal_basename =                  \
+        ::cppboot::logging_internal::Basename(__FILE__, sizeof(__FILE__) - 1); \
+    ::cppboot::logging_internal::RawLog(CPPBOOT_LOGGING_INTERNAL_##severity,   \
+                                        cppboot_logging_internal_basename,     \
+                                        __LINE__, __VA_ARGS__);                \
   } while (0)
 
 #define CPPBOOT_RAW_CHECK(condition, message)                                 \
-  do {                                                                    \
+  do {                                                                        \
     if (CPPBOOT_PREDICT_FALSE(!(condition))) {                                \
       CPPBOOT_RAW_LOG(FATAL, "Check {:s} failed: {:s}", #condition, message); \
-    }                                                                     \
+    }                                                                         \
   } while (0)
 
 #define CPPBOOT_LOGGING_INTERNAL_DEBUG ::cppboot::LogSeverity::kDebug

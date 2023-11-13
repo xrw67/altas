@@ -15,8 +15,9 @@ TEST(Timestamp, default_is_invalid) {
 TEST(Timestamp, convert_from_unixtime) {
   auto ts = cppboot::Timestamp::Now();
   auto unixtime = ts.seconds_since_epoch();
-  ASSERT_EQ(ts.ToFormattedString(false),
-            cppboot::Timestamp::FromUnixTime(unixtime).ToFormattedString(false));
+  ASSERT_EQ(
+      ts.ToFormattedString(false),
+      cppboot::Timestamp::FromUnixTime(unixtime).ToFormattedString(false));
 }
 
 // ToString

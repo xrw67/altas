@@ -1,4 +1,4 @@
-#include "cppboot/adv/plugin.h"
+#include "cppboot/adv/plugin_manager.h"
 
 #include <map>
 #include <set>
@@ -13,11 +13,9 @@ namespace cppboot {
 
 namespace {
 
-Status VerifyPluginHeader(const PCPPBOOT_PLUGIN_HEADER hdr) {
+Status VerifyPluginHeader(const struct cppboot_plugin* hdr) {
   if (!hdr) return InvalidArgumentError("no plugin");
   if (!hdr->name || !*hdr->name) return InvalidArgumentError("no name");
-  if (!hdr->version || !*hdr->version)
-    return InvalidArgumentError("no version");
   if (!hdr->init) return InvalidArgumentError("no init func");
   if (!hdr->exit) return InvalidArgumentError("no exit func");
   return OkStatus();
@@ -29,12 +27,12 @@ struct Plugin;
 typedef std::shared_ptr<Plugin> PluginPtr;
 
 struct Plugin {
-  const PCPPBOOT_PLUGIN_HEADER hdr;
+  const struct cppboot_plugin* hdr;
   std::string param;
   std::set<PluginPtr> sources;  // What plugins depend on me?
   std::set<PluginPtr> targets;  // What plugins do I depend on?
 
-  explicit Plugin(const PCPPBOOT_PLUGIN_HEADER hdr) : hdr(hdr) {}
+  explicit Plugin(const struct cppboot_plugin* hdr) : hdr(hdr) {}
 };
 
 class PluginManagerImpl : public PluginManager {
@@ -54,7 +52,7 @@ class PluginManagerImpl : public PluginManager {
       if (mods_.find(name) != mods_.end()) return AlreadyExistsError(name);
     }
 
-    PCPPBOOT_PLUGIN_HEADER hdr;
+    struct cppboot_plugin* hdr;
     Status st = loader_->Load(name, &hdr);
     if (!st.ok()) return st;
 
@@ -102,7 +100,7 @@ class PluginManagerImpl : public PluginManager {
     return OkStatus();
   }
 
-  Status InitPulgin(PluginPtr& plugin, const PCPPBOOT_PLUGIN_HEADER hdr,
+  Status InitPulgin(PluginPtr& plugin, const struct cppboot_plugin* hdr,
                     const char* param) {
     Status st = VerifyPluginHeader(hdr);
     if (st.ok()) {
@@ -116,9 +114,9 @@ class PluginManagerImpl : public PluginManager {
   }
 
   Status VerifyDependence(PluginPtr& plugin) {
-    if (!plugin->hdr->requires) return OkStatus();
+    if (!plugin->hdr->depends) return OkStatus();
 
-    auto require_list = StrSplit(plugin->hdr->requires, ',');
+    auto require_list = StrSplit(plugin->hdr->depends, ',');
     for (auto& i : require_list) {
       auto name = StrTrim(i, " ");
       if (name.empty()) continue;

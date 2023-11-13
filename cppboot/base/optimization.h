@@ -19,8 +19,8 @@
 //   }
 #if defined(__pnacl__)
 #define CPPBOOT_BLOCK_TAIL_CALL_OPTIMIZATION() \
-  if (volatile int x = 0) {                \
-    (void)x;                               \
+  if (volatile int x = 0) {                    \
+    (void)x;                                   \
   }
 #elif defined(__clang__)
 // Clang will not tail call given inline volatile assembly.
@@ -34,8 +34,8 @@
 #define CPPBOOT_BLOCK_TAIL_CALL_OPTIMIZATION() __nop()
 #else
 #define CPPBOOT_BLOCK_TAIL_CALL_OPTIMIZATION() \
-  if (volatile int x = 0) {                \
-    (void)x;                               \
+  if (volatile int x = 0) {                    \
+    (void)x;                                   \
   }
 #endif
 
@@ -43,8 +43,8 @@
 //
 // Explicitly defines the size of the L1 cache for purposes of alignment.
 // Setting the cacheline size allows you to specify that certain objects be
-// aligned on a cacheline boundary with `CPPBOOT_CACHELINE_ALIGNED` declarations.
-// (See below.)
+// aligned on a cacheline boundary with `CPPBOOT_CACHELINE_ALIGNED`
+// declarations. (See below.)
 //
 // NOTE: this macro should be replaced with the following C++17 features, when
 // those are generally available:
@@ -85,10 +85,10 @@
 // CPPBOOT_CACHELINE_ALIGNED
 //
 // Indicates that the declared object be cache aligned using
-// `CPPBOOT_CACHELINE_SIZE` (see above). Cacheline aligning objects allows you to
-// load a set of related objects in the L1 cache for performance improvements.
-// Cacheline aligning objects properly allows constructive memory sharing and
-// prevents destructive (or "false") memory sharing.
+// `CPPBOOT_CACHELINE_SIZE` (see above). Cacheline aligning objects allows you
+// to load a set of related objects in the L1 cache for performance
+// improvements. Cacheline aligning objects properly allows constructive memory
+// sharing and prevents destructive (or "false") memory sharing.
 //
 // NOTE: callers should replace uses of this macro with `alignas()` using
 // `std::hardware_constructive_interference_size` and/or
@@ -125,7 +125,8 @@
 //    the generated machine code.
 // 3) Prefer applying this attribute to individual variables. Avoid
 //    applying it to types. This tends to localize the effect.
-#define CPPBOOT_CACHELINE_ALIGNED __attribute__((aligned(CPPBOOT_CACHELINE_SIZE)))
+#define CPPBOOT_CACHELINE_ALIGNED \
+  __attribute__((aligned(CPPBOOT_CACHELINE_SIZE)))
 #elif defined(_MSC_VER)
 #define CPPBOOT_CACHELINE_SIZE 64
 #define CPPBOOT_CACHELINE_ALIGNED __declspec(align(CPPBOOT_CACHELINE_SIZE))

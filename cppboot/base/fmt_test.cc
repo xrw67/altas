@@ -43,16 +43,18 @@ TEST(Fmt, SpecialWidth) {
 }
 
 TEST(Fmt, Hex) {
-  ASSERT_EQ(cppboot::format("int: {0:d};  hex: {0:x};  oct: {0:o}; bin: {0:b}", 42),
-            "int: 42;  hex: 2a;  oct: 52; bin: 101010");
   ASSERT_EQ(
-      cppboot::format("int: {0:d};  hex: {0:#x};  oct: {0:#o};  bin: {0:#b}", 42),
-      "int: 42;  hex: 0x2a;  oct: 052;  bin: 0b101010");
-  ASSERT_EQ(cppboot::format("int: {0:d};  hex: {0:x};  oct: {0:o}; bin: {0:b}", 42),
-            "int: 42;  hex: 2a;  oct: 52; bin: 101010");
+      cppboot::format("int: {0:d};  hex: {0:x};  oct: {0:o}; bin: {0:b}", 42),
+      "int: 42;  hex: 2a;  oct: 52; bin: 101010");
+  ASSERT_EQ(cppboot::format(
+                "int: {0:d};  hex: {0:#x};  oct: {0:#o};  bin: {0:#b}", 42),
+            "int: 42;  hex: 0x2a;  oct: 052;  bin: 0b101010");
   ASSERT_EQ(
-      cppboot::format("int: {0:d};  hex: {0:#x};  oct: {0:#o};  bin: {0:#b}", 42),
-      "int: 42;  hex: 0x2a;  oct: 052;  bin: 0b101010");
+      cppboot::format("int: {0:d};  hex: {0:x};  oct: {0:o}; bin: {0:b}", 42),
+      "int: 42;  hex: 2a;  oct: 52; bin: 101010");
+  ASSERT_EQ(cppboot::format(
+                "int: {0:d};  hex: {0:#x};  oct: {0:#o};  bin: {0:#b}", 42),
+            "int: 42;  hex: 0x2a;  oct: 052;  bin: 0b101010");
 
   ASSERT_EQ(cppboot::format("{:#04x}", 0), "0x00");
 }

@@ -81,7 +81,8 @@ TEST(Http, HttpServerAndClient) {
   // Query
   {
     Response resp;
-    auto st = cppboot::http::Get("http://127.0.0.1:59999/hello?name=xrw", &resp);
+    auto st =
+        cppboot::http::Get("http://127.0.0.1:59999/hello?name=xrw", &resp);
     ASSERT_TRUE(st) << st.ToString();
     ASSERT_EQ(resp.status, Response::ok);
     ASSERT_EQ(resp.content, "Hello, xrw");
@@ -91,7 +92,7 @@ TEST(Http, HttpServerAndClient) {
   {
     Response resp;
     auto st = cppboot::http::Post("http://127.0.0.1:59999/name?format=text",
-                              "xrw666", &resp);
+                                  "xrw666", &resp);
     ASSERT_TRUE(st) << st.ToString();
     ASSERT_EQ(resp.status, Response::ok);
     ASSERT_EQ(resp.content, "PostText Ok");
@@ -103,7 +104,7 @@ TEST(Http, HttpServerAndClient) {
     cppboot::json data;
     data["name"] = "xrw666";
     auto st = cppboot::http::PostJson("http://127.0.0.1:59999/name?format=json",
-                                  data, &resp);
+                                      data, &resp);
     ASSERT_TRUE(st) << st.ToString();
     ASSERT_EQ(resp.status, Response::ok);
     ASSERT_EQ(resp.content, "PostJson Ok");
@@ -117,8 +118,8 @@ TEST(Http, HttpServerAndClient) {
     form.Set("key1", "value1");
     form.Set("key2", std::to_string(1001));
 
-    st = cppboot::http::PostForm("http://127.0.0.1:59999/name?format=form", form,
-                             &resp);
+    st = cppboot::http::PostForm("http://127.0.0.1:59999/name?format=form",
+                                 form, &resp);
 
     ASSERT_TRUE(st) << st.ToString();
     ASSERT_EQ(resp.status, Response::ok);

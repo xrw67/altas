@@ -15,10 +15,10 @@ int main(int argc, char** argv) {
 
   cppboot::http::FileServer fileserver(argv[2]);
   cppboot::http::Server server;
-  server.Handle("/",
-                [&](const cppboot::http::Request& req, cppboot::http::Response* resp) {
-                  fileserver.ServeHttp(req, resp);
-                });
+  server.Handle("/", [&](const cppboot::http::Request& req,
+                         cppboot::http::Response* resp) {
+    fileserver.ServeHttp(req, resp);
+  });
 
   auto st = server.Listen("0.0.0.0", argv[1]);
   if (!st) {

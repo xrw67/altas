@@ -72,7 +72,8 @@
 #define CPPBOOT_ATTRIBUTE_ALWAYS_INLINE
 #endif
 
-#if CPPBOOT_HAVE_ATTRIBUTE(noinline) || (defined(__GNUC__) && !defined(__clang__))
+#if CPPBOOT_HAVE_ATTRIBUTE(noinline) || \
+    (defined(__GNUC__) && !defined(__clang__))
 #define CPPBOOT_ATTRIBUTE_NOINLINE __attribute__((noinline))
 #define CPPBOOT_HAVE_ATTRIBUTE_NOINLINE 1
 #else
@@ -107,9 +108,9 @@
 //   Sprocket* SprocketPointer();
 //   SprocketPointer();  // Does *not* trigger a warning.
 //
-// CPPBOOT_MUST_USE_RESULT allows using cast-to-void to suppress the unused result
-// warning. For that, warn_unused_result is used only for clang but not for gcc.
-// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66425
+// CPPBOOT_MUST_USE_RESULT allows using cast-to-void to suppress the unused
+// result warning. For that, warn_unused_result is used only for clang but not
+// for gcc. https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66425
 //
 // Note: past advice was to place the macro after the argument list.
 //
@@ -121,11 +122,11 @@
 #define CPPBOOT_MUST_USE_RESULT
 #endif
 
-// CPPBOOT_ATTRIBUTE_LIFETIME_BOUND indicates that a resource owned by a function
-// parameter or implicit object parameter is retained by the return value of the
-// annotated function (or, for a parameter of a constructor, in the value of the
-// constructed object). This attribute causes warnings to be produced if a
-// temporary object does not live long enough.
+// CPPBOOT_ATTRIBUTE_LIFETIME_BOUND indicates that a resource owned by a
+// function parameter or implicit object parameter is retained by the return
+// value of the annotated function (or, for a parameter of a constructor, in the
+// value of the constructed object). This attribute causes warnings to be
+// produced if a temporary object does not live long enough.
 //
 // When applied to a reference parameter, the referenced object is assumed to be
 // retained by the return value of the function. When applied to a non-reference

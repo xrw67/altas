@@ -37,7 +37,6 @@ CPPBOOT_EXPORT std::string GetAppPath();
 ///
 CPPBOOT_EXPORT std::string GetCurrentDir();
 
-
 CPPBOOT_EXPORT int64_t GetNanoClock();
 
 }  // namespace cppboot

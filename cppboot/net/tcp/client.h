@@ -19,9 +19,7 @@ class TcpClient {
   void Send(const void* data, int len);
   TcpConnPtr connection() { return conn_; }
 
-  void set_conn_callback(const ConnCallback& cb) {
-    conn_callback_ = cb;
-  }
+  void set_conn_callback(const ConnCallback& cb) { conn_callback_ = cb; }
   void set_receive_callback(const ReceiveCallback& cb) {
     receive_callback_ = cb;
   }

@@ -18,8 +18,9 @@
 
 namespace cppboot {
 namespace macros_internal {
-// Note: this internal template function declaration is used by CPPBOOT_ARRAYSIZE.
-// The function doesn't need a definition, as we only use its type.
+// Note: this internal template function declaration is used by
+// CPPBOOT_ARRAYSIZE. The function doesn't need a definition, as we only use its
+// type.
 template <typename T, size_t N>
 auto ArraySizeHelper(const T (&array)[N]) -> char (&)[N];
 }  // namespace macros_internal
@@ -66,20 +67,20 @@ auto ArraySizeHelper(const T (&array)[N]) -> char (&)[N];
 #else
 #define CPPBOOT_ASSERT(expr)                           \
   (CPPBOOT_PREDICT_TRUE((expr)) ? static_cast<void>(0) \
-                            : [] { assert(false && #expr); }())  // NOLINT
+                                : [] { assert(false && #expr); }())  // NOLINT
 #endif
 
-// `CPPBOOT_INTERNAL_HARDENING_ABORT()` controls how `CPPBOOT_HARDENING_ASSERT()`
-// aborts the program in release mode (when NDEBUG is defined). The
-// implementation should abort the program as quickly as possible and ideally it
-// should not be possible to ignore the abort request.
+// `CPPBOOT_INTERNAL_HARDENING_ABORT()` controls how
+// `CPPBOOT_HARDENING_ASSERT()` aborts the program in release mode (when NDEBUG
+// is defined). The implementation should abort the program as quickly as
+// possible and ideally it should not be possible to ignore the abort request.
 #if (CPPBOOT_HAVE_BUILTIN(__builtin_trap) &&         \
      CPPBOOT_HAVE_BUILTIN(__builtin_unreachable)) || \
     (defined(__GNUC__) && !defined(__clang__))
 #define CPPBOOT_INTERNAL_HARDENING_ABORT() \
-  do {                                 \
-    __builtin_trap();                  \
-    __builtin_unreachable();           \
+  do {                                     \
+    __builtin_trap();                      \
+    __builtin_unreachable();               \
   } while (false)
 #else
 #define CPPBOOT_INTERNAL_HARDENING_ABORT() abort()
@@ -87,19 +88,20 @@ auto ArraySizeHelper(const T (&array)[N]) -> char (&)[N];
 
 // CPPBOOT_HARDENING_ASSERT()
 //
-// `CPPBOOT_HARDENING_ASSERT()` is like `CPPBOOT_ASSERT()`, but used to implement
-// runtime assertions that should be enabled in hardened builds even when
-// `NDEBUG` is defined.
+// `CPPBOOT_HARDENING_ASSERT()` is like `CPPBOOT_ASSERT()`, but used to
+// implement runtime assertions that should be enabled in hardened builds even
+// when `NDEBUG` is defined.
 //
 // When `NDEBUG` is not defined, `CPPBOOT_HARDENING_ASSERT()` is identical to
 // `CPPBOOT_ASSERT()`.
 //
-// See `CPPBOOT_OPTION_HARDENED` in `cppboot/base/options.h` for more information on
-// hardened mode.
+// See `CPPBOOT_OPTION_HARDENED` in `cppboot/base/options.h` for more
+// information on hardened mode.
 #if CPPBOOT_OPTION_HARDENED == 1 && defined(NDEBUG)
-#define CPPBOOT_HARDENING_ASSERT(expr)                 \
-  (CPPBOOT_PREDICT_TRUE((expr)) ? static_cast<void>(0) \
-                            : [] { CPPBOOT_INTERNAL_HARDENING_ABORT(); }())
+#define CPPBOOT_HARDENING_ASSERT(expr)                        \
+  (CPPBOOT_PREDICT_TRUE((expr)) ? static_cast<void>(0) : [] { \
+    CPPBOOT_INTERNAL_HARDENING_ABORT();                       \
+  }())
 #else
 #define CPPBOOT_HARDENING_ASSERT(expr) CPPBOOT_ASSERT(expr)
 #endif

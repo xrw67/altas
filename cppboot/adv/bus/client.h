@@ -26,7 +26,7 @@ class BusClient {
   ~BusClient();
 
   void Start();
-  
+
   // 主动执行关闭，会传递到Transport的Close
   void Stop();
 

@@ -8,7 +8,8 @@ namespace {
 
 void null_log_func(LogSeverity severity, const char* file, int line,
                    const std::string& message) {
-  cppboot::println("[{} {}:{}] {}", LogSeverityName(severity), file, line, message);
+  cppboot::println("[{} {}:{}] {}", LogSeverityName(severity), file, line,
+                   message);
 }
 
 InternalLogFunction internal_log_function = null_log_func;

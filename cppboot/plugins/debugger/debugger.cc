@@ -51,11 +51,4 @@ int debugger_init(const char* param) {
 
 void debugger_exit(void) { CPPBOOT_LOG(INFO, "Debugger exit"); }
 
-extern "C" __attribute__((visibility("default")))
-CPPBOOT_PLUGIN_HEADER cppboot_plugin_header = {
-    .name = "debugger",
-    .version = "0.1.0",
-    .requires = "",
-    .init = debugger_init,
-    .exit = debugger_exit,
-};
+CPPBOOT_PLUGIN(debugger, debugger_init, debugger_exit, "");

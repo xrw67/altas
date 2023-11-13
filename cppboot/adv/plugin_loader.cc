@@ -1,4 +1,4 @@
-#include "cppboot/adv/plugin.h"
+#include "cppboot/adv/plugin_manager.h"
 
 #include <string>
 #include <map>
@@ -12,7 +12,7 @@
 
 namespace cppboot {
 //
-// DLL Plugin 
+// DLL Plugin
 //
 
 class DllLoader : public PluginLoader {
@@ -21,13 +21,14 @@ class DllLoader : public PluginLoader {
   ~DllLoader() {
     for (auto h : handles_) {
       if (::dlclose(h.second)) {
-        CPPBOOT_RAW_LOG(ERROR, "unload plugin {} failed: {}", h.first, dlerror());
+        CPPBOOT_RAW_LOG(ERROR, "unload plugin {} failed: {}", h.first,
+                        dlerror());
       }
     }
   }
 
  private:
-  Status Load(const char* name, PCPPBOOT_PLUGIN_HEADER* result) {
+  Status Load(const char* name, struct cppboot_plugin** result) {
     if (!name || !*name) {
       return InvalidArgumentError("no name");
     }
@@ -42,12 +43,12 @@ class DllLoader : public PluginLoader {
           format("load plugin {} failed: {}", name, dlerror()));
     }
 
-    PCPPBOOT_PLUGIN_HEADER hdr =
-        (PCPPBOOT_PLUGIN_HEADER)::dlsym(handle, "cppboot_plugin_header");
+    struct cppboot_plugin* hdr =
+        (struct cppboot_plugin*)::dlsym(handle, "cppboot_plugin_entry");
     if (!hdr) {
       ::dlclose(handle);
-      return CancelledError(
-          format("load plugin {} failed: no symbol cppboot_plugin_header", name));
+      return CancelledError(format(
+          "load plugin {} failed: no symbol cppboot_plugin_entry", name));
     }
 
     handles_[name] = handle;
@@ -70,7 +71,7 @@ class DllLoader : public PluginLoader {
   }
 
   std::string GetPluginPath(const char* name) {
-    return PathJoin(dir_, StrCat("libmod_", name, ".so"));
+    return PathJoin(dir_, StrCat("libplugin_", name, ".so"));
   }
 
  private:
