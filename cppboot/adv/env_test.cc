@@ -1,8 +1,8 @@
-#include "cppboot/appkit/env.h"
+#include "cppboot/adv/env.h"
 
 #include "gmock/gmock.h"
 
-#include "cppboot/appkit/object.h"
+#include "cppboot/adv/object.h"
 
 namespace cppboot {
 

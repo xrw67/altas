@@ -3,7 +3,7 @@
 #include <map>
 
 #include "cppboot/base/log.h"
-#include "cppboot/appkit/module.h"
+#include "cppboot/adv/module.h"
 
 namespace cppboot {
 class DebuggerImpl : public Debugger {

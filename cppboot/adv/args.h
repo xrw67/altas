@@ -1,5 +1,5 @@
-#ifndef CPPBOOT_APPKIT_ARGS_H_
-#define CPPBOOT_APPKIT_ARGS_H_
+#ifndef CPPBOOT_ADV_ARGS_H_
+#define CPPBOOT_ADV_ARGS_H_
 
 #include "cppboot/base/status.h"
 
@@ -32,4 +32,4 @@ class Args {
 
 }  // namespace cppboot
 
-#endif  // CPPBOOT_APPKIT_ARGS_H_
+#endif  // CPPBOOT_ADV_ARGS_H_

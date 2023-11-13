@@ -4,5 +4,5 @@ add_executable(args_demo
 
 target_link_libraries(args_demo 
     cppboot_base 
-    cppboot_appkit
+    cppboot_adv
 )

@@ -1,5 +1,5 @@
-#ifndef CPPBOOT_APPKIT_OBJECT_H_
-#define CPPBOOT_APPKIT_OBJECT_H_
+#ifndef CPPBOOT_ADV_OBJECT_H_
+#define CPPBOOT_ADV_OBJECT_H_
 
 #include <atomic>
 
@@ -37,4 +37,4 @@ inline void Object::Release() {
 
 }  // namespace cppboot
 
-#endif  // CPPBOOT_APPKIT_OBJECT_H_
+#endif  // CPPBOOT_ADV_OBJECT_H_

@@ -1,4 +1,4 @@
-#include "cppboot/appkit/module.h"
+#include "cppboot/adv/module.h"
 #include "cppboot/base/log.h"
 
 int hello_init(const char* param) {

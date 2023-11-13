@@ -1,5 +1,5 @@
-#ifndef CPPBOOT_APPKIT_ENV_H_
-#define CPPBOOT_APPKIT_ENV_H_
+#ifndef CPPBOOT_ADV_ENV_H_
+#define CPPBOOT_ADV_ENV_H_
 
 #include <string>
 
@@ -29,4 +29,4 @@ class GlobalEnv {
 
 }  // namespace cppboot
 
-#endif  // CPPBOOT_APPKIT_ENV_H_
+#endif  // CPPBOOT_ADV_ENV_H_

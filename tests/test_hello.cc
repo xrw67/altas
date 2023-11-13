@@ -1,5 +1,5 @@
 #include "gmock/gmock.h"
-#include "cppboot/appkit/module.h"
+#include "cppboot/adv/module.h"
 
 using namespace cppboot;
 

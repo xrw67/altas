@@ -1,5 +1,5 @@
-#ifndef CPPBOOT_APPKIT_MODULE_H_
-#define CPPBOOT_APPKIT_MODULE_H_
+#ifndef CPPBOOT_ADV_MODULE_H_
+#define CPPBOOT_ADV_MODULE_H_
 
 #include <vector>
 #include <string>
@@ -54,4 +54,4 @@ class ModuleManager {
 
 }  // namespace cppboot
 
-#endif  // CPPBOOT_APPKIT_MODULE_H_
+#endif  // CPPBOOT_ADV_MODULE_H_

@@ -4,7 +4,7 @@
 #include "cppboot/base/string_view.h"
 #include "cppboot/base/status.h"
 
-#include "cppboot/appkit/object.h"
+#include "cppboot/adv/object.h"
 
 namespace cppboot {
 
