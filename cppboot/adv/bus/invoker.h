@@ -1,5 +1,5 @@
-#ifndef CPPBOOT_BUS_CONNECTION_H_
-#define CPPBOOT_BUS_CONNECTION_H_
+#ifndef CPPBOOT_ADV_BUS_CONNECTION_H_
+#define CPPBOOT_ADV_BUS_CONNECTION_H_
 
 #include <map>
 #include <string>
@@ -7,11 +7,10 @@
 #include <mutex>
 #include <functional>
 
-#include "cppboot/bus/msg.h"
-#include "cppboot/bus/method.h"
+#include "cppboot/adv/bus/msg.h"
+#include "cppboot/adv/bus/method.h"
 
 namespace cppboot {
-namespace bus {
 
 typedef std::function<void(const MsgPtr&)> MsgWriter;
 
@@ -39,6 +38,5 @@ class BusInvoker {
   MsgWriter msg_writer_;
 };
 
-}  // namespace bus
 }  // namespace cppboot
-#endif  // CPPBOOT_BUS_CONNECTION_H_
+#endif  // CPPBOOT_ADV_BUS_CONNECTION_H_

@@ -1,10 +1,9 @@
-#include "cppboot/bus/context.h"
+#include "cppboot/adv/bus/context.h"
 #include "cppboot/net/buffer.h"
-#include "cppboot/bus/msg.h"
-#include "cppboot/bus/msg_packer.h"
+#include "cppboot/adv/bus/msg.h"
+#include "cppboot/adv/bus/msg_packer.h"
 
 namespace cppboot {
-namespace bus {
 
 BusContext::BusContext() : state_(kHeader) {}
 
@@ -43,5 +42,4 @@ BusContext::Result BusContext::Parse(Buffer* buf, Msg* msg) {
   return kGood;
 }
 
-}  // namespace bus
 }  // namespace cppboot

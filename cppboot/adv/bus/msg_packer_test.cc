@@ -1,11 +1,11 @@
 #include "gmock/gmock.h"
 
-#include "cppboot/bus/msg.h"
-#include "cppboot/bus/msg_packer.h"
+#include "cppboot/adv/bus/msg.h"
+#include "cppboot/adv/bus/msg_packer.h"
 
 namespace {
 
-using cppboot::bus::Msg;
+using cppboot::Msg;
 
 static const char* json_data =
     "{\"caller\":\"\",\"id\":123,\"is_req\":true,\"method\":\"foo\",\"method_"
@@ -19,7 +19,7 @@ TEST(MsgPacker, should_pack_by_json) {
   msg.set_param("key1", "str1");
   msg.set_param("key2", "1001");
 
-  cppboot::bus::JsonPacker j;
+  cppboot::JsonPacker j;
   std::string s;
 
   j.Pack(msg, &s);
@@ -28,7 +28,7 @@ TEST(MsgPacker, should_pack_by_json) {
 
 TEST(MsgPacker, should_unpack_by_json) {
   Msg msg;
-  cppboot::bus::JsonPacker j;
+  cppboot::JsonPacker j;
 
   auto st = j.Unpack(json_data, &msg);
   ASSERT_TRUE(st) << st.ToString();
@@ -40,7 +40,7 @@ TEST(MsgPacker, should_unpack_by_json) {
 
 TEST(MsgPacker, should_catch_exception_with_unpack) {
   Msg msg;
-  cppboot::bus::JsonPacker j;
+  cppboot::JsonPacker j;
 
   ASSERT_FALSE(j.Unpack("{\"id\":\"abc\"}", &msg));
   ASSERT_FALSE(j.Unpack("{\"id\":123, \"method\": 123}", &msg));

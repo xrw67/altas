@@ -1,8 +1,7 @@
 #include "gmock/gmock.h"
-#include "cppboot/bus/invoker.h"
+#include "cppboot/adv/bus/invoker.h"
 
 namespace cppboot {
-namespace bus {
 namespace {
 
 TEST(BusInvokerTest, should_call_service) {
@@ -32,5 +31,4 @@ TEST(BusInvokerTest, should_call_service) {
 }
 
 }  // namespace
-}  // namespace bus
 }  // namespace cppboot

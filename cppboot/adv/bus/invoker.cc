@@ -1,7 +1,6 @@
-#include "cppboot/bus/invoker.h"
+#include "cppboot/adv/bus/invoker.h"
 
 namespace cppboot {
-namespace bus {
 
 BusInvoker::BusInvoker(const std::string& name) : name_(name), next_id_(1) {}
 
@@ -64,5 +63,4 @@ void BusInvoker::HandleResponseMessage(const MsgPtr& msg) {
     result->WeakUp();
   }
 }
-}  // namespace bus
 }  // namespace cppboot

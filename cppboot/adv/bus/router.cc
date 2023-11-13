@@ -1,7 +1,6 @@
-#include "cppboot/bus/router.h"
+#include "cppboot/adv/bus/router.h"
 
 namespace cppboot {
-namespace bus {
 
 using cppboot::net::ConnPtr;
 
@@ -21,5 +20,4 @@ ConnPtr BusRouter::Find(const std::string& name) {
   return (it != connections_.end()) ? it->second : nullptr;
 }
 
-}  // namespace bus
 }  // namespace cppboot

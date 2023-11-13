@@ -1,14 +1,14 @@
 #include "gmock/gmock.h"
 
-#include "cppboot/bus/service.h"
-#include "cppboot/bus/msg.h"
+#include "cppboot/adv/bus/service.h"
+#include "cppboot/adv/bus/msg.h"
 
 namespace {
 
-using cppboot::bus::BusService;
-using cppboot::bus::In;
-using cppboot::bus::Msg;
-using cppboot::bus::Out;
+using cppboot::BusService;
+using cppboot::In;
+using cppboot::Msg;
+using cppboot::Out;
 
 TEST(BusServiceTest, should_serve_msg) {
   BusService svc("noname");

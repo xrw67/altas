@@ -1,5 +1,5 @@
-#ifndef CPPBOOT_BUS_MSG_H_
-#define CPPBOOT_BUS_MSG_H_
+#ifndef CPPBOOT_ADV_BUS_MSG_H_
+#define CPPBOOT_ADV_BUS_MSG_H_
 
 #include <stdint.h>
 #include <string>
@@ -9,7 +9,6 @@
 #include "cppboot/net/connection.h"
 
 namespace cppboot {
-namespace bus {
 
 using cppboot::net::ConnPtr;
 
@@ -98,7 +97,6 @@ class Msg {
 
 void SendMessageToConnection(const ConnPtr& conn, const MsgPtr& msg);
 
-}  // namespace bus
 }  // namespace cppboot
 
-#endif  // CPPBOOT_BUS_MSG_H_
+#endif  // CPPBOOT_ADV_BUS_MSG_H_

@@ -1,5 +1,5 @@
-#ifndef CPPBOOT_BUS_ROUTER_H_
-#define CPPBOOT_BUS_ROUTER_H_
+#ifndef CPPBOOT_ADV_BUS_ROUTER_H_
+#define CPPBOOT_ADV_BUS_ROUTER_H_
 
 #include <mutex>
 #include <string>
@@ -8,7 +8,6 @@
 #include "cppboot/net/callbacks.h"
 
 namespace cppboot {
-namespace bus {
 
 class BusRouter {
  public:
@@ -20,7 +19,6 @@ class BusRouter {
   std::mutex mutex_;
   std::unordered_map<std::string, cppboot::net::ConnPtr> connections_;
 };
-}  // namespace bus
 }  // namespace cppboot
 
-#endif  // CPPBOOT_BUS_ROUTER_H_
+#endif  // CPPBOOT_ADV_BUS_ROUTER_H_

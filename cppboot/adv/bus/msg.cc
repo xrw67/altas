@@ -1,11 +1,10 @@
-#include "cppboot/bus/msg.h"
+#include "cppboot/adv/bus/msg.h"
 
 #include "cppboot/net/buffer.h"
 #include "cppboot/net/connection.h"
 
-#include "cppboot/bus/msg_packer.h"
+#include "cppboot/adv/bus/msg_packer.h"
 namespace cppboot {
-namespace bus {
 
 using cppboot::net::Buffer;
 
@@ -30,5 +29,4 @@ void SendMessageToConnection(const ConnPtr& conn, const MsgPtr& msg) {
   conn->Send(tmp.Peek(), tmp.ReadableBytes());
 }
 
-}  // namespace bus
 }  // namespace cppboot

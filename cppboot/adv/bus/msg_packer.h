@@ -1,11 +1,10 @@
-#ifndef CPPBOOT_BUS_MSG_PACKER_H_
-#define CPPBOOT_BUS_MSG_PACKER_H_
+#ifndef CPPBOOT_ADV_BUS_MSG_PACKER_H_
+#define CPPBOOT_ADV_BUS_MSG_PACKER_H_
 
 #include <string>
 #include "cppboot/base/status.h"
 
 namespace cppboot {
-namespace bus {
 
 class Msg;
 
@@ -33,7 +32,6 @@ class JsonPacker : public MsgPacker {
   Status Unpack(const std::string& data, Msg* msg);
 };
 
-}  // namespace bus
 }  // namespace cppboot
 
-#endif  // CPPBOOT_BUS_MSG_PACKER_H_
+#endif  // CPPBOOT_ADV_BUS_MSG_PACKER_H_

@@ -1,5 +1,5 @@
-#ifndef CPPBOOT_BUS_METHOD_H_
-#define CPPBOOT_BUS_METHOD_H_
+#ifndef CPPBOOT_ADV_BUS_METHOD_H_
+#define CPPBOOT_ADV_BUS_METHOD_H_
 
 #include <map>
 #include <string>
@@ -12,7 +12,6 @@
 #include "cppboot/net/connection.h"
 
 namespace cppboot {
-namespace bus {
 
 class In {
  public:
@@ -71,7 +70,6 @@ class Result {
 
 typedef std::function<void(const In&, Out*)> MethodFunc;
 
-}  // namespace bus
 }  // namespace cppboot
 
-#endif  // CPPBOOT_BUS_METHOD_H_
+#endif  // CPPBOOT_ADV_BUS_METHOD_H_

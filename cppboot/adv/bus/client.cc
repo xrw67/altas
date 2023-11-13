@@ -1,17 +1,16 @@
-#include "cppboot/bus/client.h"
+#include "cppboot/adv/bus/client.h"
 
 #include <exception>
 
 #include "cppboot/net/tcp/connection.h"
-#include "cppboot/bus/method.h"
-#include "cppboot/bus/msg.h"
-#include "cppboot/bus/context.h"
-#include "cppboot/bus/msg_packer.h"
-#include "cppboot/bus/invoker.h"
-#include "cppboot/bus/service.h"
+#include "cppboot/adv/bus/method.h"
+#include "cppboot/adv/bus/msg.h"
+#include "cppboot/adv/bus/context.h"
+#include "cppboot/adv/bus/msg_packer.h"
+#include "cppboot/adv/bus/invoker.h"
+#include "cppboot/adv/bus/service.h"
 
 namespace cppboot {
-namespace bus {
 
 using cppboot::net::_1;
 using cppboot::net::_2;
@@ -109,5 +108,4 @@ void BusClient::ReportMyServiceToServer() {
   invoker_->Call("RegisterService", in, NULL);
 }
 
-}  // namespace bus
 }  // namespace cppboot

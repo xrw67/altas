@@ -1,10 +1,10 @@
 #include "gmock/gmock.h"
 
-#include "cppboot/bus/msg.h"
+#include "cppboot/adv/bus/msg.h"
 
 namespace {
 
-using cppboot::bus::Msg;
+using cppboot::Msg;
 
 TEST(Msg, create) {
   Msg msg;

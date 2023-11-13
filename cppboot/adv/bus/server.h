@@ -1,5 +1,5 @@
-#ifndef CPPBOOT_BUS_SERVER_H_
-#define CPPBOOT_BUS_SERVER_H_
+#ifndef CPPBOOT_ADV_BUS_SERVER_H_
+#define CPPBOOT_ADV_BUS_SERVER_H_
 
 #include <set>
 #include <memory>
@@ -8,11 +8,10 @@
 #include "asio.hpp"
 #include "cppboot/base/status.h"
 #include "cppboot/net/tcp/server.h"
-#include "cppboot/bus/msg.h"
-#include "cppboot/bus/method.h"
+#include "cppboot/adv/bus/msg.h"
+#include "cppboot/adv/bus/method.h"
 
 namespace cppboot {
-namespace bus {
 
 using cppboot::net::Buffer;
 using cppboot::net::ConnPtr;
@@ -45,7 +44,6 @@ class BusServer {
   std::unique_ptr<BusRouter> router_;
 };
 
-}  // namespace bus
 }  // namespace cppboot
 
-#endif  // CPPBOOT_BUS_SERVER_H_
+#endif  // CPPBOOT_ADV_BUS_SERVER_H_

@@ -5,10 +5,9 @@
 #include "cppboot/net/testing/mocks.h"
 
 namespace cppboot {
-namespace bus {
 namespace {
 
-using cppboot::bus::BusClient;
+using cppboot::BusClient;
 using cppboot::net::Conn;
 using cppboot::net::TcpServer;
 using cppboot::net::testing::MockConnectionPair;
@@ -69,15 +68,14 @@ TEST(BusServer, should_register_method_by_client) {
     out->set("key2", "666");
   });
 
-  cppboot::bus::In in;
+  cppboot::In in;
   in.set("name", "xrw");
 
-  cppboot::bus::Out out;
+  cppboot::Out out;
   ASSERT_TRUE(client2.Call("client1/func1", in, &out));
   ASSERT_EQ(out.get("name"), "xrw");
   ASSERT_EQ(out.get("key2"), "666");
 }
 
 }  // namespace
-}  // namespace bus
 }  // namespace cppboot

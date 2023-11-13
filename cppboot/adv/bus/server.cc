@@ -1,14 +1,13 @@
-#include "cppboot/bus/server.h"
+#include "cppboot/adv/bus/server.h"
 #include "cppboot/net/tcp/connection.h"
 
 #include "cppboot/base/str_util.h"
 #include "cppboot/base/log.h"
-#include "cppboot/bus/context.h"
-#include "cppboot/bus/service.h"
-#include "cppboot/bus/router.h"
+#include "cppboot/adv/bus/context.h"
+#include "cppboot/adv/bus/service.h"
+#include "cppboot/adv/bus/router.h"
 
 namespace cppboot {
-namespace bus {
 
 using cppboot::net::_1;
 using cppboot::net::_2;
@@ -101,5 +100,4 @@ void BusServer::HandleRegisterMethod(const In& in, Out* out) {
   CPPBOOT_LOG(DEBUG, "handle {}, name is {}", "RegisterMethod", name);
 }
 
-}  // namespace bus
 }  // namespace cppboot

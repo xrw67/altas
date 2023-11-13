@@ -1,6 +1,6 @@
 #include "gmock/gmock.h"
 
-#include "cppboot/bus/router.h"
+#include "cppboot/adv/bus/router.h"
 #include "cppboot/net/connection.h"
 
 namespace {
@@ -13,7 +13,7 @@ struct MockConnection : public Conn {
 };
 
 TEST(BusRouterTest, example) {
-  cppboot::bus::BusRouter r;
+  cppboot::BusRouter r;
 
   auto conn1 = std::make_shared<MockConnection>();
   auto conn2 = std::make_shared<MockConnection>();

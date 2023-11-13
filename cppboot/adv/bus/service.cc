@@ -1,8 +1,7 @@
-#include "cppboot/bus/service.h"
-#include "cppboot/bus/msg.h"
+#include "cppboot/adv/bus/service.h"
+#include "cppboot/adv/bus/msg.h"
 
 namespace cppboot {
-namespace bus {
 
 bool BusService::AddMethod(const std::string& name, MethodFunc func) {
   if (methods_.find(name) == methods_.end()) {
@@ -36,5 +35,4 @@ void BusService::ServeMsg(const Msg& req, Msg* resp) {
   resp->set_request(false);
 }
 
-}  // namespace bus
 }  // namespace cppboot

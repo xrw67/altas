@@ -1,12 +1,11 @@
-#include "cppboot/bus/msg_packer.h"
+#include "cppboot/adv/bus/msg_packer.h"
 
 #include <exception>
 
 #include "cppboot/base/json.h"
-#include "cppboot/bus/msg.h"
+#include "cppboot/adv/bus/msg.h"
 
 namespace cppboot {
-namespace bus {
 
 //
 // JsonPacker
@@ -50,5 +49,4 @@ Status JsonPacker::Unpack(const std::string& data, Msg* msg) {
   return OkStatus();
 }
 
-}  // namespace bus
 }  // namespace cppboot

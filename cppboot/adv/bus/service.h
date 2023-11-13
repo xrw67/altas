@@ -1,13 +1,12 @@
-#ifndef CPPBOOT_BUS_SERVICE_H_
-#define CPPBOOT_BUS_SERVICE_H_
+#ifndef CPPBOOT_ADV_BUS_SERVICE_H_
+#define CPPBOOT_ADV_BUS_SERVICE_H_
 
 #include <string>
 #include <map>
 
-#include "cppboot/bus/method.h"
+#include "cppboot/adv/bus/method.h"
 
 namespace cppboot {
-namespace bus {
 
 class Msg;
 
@@ -27,7 +26,6 @@ class BusService {
   std::map<std::string, MethodFunc> methods_;
 };
 
-}  // namespace bus
 }  // namespace cppboot
 
-#endif  // CPPBOOT_BUS_SERVICE_H_
+#endif  // CPPBOOT_ADV_BUS_SERVICE_H_

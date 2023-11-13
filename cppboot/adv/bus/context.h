@@ -1,5 +1,5 @@
-#ifndef CPPBOOT_BUS_CONTEXT_H_
-#define CPPBOOT_BUS_CONTEXT_H_
+#ifndef CPPBOOT_ADV_BUS_CONTEXT_H_
+#define CPPBOOT_ADV_BUS_CONTEXT_H_
 
 #include <string>
 
@@ -11,7 +11,6 @@
 #include "msg.h"
 
 namespace cppboot {
-namespace bus {
 
 using cppboot::net::Buffer;
 
@@ -35,7 +34,6 @@ class BusContext : public cppboot::net::Context {
   MsgHeader header_;
 };
 
-}  // namespace bus
 }  // namespace cppboot
 
-#endif  // CPPBOOT_BUS_CONTEXT_H_
+#endif  // CPPBOOT_ADV_BUS_CONTEXT_H_

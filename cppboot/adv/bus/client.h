@@ -1,5 +1,5 @@
-#ifndef CPPBOOT_BUS_CLIENT_H_
-#define CPPBOOT_BUS_CLIENT_H_
+#ifndef CPPBOOT_ADV_BUS_CLIENT_H_
+#define CPPBOOT_ADV_BUS_CLIENT_H_
 
 #include <string>
 #include <memory.h>
@@ -8,11 +8,10 @@
 
 #include "cppboot/base/status.h"
 #include "cppboot/net/connection.h"
-#include "cppboot/bus/msg.h"
-#include "cppboot/bus/method.h"
+#include "cppboot/adv/bus/msg.h"
+#include "cppboot/adv/bus/method.h"
 
 namespace cppboot {
-namespace bus {
 
 using cppboot::net::Buffer;
 using cppboot::net::ConnPtr;
@@ -57,7 +56,6 @@ class BusClient {
   ConnPtr transport_;
 };
 
-}  // namespace bus
 }  // namespace cppboot
 
-#endif  // CPPBOOT_BUS_CLIENT_H_
+#endif  // CPPBOOT_ADV_BUS_CLIENT_H_
