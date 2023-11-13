@@ -1,5 +1,4 @@
 #include "cppboot/net/http/response.h"
-#include "cppboot/net/html/document.h"
 
 #include <string>
 
@@ -248,9 +247,9 @@ void Response::WriteText(status_type code, const std::string& body) {
   set_header("Content-Type", "text/plain");
 }
 
-void Response::WriteHtml(status_type code, const html::Document& doc) {
+void Response::WriteHtml(status_type code, const std::string& body) {
   status = code;
-  content = doc.Dump();
+  content = body;
   set_header("Content-Length", std::to_string(content.size()));
   set_header("Content-Type", "text/html");
 }

@@ -65,7 +65,7 @@ struct Response {
    */
   void WriteText(status_type code, const std::string& body);
 
-  void WriteHtml(status_type code, const html::Document& doc);
+  void WriteHtml(status_type code, const std::string& body);
 
   /**
    * @brief JSON serializes into the response body with "application/json".

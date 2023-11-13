@@ -52,7 +52,7 @@ int main(int argc, char* argv[]) {
       DoCommand(ui, cmd);
     }
 
-    resp->WriteHtml(Response::ok, ui.doc());
+    resp->WriteHtml(Response::ok, ui.doc().Dump());
   });
 
   auto port = std::to_string(args.GetLong("port"));
