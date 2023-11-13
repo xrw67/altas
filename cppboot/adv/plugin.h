@@ -18,7 +18,7 @@ typedef struct CPPBOOT_EXPORT _CPPBOOT_MODULE_HEADER {
   const char* requires;            // 依赖的其他插件
   int (*init)(const char* param);  // 插件初始化函数
   void (*exit)(void);              // 插件退出函数
-} CPPBOOT_MODULE_HEADER, *PCPPBOOT_MODULE_HEADER;
+} CPPBOOT_PLUGIN_HEADER, *PCPPBOOT_PLUGIN_HEADER;
 
 #ifdef __cplusplus
 }
@@ -26,27 +26,27 @@ typedef struct CPPBOOT_EXPORT _CPPBOOT_MODULE_HEADER {
 
 namespace cppboot {
 
-class ModuleLoader {
+class PluginLoader {
  public:
   enum Type {
     kDll = 1,
   };
 
-  virtual ~ModuleLoader() {}
+  virtual ~PluginLoader() {}
 
-  static ModuleLoader* New(Type type, const char* dir);
-  static void Release(ModuleLoader* ldr);
+  static PluginLoader* New(Type type, const char* dir);
+  static void Release(PluginLoader* ldr);
 
-  virtual Status Load(const char* name, PCPPBOOT_MODULE_HEADER* result) = 0;
+  virtual Status Load(const char* name, PCPPBOOT_PLUGIN_HEADER* result) = 0;
   virtual Status Unload(const char* name) = 0;
 };
 
-class ModuleManager {
+class PluginManager {
  public:
-  virtual ~ModuleManager() {}
+  virtual ~PluginManager() {}
 
-  static ModuleManager* New(ModuleLoader* loader);
-  static void Release(ModuleManager* mgr);
+  static PluginManager* New(PluginLoader* loader);
+  static void Release(PluginManager* mgr);
 
   virtual Status Load(const char* name, const char* param) = 0;
   virtual Status Unload(const char* name) = 0;

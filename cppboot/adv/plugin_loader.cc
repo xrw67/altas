@@ -1,4 +1,4 @@
-#include "cppboot/adv/module.h"
+#include "cppboot/adv/plugin.h"
 
 #include <string>
 #include <map>
@@ -12,22 +12,22 @@
 
 namespace cppboot {
 //
-// DLL Module Loader
+// DLL Plugin 
 //
 
-class DllLoader : public ModuleLoader {
+class DllLoader : public PluginLoader {
  public:
   DllLoader(const char* dir) : dir_(dir) {}
   ~DllLoader() {
     for (auto h : handles_) {
       if (::dlclose(h.second)) {
-        CPPBOOT_RAW_LOG(ERROR, "unload module {} failed: {}", h.first, dlerror());
+        CPPBOOT_RAW_LOG(ERROR, "unload plugin {} failed: {}", h.first, dlerror());
       }
     }
   }
 
  private:
-  Status Load(const char* name, PCPPBOOT_MODULE_HEADER* result) {
+  Status Load(const char* name, PCPPBOOT_PLUGIN_HEADER* result) {
     if (!name || !*name) {
       return InvalidArgumentError("no name");
     }
@@ -35,19 +35,19 @@ class DllLoader : public ModuleLoader {
       return InvalidArgumentError("invalid result");
     }
 
-    auto path = GetModulePath(name);
+    auto path = GetPluginPath(name);
     void* handle = dlopen(path.c_str(), RTLD_NOW);
     if (!handle) {
       return CancelledError(
-          format("load module {} failed: {}", name, dlerror()));
+          format("load plugin {} failed: {}", name, dlerror()));
     }
 
-    PCPPBOOT_MODULE_HEADER hdr =
-        (PCPPBOOT_MODULE_HEADER)::dlsym(handle, "cppboot_module_header");
+    PCPPBOOT_PLUGIN_HEADER hdr =
+        (PCPPBOOT_PLUGIN_HEADER)::dlsym(handle, "cppboot_plugin_header");
     if (!hdr) {
       ::dlclose(handle);
       return CancelledError(
-          format("load module {} failed: no symbol cppboot_module_header", name));
+          format("load plugin {} failed: no symbol cppboot_plugin_header", name));
     }
 
     handles_[name] = handle;
@@ -69,7 +69,7 @@ class DllLoader : public ModuleLoader {
     return NotFoundError(name);
   }
 
-  std::string GetModulePath(const char* name) {
+  std::string GetPluginPath(const char* name) {
     return PathJoin(dir_, StrCat("libmod_", name, ".so"));
   }
 
@@ -78,7 +78,7 @@ class DllLoader : public ModuleLoader {
   std::map<std::string, void*> handles_;
 };
 
-ModuleLoader* ModuleLoader::New(ModuleLoader::Type type, const char* dir) {
+PluginLoader* PluginLoader::New(PluginLoader::Type type, const char* dir) {
   switch (type) {
     case kDll:
       return new DllLoader(dir ? dir : "");
@@ -88,5 +88,5 @@ ModuleLoader* ModuleLoader::New(ModuleLoader::Type type, const char* dir) {
   }
 }
 
-void ModuleLoader::Release(ModuleLoader* loader) { delete loader; }
+void PluginLoader::Release(PluginLoader* loader) { delete loader; }
 }  // namespace cppboot

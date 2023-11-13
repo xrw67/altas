@@ -1,4 +1,4 @@
-#include "cppboot/adv/module.h"
+#include "cppboot/adv/plugin.h"
 #include "cppboot/base/log.h"
 
 int hello_init(const char* param) {
@@ -9,7 +9,7 @@ int hello_init(const char* param) {
 void hello_exit(void) { CPPBOOT_LOG(INFO, "Hello exit"); }
 
 extern "C" __attribute__((visibility("default")))
-CPPBOOT_MODULE_HEADER cppboot_module_header = {
+CPPBOOT_PLUGIN_HEADER cppboot_plugin_header = {
     .name = "hello",
     .version = "0.1.0",
     .requires = "",

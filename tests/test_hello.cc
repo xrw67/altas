@@ -1,5 +1,5 @@
 #include "gmock/gmock.h"
-#include "cppboot/adv/module.h"
+#include "cppboot/adv/plugin.h"
 
 using namespace cppboot;
 

@@ -1,4 +1,4 @@
-#include "cppboot/modules/debugger/debugger.h"
+#include "cppboot/plugins/debugger/debugger.h"
 
 #include <map>
 #include <string>

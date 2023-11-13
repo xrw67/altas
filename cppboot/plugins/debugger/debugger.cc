@@ -1,9 +1,9 @@
-#include "cppboot/modules/debugger/debugger.h"
+#include "cppboot/plugins/debugger/debugger.h"
 
 #include <map>
 
 #include "cppboot/base/log.h"
-#include "cppboot/adv/module.h"
+#include "cppboot/adv/plugin.h"
 
 namespace cppboot {
 class DebuggerImpl : public Debugger {
@@ -52,7 +52,7 @@ int debugger_init(const char* param) {
 void debugger_exit(void) { CPPBOOT_LOG(INFO, "Debugger exit"); }
 
 extern "C" __attribute__((visibility("default")))
-CPPBOOT_MODULE_HEADER cppboot_module_header = {
+CPPBOOT_PLUGIN_HEADER cppboot_plugin_header = {
     .name = "debugger",
     .version = "0.1.0",
     .requires = "",

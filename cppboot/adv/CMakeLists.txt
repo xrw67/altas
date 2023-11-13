@@ -1,8 +1,8 @@
 SET(CPPBOOT_ADV_SRCS
     args.cc
     env.cc
-    module_manager.cc
-    module_loader.cc
+    plugin_manager.cc
+    plugin_loader.cc
 )
 
 list(APPEND CPPBOOT_ADV_SRCS
@@ -19,7 +19,7 @@ list(APPEND CPPBOOT_ADV_SRCS
 SET(CPPBOOT_ADV_TEST_SRCS
     args_test.cc
     env_test.cc
-    module_test.cc
+    plugin_test.cc
 )
 
 list(APPEND CPPBOOT_ADV_TEST_SRCS

@@ -1,4 +1,4 @@
-#include "cppboot/adv/module.h"
+#include "cppboot/adv/plugin.h"
 
 #include <map>
 #include <set>
@@ -13,8 +13,8 @@ namespace cppboot {
 
 namespace {
 
-Status VerifyModuleHeader(const PCPPBOOT_MODULE_HEADER hdr) {
-  if (!hdr) return InvalidArgumentError("no module");
+Status VerifyPluginHeader(const PCPPBOOT_PLUGIN_HEADER hdr) {
+  if (!hdr) return InvalidArgumentError("no plugin");
   if (!hdr->name || !*hdr->name) return InvalidArgumentError("no name");
   if (!hdr->version || !*hdr->version)
     return InvalidArgumentError("no version");
@@ -25,43 +25,43 @@ Status VerifyModuleHeader(const PCPPBOOT_MODULE_HEADER hdr) {
 
 };  // namespace
 
-struct Module;
-typedef std::shared_ptr<Module> ModulePtr;
+struct Plugin;
+typedef std::shared_ptr<Plugin> PluginPtr;
 
-struct Module {
-  const PCPPBOOT_MODULE_HEADER hdr;
+struct Plugin {
+  const PCPPBOOT_PLUGIN_HEADER hdr;
   std::string param;
-  std::set<ModulePtr> sources;  // What modules depend on me?
-  std::set<ModulePtr> targets;  // What modules do I depend on?
+  std::set<PluginPtr> sources;  // What plugins depend on me?
+  std::set<PluginPtr> targets;  // What plugins do I depend on?
 
-  explicit Module(const PCPPBOOT_MODULE_HEADER hdr) : hdr(hdr) {}
+  explicit Plugin(const PCPPBOOT_PLUGIN_HEADER hdr) : hdr(hdr) {}
 };
 
-class ModuleManagerImpl : public ModuleManager {
+class PluginManagerImpl : public PluginManager {
  public:
-  ModuleManagerImpl(ModuleLoader* loader) : loader_(loader) {}
+  PluginManagerImpl(PluginLoader* loader) : loader_(loader) {}
 
  private:
-  ModuleLoader* loader_;
+  PluginLoader* loader_;
 
   std::mutex mutex_;
-  std::map<std::string, ModulePtr> mods_;
+  std::map<std::string, PluginPtr> mods_;
 
   Status Load(const char* name, const char* param) {
-    if (!name || !*name) return InvalidArgumentError("no module name");
+    if (!name || !*name) return InvalidArgumentError("no plugin name");
     {
       std::lock_guard<std::mutex> lock(mutex_);
       if (mods_.find(name) != mods_.end()) return AlreadyExistsError(name);
     }
 
-    PCPPBOOT_MODULE_HEADER hdr;
+    PCPPBOOT_PLUGIN_HEADER hdr;
     Status st = loader_->Load(name, &hdr);
     if (!st.ok()) return st;
 
-    ModulePtr me(new Module(hdr));
+    PluginPtr me(new Plugin(hdr));
 
     if (!param) param = "";
-    st = InitModule(me, hdr, param);
+    st = InitPulgin(me, hdr, param);
     if (!st.ok()) {
       loader_->Unload(name);
       return st;
@@ -74,9 +74,9 @@ class ModuleManagerImpl : public ModuleManager {
   }
 
   Status Unload(const char* name) {
-    if (!name || !*name) return InvalidArgumentError("empty module name");
+    if (!name || !*name) return InvalidArgumentError("empty plugin name");
 
-    ModulePtr me;
+    PluginPtr me;
 
     {
       std::lock_guard<std::mutex> lock(mutex_);
@@ -102,11 +102,11 @@ class ModuleManagerImpl : public ModuleManager {
     return OkStatus();
   }
 
-  Status InitModule(ModulePtr& module, const PCPPBOOT_MODULE_HEADER hdr,
+  Status InitPulgin(PluginPtr& plugin, const PCPPBOOT_PLUGIN_HEADER hdr,
                     const char* param) {
-    Status st = VerifyModuleHeader(hdr);
+    Status st = VerifyPluginHeader(hdr);
     if (st.ok()) {
-      st = VerifyDependence(module);
+      st = VerifyDependence(plugin);
       if (st.ok()) {
         int err = hdr->init(param);
         if (err) return InvalidArgumentError("init retrn error");
@@ -115,10 +115,10 @@ class ModuleManagerImpl : public ModuleManager {
     return st;
   }
 
-  Status VerifyDependence(ModulePtr& module) {
-    if (!module->hdr->requires) return OkStatus();
+  Status VerifyDependence(PluginPtr& plugin) {
+    if (!plugin->hdr->requires) return OkStatus();
 
-    auto require_list = StrSplit(module->hdr->requires, ',');
+    auto require_list = StrSplit(plugin->hdr->requires, ',');
     for (auto& i : require_list) {
       auto name = StrTrim(i, " ");
       if (name.empty()) continue;
@@ -126,21 +126,21 @@ class ModuleManagerImpl : public ModuleManager {
       if (it == mods_.end())
         return NotFoundError(format("depend on {}", name.data()));
       else
-        AddModuleUsage(module, it->second);
+        AddpluginUsage(plugin, it->second);
     }
     return OkStatus();
   }
 
-  // Module a uses b
-  void AddModuleUsage(ModulePtr& a, ModulePtr& b) {
+  // Plugin a uses b
+  void AddpluginUsage(PluginPtr& a, PluginPtr& b) {
     b->sources.insert(a);
     a->targets.insert(b);
   }
 };
 
-ModuleManager* ModuleManager::New(ModuleLoader* loader) {
-  return new ModuleManagerImpl(loader);
+PluginManager* PluginManager::New(PluginLoader* loader) {
+  return new PluginManagerImpl(loader);
 }
-void ModuleManager::Release(ModuleManager* mgr) { delete mgr; }
+void PluginManager::Release(PluginManager* mgr) { delete mgr; }
 
 }  // namespace cppboot
